@@ -13,18 +13,18 @@ namespace eventsApp.Controllers
             _dobavljaciService = dobavljaciService;
         }
 
-        [HttpGet]
+      /*  [HttpGet]
         public IEnumerable<Dobavljaci> Get()
         {
             
             return _dobavljaciService.Get();
-        }
+        }*/
 
-        [HttpGet("{id}")]
+       /* [HttpGet("{id}")]
         public Dobavljaci GetById(int id)
         {
 
             return _dobavljaciService.GetById(id);
-        }
+        }*/
     }
 }

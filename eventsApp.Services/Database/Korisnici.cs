@@ -29,7 +29,7 @@ public partial class Korisnici
 
     public string? Drzava { get; set; }
 
-    public byte[] Slika { get; set; } = null!;
+    public byte[]? Slika { get; set; }
 
     public virtual ICollection<HistorijaPregledum> HistorijaPregleda { get; } = new List<HistorijaPregledum>();
 
