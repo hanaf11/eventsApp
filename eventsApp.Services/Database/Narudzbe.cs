@@ -25,6 +25,8 @@ public partial class Narudzbe
 
     public string? Drzava { get; set; }
 
+    public string Status { get; set; } = null!;
+
     public virtual Korisnici Korisnik { get; set; } = null!;
 
     public virtual ICollection<NarudzbaStavke> NarudzbaStavkes { get; } = new List<NarudzbaStavke>();

@@ -19,6 +19,8 @@ public partial class EventsDbContext : DbContext
 
     public virtual DbSet<Dogadjaji> Dogadjajis { get; set; }
 
+    public virtual DbSet<Galerija> Galerijas { get; set; }
+
     public virtual DbSet<HistorijaPregledum> HistorijaPregleda { get; set; }
 
     public virtual DbSet<Karte> Kartes { get; set; }
@@ -53,7 +55,7 @@ public partial class EventsDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=localhost, 1434; Initial Catalog=eventsDb; User=sa; Password=QWEasd123!; TrustServerCertificate=True");
+        => optionsBuilder.UseSqlServer("Data Source=localhost, 1434; Initial Catalog = eventsDb; user=sa; Password=QWEasd123!; TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -91,7 +93,9 @@ public partial class EventsDbContext : DbContext
             entity.Property(e => e.Lokacija).HasMaxLength(200);
             entity.Property(e => e.Naziv).HasMaxLength(100);
             entity.Property(e => e.Opis).HasColumnType("text");
+            entity.Property(e => e.PodkategorijaId).HasColumnName("PodkategorijaID");
             entity.Property(e => e.Program).HasColumnType("text");
+            entity.Property(e => e.Status).HasMaxLength(100);
             entity.Property(e => e.Website).HasMaxLength(200);
 
             entity.HasOne(d => d.Dobavljac).WithMany(p => p.Dogadjajis)
@@ -102,6 +106,17 @@ public partial class EventsDbContext : DbContext
                 .HasForeignKey(d => d.KategorijaId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Dogadjaji_Kategorije");
+        });
+
+        modelBuilder.Entity<Galerija>(entity =>
+        {
+            entity.ToTable("Galerija");
+
+            entity.Property(e => e.GalerijaId)
+                .ValueGeneratedNever()
+                .HasColumnName("GalerijaID");
+            entity.Property(e => e.DogadjajId).HasColumnName("DogadjajID");
+            entity.Property(e => e.SlikaId).HasColumnName("SlikaID");
         });
 
         modelBuilder.Entity<HistorijaPregledum>(entity =>
@@ -262,6 +277,7 @@ public partial class EventsDbContext : DbContext
                 .HasColumnType("decimal(18, 2)")
                 .HasColumnName("IznosSaPDV");
             entity.Property(e => e.KorisnikId).HasColumnName("KorisnikID");
+            entity.Property(e => e.Status).HasMaxLength(100);
             entity.Property(e => e.Tip).HasMaxLength(20);
 
             entity.HasOne(d => d.Korisnik).WithMany(p => p.Narudzbes)

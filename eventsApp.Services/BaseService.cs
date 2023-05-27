@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace eventsApp.Services
 {
-    public class BaseService<T, TDb, TSearch>:IService<T, TSearch> where TDb : class where TSearch: BaseSearchObject
+   public class BaseService<T, TDb, TSearch>:IService<T, TSearch> where TDb : class where TSearch: BaseSearchObject
     {
         protected EventsDbContext _context;
         protected IMapper _mapper { get; set; }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,11 +9,12 @@ namespace eventsApp.Model.Requests
 {
     public class DogadjajiInsertRequest
     {
-
+        [Required(AllowEmptyStrings =false)]
+        [MinLength(1)]
         public string Naziv { get; set; } = null!;
-
+        [Required]
         public DateTime DatumOd { get; set; }
-
+        [Required]
         public DateTime DatumDo { get; set; }
 
         public string? Program { get; set; }
@@ -30,5 +32,7 @@ namespace eventsApp.Model.Requests
         public int? DobavljacId { get; set; }
 
         public int KategorijaId { get; set; }
+
+        public int? PodkategorijaId { get; set; }
     }
 }

@@ -30,5 +30,7 @@ namespace eventsApp.Model.Requests
         public int? DobavljacId { get; set; }
 
         public int? KategorijaId { get; set; }
+
+        public int? PodkategorijaId { get; set; }
     }
 }

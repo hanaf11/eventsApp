@@ -14,5 +14,24 @@ namespace eventsApp.Controllers
         public DogadjajiController(ILogger<BaseController<Dogadjaji, DogadjajiSearchObject>> logger, IDogadjajiService service) : base(logger, service)
         {
         }
+
+        [HttpPut("{id}/activate")]
+        public virtual async Task<Model.Dogadjaji> Activate(int id)
+        {
+            return await (_service as IDogadjajiService).Activate(id);
+        }
+
+
+        [HttpPut("{id}/cancel")]
+        public virtual async Task<Model.Dogadjaji> Cancel(int id)
+        {
+            return await (_service as IDogadjajiService).Cancel(id);
+        }
+
+        [HttpGet("{id}/allowedActions")]
+        public virtual async Task<List<string>> AllowedActions(int id)
+        {
+            return await (_service as IDogadjajiService).AllowedActions(id);
+        }
     }
 }

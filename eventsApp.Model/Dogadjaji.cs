@@ -32,6 +32,10 @@ namespace eventsApp.Model
 
         public int KategorijaId { get; set; }
 
+        public int PodkategorijaId { get; set; }
+
+        public string Status { get; set; }
+
       /*  public virtual Dobavljaci? Dobavljac { get; set; }
 
         public virtual ICollection<HistorijaPregledum> HistorijaPregleda { get; } = new List<HistorijaPregledum>();

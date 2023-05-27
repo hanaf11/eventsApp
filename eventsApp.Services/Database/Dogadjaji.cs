@@ -29,11 +29,17 @@ public partial class Dogadjaji
 
     public int KategorijaId { get; set; }
 
+    public string Status { get; set; } = null!;
+
+    public int? PodkategorijaId { get; set; }
+
     public virtual Dobavljaci? Dobavljac { get; set; }
 
     public virtual ICollection<HistorijaPregledum> HistorijaPregleda { get; } = new List<HistorijaPregledum>();
 
     public virtual Kategorije Kategorija { get; set; } = null!;
+
+    public virtual Podkategorije Podkategorija { get; set; } = null!;
 
     public virtual ICollection<Komentari> Komentaris { get; } = new List<Komentari>();
 

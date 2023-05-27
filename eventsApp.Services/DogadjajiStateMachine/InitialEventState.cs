@@ -11,7 +11,7 @@ namespace eventsApp.Services.DogadjajiStateMachine
 {
     public class InitialEventState:BaseState
     {
-        public InitialEventState(Database.EventsDbContext context, IMapper mapper) : base(context, mapper)
+        public InitialEventState(IServiceProvider serviceProvider,Database.EventsDbContext context, IMapper mapper) : base(serviceProvider,context, mapper)
         {
         }
 
@@ -20,12 +20,40 @@ namespace eventsApp.Services.DogadjajiStateMachine
             var set = _context.Set<Database.Dogadjaji>();
 
             var entity = _mapper.Map<Database.Dogadjaji>(request);
+            entity.Status = "Initial";
 
             set.Add(entity);
            // await BeforeInsert(entity, insert);
             await _context.SaveChangesAsync();
 
             return _mapper.Map<Dogadjaji>(entity);
+        }
+
+        public override async Task<Dogadjaji> Update(int id, DogadjajiUpdateRequest request)
+        {
+            var set = _context.Set<Database.Dogadjaji>();
+
+            var entity = await set.FindAsync(id);
+
+            _mapper.Map(request, entity);
+
+            if (entity.Opis == "aa")
+            {
+                throw new UserException("Opis nije dozvoljen");
+            }
+
+            await _context.SaveChangesAsync();
+
+            return _mapper.Map<Model.Dogadjaji>(entity);
+        }
+
+        public override async Task<List<string>> AllowedActions()
+        {
+            var list=await base.AllowedActions();
+            list.Add("Verify");
+            list.Add("Cancel");
+
+            return list;
         }
     }
 }
