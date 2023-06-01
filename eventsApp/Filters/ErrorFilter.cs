@@ -16,7 +16,10 @@ namespace eventsApp.Filters
             }
             else
             {
-                context.ModelState.AddModelError("ERROR", "Server side error");
+                //TBD: sakriti trace
+                // context.ModelState.AddModelError("ERROR", "Server side error");
+                context.ModelState.AddModelError("ERROR", context.Exception.Message);
+                context.ModelState.AddModelError("ERROR", context.Exception.StackTrace);
                 context.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             }
             

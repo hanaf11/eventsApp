@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using EasyNetQ;
 using eventsApp.Services.Database;
+using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +26,29 @@ namespace eventsApp.Services.DogadjajiStateMachine
 
             await _context.SaveChangesAsync();
 
-            return _mapper.Map<Model.Dogadjaji>(entity);
+            /*var factory = new ConnectionFactory { HostName = "localhost" };
+            using var connection = factory.CreateConnection();
+            using var channel= connection.CreateModel();
+
+            channel.QueueDeclare(queue:"category_subscription",
+                                 durable:false,
+                                 exclusive:false,
+                                 autoDelete:false,
+                                 arguments:null);
+            const string message = "aa";
+            var body = Encoding.UTF8.GetBytes(message);
+
+            channel.BasicPublish(exchange: string.Empty,
+                                 routingKey: "category_subscription",
+                                 basicProperties: null,
+                                 body: body);*/
+
+            var mappedEntity=_mapper.Map<Model.Dogadjaji>(entity);
+
+            using var bus = RabbitHutch.CreateBus("host=localhost");
+            bus.PubSub.Publish(mappedEntity);
+
+            return mappedEntity;
         }
 
         public override async Task<List<string>> AllowedActions()

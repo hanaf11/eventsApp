@@ -14,9 +14,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddTransient<IDobavljaciService, DobavljaciServiceImpl>();
 builder.Services.AddTransient<IKorisniciService, KorisniciServiceImpl>();
-builder.Services.AddTransient<IDobavljaciService, DobavljaciServiceImpl>();
-builder.Services.AddTransient<IService<eventsApp.Model.Kategorije, BaseSearchObject>, BaseService<eventsApp.Model.Kategorije, eventsApp.Services.Database.Kategorije, BaseSearchObject>>();
+//builder.Services.AddTransient<IService<eventsApp.Model.Kategorije, BaseSearchObject>, BaseService<eventsApp.Model.Kategorije, eventsApp.Services.Database.Kategorije, BaseSearchObject>>();
 builder.Services.AddTransient<IDogadjajiService, DogadjajiServiceImpl>();
+builder.Services.AddTransient<IKategorijeService, KategorijeServiceImpl>();
 
 builder.Services.AddTransient<BaseState>();
 builder.Services.AddTransient<ActiveEventState>();
@@ -28,7 +28,7 @@ builder.Services.AddTransient<VerifiedEventState>();
 builder.Services.AddControllers(x => { x.Filters.Add<ErrorFilter>(); });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
+builder.Services.AddSwaggerGen( c =>
 {
     c.AddSecurityDefinition("basicAuth", new Microsoft.OpenApi.Models.OpenApiSecurityScheme()
     {

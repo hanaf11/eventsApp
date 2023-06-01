@@ -12,6 +12,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eventsApp.Services", "..\ev
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eventsApp.Model", "..\eventsApp.Model\eventsApp.Model.csproj", "{B0914B7B-53EC-4142-B96B-F7D180A524F2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eventsApp.Subscriber", "..\eventsApp.Subscriber\eventsApp.Subscriber.csproj", "{F2900A82-1AAD-44C8-ACE3-0687E00D4D62}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,6 +32,10 @@ Global
 		{B0914B7B-53EC-4142-B96B-F7D180A524F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0914B7B-53EC-4142-B96B-F7D180A524F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0914B7B-53EC-4142-B96B-F7D180A524F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2900A82-1AAD-44C8-ACE3-0687E00D4D62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2900A82-1AAD-44C8-ACE3-0687E00D4D62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2900A82-1AAD-44C8-ACE3-0687E00D4D62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2900A82-1AAD-44C8-ACE3-0687E00D4D62}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
