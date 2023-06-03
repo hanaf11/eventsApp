@@ -12,7 +12,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eventsApp.Services", "..\ev
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eventsApp.Model", "..\eventsApp.Model\eventsApp.Model.csproj", "{B0914B7B-53EC-4142-B96B-F7D180A524F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eventsApp.Subscriber", "..\eventsApp.Subscriber\eventsApp.Subscriber.csproj", "{F2900A82-1AAD-44C8-ACE3-0687E00D4D62}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eventsApp.Subscriber", "..\eventsApp.Subscriber\eventsApp.Subscriber.csproj", "{F2900A82-1AAD-44C8-ACE3-0687E00D4D62}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{29AE59AE-EB20-44DD-A0FC-8A591351C5A1}"
+	ProjectSection(SolutionItems) = preProject
+		Dockerfile.txt = Dockerfile.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

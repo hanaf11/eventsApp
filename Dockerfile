@@ -2,21 +2,17 @@
 
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
+EXPOSE 7294
+ENV ASPNETCORE_URLS=http://+:7294
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["eventsApp.csproj", "."]
-RUN dotnet restore "./eventsApp.csproj"
 COPY . .
-WORKDIR "/src/."
-RUN dotnet build "eventsApp.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "eventsApp.csproj" -c Release -o /app/publish
-
+RUN dotnet publish "eventsApp/eventsApp.csproj" -c Release -o /app
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=publish /app .
+
 ENTRYPOINT ["dotnet", "eventsApp.dll"]

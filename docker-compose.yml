@@ -1,0 +1,36 @@
+version: '1'
+services:
+#mssql docker
+  eventsapp-sql:
+    image: mcr.microsoft.com/mssql/server:2017-latest-ubuntu
+    restart: unless-stopped
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=QWElkj132!
+      - MSSQL_PID=Developer
+    ports:
+      - 1401:1433
+    expose:
+      - 1433
+    networks:
+      - eventsappnet
+
+  eventsapp-api:
+    restart: unless-stopped
+    build:
+      context: .
+    environment:
+      - ConnectionStrings:DefaultConnection=Server=eventsapp-sql,1433;Database=eventsDb;User=sa;Password=QWElkj132!;ConnectRetryCount=0;TrustServerCertificate=True
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - 7294:7294
+    networks:
+      - eventsappnet
+    links:
+      - eventsapp-sql
+    depends_on:
+      - eventsapp-sql
+      
+networks:
+  eventsappnet:
+    driver: bridge      
