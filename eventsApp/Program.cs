@@ -71,10 +71,10 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-using (var scope = app.Services.CreateScope())
+/*using (var scope = app.Services.CreateScope())
 {
     var dataContext = scope.ServiceProvider.GetRequiredService<EventsDbContext>();
    // dataContext.Database.EnsureCreated();
     dataContext.Database.Migrate();
-}
+}*/
 app.Run();
