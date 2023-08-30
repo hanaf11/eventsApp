@@ -19,6 +19,32 @@ namespace eventsApp.Services
             _baseState = baseState;
         }
 
+        public override IQueryable<Dogadjaji> AddFilter(IQueryable<Dogadjaji> query, DogadjajiSearchObject? search = null)
+        {
+            var filteredQuery= base.AddFilter(query, search);
+            if (!string.IsNullOrWhiteSpace(search?.FTS))
+            {
+                filteredQuery = filteredQuery.Where(x => x.Naziv.Contains(search.FTS));
+            }
+            if (!string.IsNullOrWhiteSpace(search?.Lokacija))
+            {
+                filteredQuery = filteredQuery.Where(x => x.Lokacija.Contains(search.Lokacija));
+            }
+            if (!string.IsNullOrWhiteSpace(search?.Kategorija))
+            {
+                filteredQuery = filteredQuery.Where(x => x.Kategorija.Equals(search.Kategorija));
+            }
+            if (search?.DatumOd!=null)
+            {
+                filteredQuery = filteredQuery.Where(x => x.DatumOd.Equals(search.DatumOd));
+            }
+            if (search?.DatumDo!=null)
+            {
+                filteredQuery = filteredQuery.Where(x => x.DatumDo.Equals(search.DatumDo));
+            }
+            return filteredQuery;
+        }
+
         public override Task<Model.Dogadjaji> Insert(DogadjajiInsertRequest insert)
         {
             var state = _baseState.CreateState("Initial");

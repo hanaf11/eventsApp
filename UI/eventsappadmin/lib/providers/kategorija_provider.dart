@@ -8,11 +8,13 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 
-class DogadjajProvider extends BaseProvider<Dogadjaj> {
-  DogadjajProvider() : super("Dogadjaji") {}
+import '../models/kategorija.dart';
+
+class KategorijaProvider extends BaseProvider<Kategorija> {
+  KategorijaProvider() : super("Kategorije") {}
 
   @override
-  Dogadjaj fromJson(data) {
-    return Dogadjaj.fromJson(data);
+  Kategorija fromJson(data) {
+    return Kategorija.fromJson(data);
   }
 }
