@@ -1,6 +1,10 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:eventsappadmin/providers/dogadjaj_provider.dart';
 import 'package:eventsappadmin/providers/kategorija_provider.dart';
 import 'package:eventsappadmin/widgets/master_screen.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:provider/provider.dart';
@@ -62,14 +66,17 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
                     _formKey.currentState?.saveAndValidate();
                     print(_formKey.currentState?.value);
 
+                    var request = new Map.from(_formKey.currentState!.value);
+                    request['naslovna'] = _base64Image;
+                    print(request['naslovna']);
+
                     try {
                       if (widget.dogadjaj == null) {
-                        await _dogadjajProvider
-                            .insert(_formKey.currentState?.value);
+                        await _dogadjajProvider.insert(request);
                       } else {
                         await _dogadjajProvider.update(
                             widget.dogadjaj!.dogadjajId!,
-                            request: _formKey.currentState?.value);
+                            request: request);
                       }
                     } on Exception catch (e) {
                       showDialog(
@@ -155,8 +162,38 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
                           [],
                     )),
                   ],
-                )
+                ),
+                Row(children: [
+                  Expanded(
+                      child: FormBuilderField(
+                    name: 'naslovna',
+                    builder: ((field) {
+                      return InputDecorator(
+                          decoration: InputDecoration(
+                              label: Text("Odaberite sliku"),
+                              errorText: field.errorText),
+                          child: ListTile(
+                            leading: Icon(Icons.photo),
+                            title: Text("Select image"),
+                            trailing: Icon(Icons.file_upload),
+                            onTap: getImage,
+                          ));
+                    }),
+                  ))
+                ])
               ],
             )));
+  }
+
+  File? _image;
+  String? _base64Image;
+
+  Future getImage() async {
+    var result = await FilePicker.platform.pickFiles(type: FileType.image);
+
+    if (result != null && result.files.single.path != null) {
+      _image = File(result.files.single.path!);
+      _base64Image = base64Encode(_image!.readAsBytesSync());
+    }
   }
 }

@@ -33,5 +33,11 @@ namespace eventsApp.Controllers
         {
             return await (_service as IDogadjajiService).AllowedActions(id);
         }
+
+       /* [HttpGet("{id}/recommend")]
+        public virtual List<Model.Dogadjaji> Recommend(int id)
+        {
+            return  (_service as IDogadjajiService).Recommend(id);
+        }*/
     }
 }

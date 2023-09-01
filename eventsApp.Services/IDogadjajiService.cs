@@ -15,5 +15,7 @@ namespace eventsApp.Services
         Task<Dogadjaji> Cancel(int id);
 
         Task<List<string>> AllowedActions(int id);
+
+      //  List<Model.Dogadjaji> Recommend(int id);
     }
 }
