@@ -189,7 +189,9 @@ class LoginPage extends StatelessWidget {
 
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => const DogadjajiListScreen(),
+                              builder: (context) => DogadjajiListScreen(
+                                selected: 0,
+                              ),
                             ),
                           );
                         } on Exception catch (e) {
