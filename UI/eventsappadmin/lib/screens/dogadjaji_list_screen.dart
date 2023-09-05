@@ -36,6 +36,7 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen> {
   @override
   Widget build(BuildContext context) {
     return MasterScreenWidget(
+      selectedIndex: selected,
       child: Container(
           child: Column(
         children: [
