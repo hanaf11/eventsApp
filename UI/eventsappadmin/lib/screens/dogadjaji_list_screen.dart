@@ -9,16 +9,14 @@ import '../models/dogadjaj.dart';
 import '../models/search_result.dart';
 
 class DogadjajiListScreen extends StatefulWidget {
-  int? selected = 0;
-  DogadjajiListScreen({this.selected, super.key});
+  DogadjajiListScreen({super.key});
 
   @override
-  State<DogadjajiListScreen> createState() =>
-      _DogadjajiListScreenState(selected);
+  State<DogadjajiListScreen> createState() => _DogadjajiListScreenState();
 }
 
 class _DogadjajiListScreenState extends State<DogadjajiListScreen> {
-  int? selected;
+  int selected = 0;
   late DogadjajProvider _dogadjajProvider;
   SearchResult<Dogadjaj>? result;
   //late int? selected;
@@ -26,7 +24,6 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen> {
   TextEditingController _kategorijaController = new TextEditingController();
   TextEditingController _lokacijaController = new TextEditingController();
 
-  _DogadjajiListScreenState(this.selected);
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();

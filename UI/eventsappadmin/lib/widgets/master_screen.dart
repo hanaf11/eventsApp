@@ -11,7 +11,6 @@ class MasterScreenWidget extends StatefulWidget {
   int? selectedIndex = 0;
 
   Widget? child;
-  //int? selectedIndex = 0;
   MasterScreenWidget({this.selectedIndex, this.child, super.key});
 
   @override
@@ -32,33 +31,6 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> {
     "Log out"
   ];
 
-  @override
-  void initState() {
-    super.initState();
-
-    /* _items = [
-      Item(name: "Događaji"),
-      Item(name: "Zahtjevi"),
-      Item(name: "Korisnici"),
-      // Add more items here
-    ];*/
-  }
-
-  /* final List<Item> _items = [
-    Item(
-        name: "Događaji",
-        route: DogadjajiListScreen(
-          selected: selectedIndex,
-        )),
-    Item(
-        name: "Zahtjevi",
-        route: ZahtjeviListScreen(
-          selected: null,
-        )),
-    Item(name: "Korisnici", route: KorisniciListScreen()),
-    // Add more items here
-  ];*/
-
   void _onItemTapped(int index) {
     setState(() {
       selectedIndex = index;
@@ -69,16 +41,17 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: Row(
             children: [
               Text("Events "),
               SizedBox(width: 5),
               Text("Admin panel",
-                  style: TextStyle(color: Colors.white10.withOpacity(0.6))),
-              Text("selected master ${selectedIndex}")
+                  style: TextStyle(
+                      color: const Color.fromARGB(26, 251, 209, 209)
+                          .withOpacity(0.6))),
             ],
           ),
-          //title: Text(widget.title ?? " ")
         ),
         body: Row(
           children: [
@@ -86,92 +59,6 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> {
               width: 250,
               decoration:
                   BoxDecoration(color: Color.fromRGBO(171, 213, 249, 100)),
-              /* child: ListView(
-                children: [
-                  ListTile(
-                      title: Text(
-                        "Događaji",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center,
-                      ),
-                      shape: Border(
-                        bottom: BorderSide(color: Colors.grey, width: 1),
-                      ),
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const DogadjajiListScreen(),
-                          ),
-                        );
-                        
-                      }),
-                  ListTile(
-                      title: Text("Zahtjevi",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold),
-                          textAlign: TextAlign.center),
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const DogadjajiListScreen(),
-                          ),
-                        );
-                      }),
-                  ListTile(
-                      title: Text(
-                        "Korisnici",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center,
-                      ),
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const DogadjajiListScreen(),
-                          ),
-                        );
-                      }),
-                  ListTile(
-                      title: Text(
-                        "Narudžbe",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center,
-                      ),
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const DogadjajiListScreen(),
-                          ),
-                        );
-                      }),
-                  ListTile(
-                      title: Text(
-                        "Log out",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center,
-                      ),
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => LoginPage(),
-                          ),
-                        );
-                      })
-                ],
-              ),*/
               child: ListView.separated(
                   itemBuilder: (context, index) {
                     final item = _items[index];
@@ -197,10 +84,6 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> {
                                       fontWeight: FontWeight.bold),
                                   textAlign: TextAlign.center,
                                 ),
-                                /*shape: RoundedRectangleBorder(
-                                  side: BorderSide(width: 2),
-                                  borderRadius: BorderRadius.circular(30),
-                                ),*/
                                 onTap: () {
                                   _onItemTapped(index);
                                   Navigator.of(context).push(
@@ -227,9 +110,9 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> {
 Widget getScreen(int index) {
   switch (index) {
     case 0:
-      return DogadjajiListScreen(selected: index);
+      return DogadjajiListScreen();
     case 1:
-      return ZahtjeviListScreen(selected: index);
+      return ZahtjeviListScreen();
     case 2:
       return KorisniciListScreen(selected: index);
     case 3:
@@ -237,14 +120,6 @@ Widget getScreen(int index) {
     case 4:
       return LoginPage();
     default:
-      return DogadjajiListScreen(selected: 0);
+      return DogadjajiListScreen();
   }
 }
-
-/*class Item {
-  final String name;
-  String route;
-
-  Item({required this.name, required this.route});
-}
-*/

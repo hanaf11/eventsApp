@@ -144,6 +144,7 @@ class LoginPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("Login"),
+        automaticallyImplyLeading: false,
       ),
       body: Center(
         child: Container(
@@ -190,8 +191,8 @@ class LoginPage extends StatelessWidget {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => DogadjajiListScreen(
-                                selected: 0,
-                              ),
+                                  // selected: 0,
+                                  ),
                             ),
                           );
                         } on Exception catch (e) {

@@ -9,17 +9,17 @@ import '../models/dogadjaj.dart';
 import '../models/search_result.dart';
 
 class ZahtjeviListScreen extends StatefulWidget {
-  int? selected = 0;
-  ZahtjeviListScreen({this.selected, super.key});
+  // int? selected = 0;
+  ZahtjeviListScreen({super.key});
 
   @override
-  State<ZahtjeviListScreen> createState() => _ZahtjeviListScreenState(selected);
+  State<ZahtjeviListScreen> createState() => _ZahtjeviListScreenState();
 }
 
 class _ZahtjeviListScreenState extends State<ZahtjeviListScreen> {
-  int? selected;
+  int? selected = 1;
 
-  _ZahtjeviListScreenState(this.selected);
+  //_ZahtjeviListScreenState(this.selected);
 
   @override
   Widget build(BuildContext context) {
