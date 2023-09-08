@@ -34,17 +34,21 @@ namespace eventsApp.Services
             {
                 filteredQuery = filteredQuery.Where(x => x.Lokacija.Contains(search.Lokacija));
             }
-            if (!string.IsNullOrWhiteSpace(search?.Kategorija))
+            if (search?.Kategorija!=null)
             {
-                filteredQuery = filteredQuery.Where(x => x.Kategorija.Equals(search.Kategorija));
+                filteredQuery = filteredQuery.Where(x => x.KategorijaId.Equals(search.Kategorija));
             }
-            if (search?.DatumOd != null)
+            if (search?.DatumOd != null && search?.DatumDo==null)
             {
-                filteredQuery = filteredQuery.Where(x => x.DatumOd.Equals(search.DatumOd));
+                filteredQuery = filteredQuery.Where(x => x.DatumOd>=(search.DatumOd));
             }
-            if (search?.DatumDo != null)
+            if (search?.DatumOd==null && search?.DatumDo != null)
             {
-                filteredQuery = filteredQuery.Where(x => x.DatumDo.Equals(search.DatumDo));
+                filteredQuery = filteredQuery.Where(x => x.DatumOd<=(search.DatumDo));
+            }
+            if(search?.DatumOd!=null && search?.DatumDo!=null)
+            {
+                filteredQuery = filteredQuery.Where(x => x.DatumOd >= (search.DatumOd)).Where(x=>x.DatumOd<=search.DatumDo);
             }
             return filteredQuery;
         }

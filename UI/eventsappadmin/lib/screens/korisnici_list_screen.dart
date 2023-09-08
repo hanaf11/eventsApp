@@ -9,7 +9,7 @@ import '../models/dogadjaj.dart';
 import '../models/search_result.dart';
 
 class KorisniciListScreen extends StatefulWidget {
-  int? selected = 0;
+  int? selected = 2;
   KorisniciListScreen({this.selected, super.key});
 
   @override

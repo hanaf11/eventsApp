@@ -29,6 +29,7 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
   Map<String, dynamic> _initialValue = {};
   SearchResult<Kategorija>? kategorijeResult;
   bool isLoading = true;
+  bool showBackButton = true;
 
   @override
   void initState() {
@@ -53,49 +54,53 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return MasterScreenWidget(
+        showBackButton: showBackButton,
+        selectedIndex: 0,
         child: Expanded(
             child: Column(children: [
-      isLoading ? Container() : _buildForm(),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Padding(
-              padding: EdgeInsets.all(10),
-              child: ElevatedButton(
-                  onPressed: () async {
-                    _formKey.currentState?.saveAndValidate();
-                    print(_formKey.currentState?.value);
+          isLoading ? Container() : _buildForm(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Padding(
+                  padding: EdgeInsets.all(10),
+                  child: ElevatedButton(
+                      onPressed: () async {
+                        _formKey.currentState?.saveAndValidate();
+                        print(_formKey.currentState?.value);
 
-                    var request = new Map.from(_formKey.currentState!.value);
-                    request['naslovna'] = _base64Image;
-                    print(request['naslovna']);
+                        var request =
+                            new Map.from(_formKey.currentState!.value);
+                        request['naslovna'] = _base64Image;
+                        print(request['naslovna']);
 
-                    try {
-                      if (widget.dogadjaj == null) {
-                        await _dogadjajProvider.insert(request);
-                      } else {
-                        await _dogadjajProvider.update(
-                            widget.dogadjaj!.dogadjajId!,
-                            request: request);
-                      }
-                    } on Exception catch (e) {
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) => AlertDialog(
-                                title: Text("Error"),
-                                content: Text(e.toString()),
-                                actions: [
-                                  TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: Text("OK"))
-                                ],
-                              ));
-                    }
-                  },
-                  child: Text("Sačuvaj")))
-        ],
-      )
-    ])));
+                        try {
+                          if (widget.dogadjaj == null) {
+                            await _dogadjajProvider.insert(request);
+                          } else {
+                            await _dogadjajProvider.update(
+                                widget.dogadjaj!.dogadjajId!,
+                                request: request);
+                          }
+                        } on Exception catch (e) {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) => AlertDialog(
+                                    title: Text("Error"),
+                                    content: Text(e.toString()),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context),
+                                          child: Text("OK"))
+                                    ],
+                                  ));
+                        }
+                      },
+                      child: Text("Sačuvaj")))
+            ],
+          )
+        ])));
   }
 
   Future initForm() async {

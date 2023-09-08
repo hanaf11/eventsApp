@@ -9,19 +9,20 @@ import '../screens/zahtjevi_list_screen.dart';
 
 class MasterScreenWidget extends StatefulWidget {
   int? selectedIndex = 0;
-
+  bool? showBackButton = false;
   Widget? child;
-  MasterScreenWidget({this.selectedIndex, this.child, super.key});
+  MasterScreenWidget(
+      {this.selectedIndex, this.child, this.showBackButton, super.key});
 
   @override
-  State<MasterScreenWidget> createState() =>
-      _MasterScreenWidgetState(selectedIndex: selectedIndex);
+  State<MasterScreenWidget> createState() => _MasterScreenWidgetState(
+      selectedIndex: selectedIndex, showBackButton: showBackButton);
 }
 
 class _MasterScreenWidgetState extends State<MasterScreenWidget> {
   int? selectedIndex = 0;
-
-  _MasterScreenWidgetState({this.selectedIndex});
+  bool? showBackButton = false;
+  _MasterScreenWidgetState({this.selectedIndex, this.showBackButton});
 
   final List<String> _items = [
     "Događaji",
@@ -41,7 +42,7 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          automaticallyImplyLeading: false,
+          automaticallyImplyLeading: showBackButton ?? false,
           title: Row(
             children: [
               Text("Events "),
@@ -112,7 +113,7 @@ Widget getScreen(int index) {
     case 0:
       return DogadjajiListScreen();
     case 1:
-      return ZahtjeviListScreen();
+      return ZahtjeviListScreen(selected: index);
     case 2:
       return KorisniciListScreen(selected: index);
     case 3:

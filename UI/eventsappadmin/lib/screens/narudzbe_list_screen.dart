@@ -9,7 +9,7 @@ import '../models/dogadjaj.dart';
 import '../models/search_result.dart';
 
 class NarudzbeListScreen extends StatefulWidget {
-  int? selected = 0;
+  int? selected = 3;
   NarudzbeListScreen({this.selected, super.key});
 
   @override
