@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace eventsApp.Services
 {
-    public interface IService<T, TSearch> where TSearch:class
+    public interface IService<T, TDetails, TSearch> where TSearch:class where TDetails : class
     {
         Task<PagedResult<T>> Get(TSearch search=null);
-        Task<T> GetById(int id);
+        Task<TDetails> GetById(int id);
     }
 }

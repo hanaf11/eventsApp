@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace eventsApp.Services
 {
-   public class BaseService<T, TDb, TSearch>:IService<T, TSearch> where TDb : class where TSearch: BaseSearchObject
+   public class BaseService<T, TDetails, TDb, TSearch>:IService<T, TDetails, TSearch> where TDb : class where TDetails:class where TSearch: BaseSearchObject
     {
         protected EventsDbContext _context;
         protected IMapper _mapper { get; set; }
@@ -44,10 +44,10 @@ namespace eventsApp.Services
             return result;
         }
 
-        public virtual async Task<T> GetById(int id)
+        public virtual async Task<TDetails> GetById(int id)
         {
             var entity = await _context.Set<TDb>().FindAsync(id);
-            return _mapper.Map<T>(entity);
+            return _mapper.Map<TDetails>(entity);
         }
 
         public virtual IQueryable<TDb> AddInclude(IQueryable<TDb> query, TSearch? search = null)

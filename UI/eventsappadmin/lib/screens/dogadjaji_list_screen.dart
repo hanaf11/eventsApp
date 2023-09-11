@@ -3,6 +3,7 @@ import 'package:eventsappadmin/screens/dogadjaj_details_screen.dart';
 import 'package:eventsappadmin/utils/util.dart';
 import 'package:eventsappadmin/widgets/master_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 
 import '../models/dogadjaj.dart';
@@ -28,7 +29,6 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen> {
   TextEditingController _lokacijaController = new TextEditingController();
   late TextEditingController _datumOdController;
   late TextEditingController _datumDoController;
-  List<String> list = <String>['One', 'Two', 'Three', 'Four'];
   bool isLoading = true;
   bool backButtonEnabled = false;
   bool initial = true;
@@ -373,9 +373,11 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen> {
                                   },*/
                               cells: [
                                 DataCell(Text(e.naziv?.toString() ?? "")),
-                                DataCell(Text(e.naziv?.toString() ?? "")),
-                                DataCell(Text(e.opis?.toString() ?? "")),
-                                DataCell(Text(e.naziv?.toString() ?? "")),
+                                DataCell(Text(e.datumOd != null
+                                    ? "${e.datumOd?.day}.${e.datumOd?.month}.${e.datumOd?.year}."
+                                    : "")),
+                                DataCell(Text(e.lokacija?.toString() ?? "")),
+                                DataCell(Text(e.dobavljacId?.toString() ?? "")),
                                 DataCell(IconButton(
                                     icon: const Icon(Icons.edit),
                                     color: Color.fromRGBO(44, 152, 240, 1),
@@ -411,8 +413,12 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen> {
                                             child: const Text('Odustani'),
                                           ),
                                           TextButton(
-                                            onPressed: () => Navigator.pop(
-                                                context, 'Potvrdi'),
+                                            onPressed: () {
+                                              Navigator.pop(context, 'Potvrdi');
+                                              _dogadjajProvider
+                                                  .delete(e.dogadjajId!)
+                                                  .then((value) => search());
+                                            },
                                             child: const Text('Potvrdi'),
                                           ),
                                         ],

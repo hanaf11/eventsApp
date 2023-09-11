@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace eventsApp.Services
 {
-    public class DobavljaciServiceImpl : BaseService<Model.Dobavljaci,Database.Dobavljaci, DobavljaciSearchObject>,IDobavljaciService
+    public class DobavljaciServiceImpl : BaseService<Model.Dobavljaci, Model.Dobavljaci, Database.Dobavljaci, DobavljaciSearchObject>,IDobavljaciService
     {
 
        public DobavljaciServiceImpl(EventsDbContext context, IMapper mapper):base(context,mapper)

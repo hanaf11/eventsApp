@@ -9,9 +9,9 @@ namespace eventsApp.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class DogadjajiController : BaseCRUDController<Model.Dogadjaji, Model.SearchObjects.DogadjajiSearchObject, Model.Requests.DogadjajiInsertRequest, Model.Requests.DogadjajiUpdateRequest>
+    public class DogadjajiController : BaseCRUDController<Model.DogadjajiListResponse, Model.Dogadjaji, Model.SearchObjects.DogadjajiSearchObject, Model.Requests.DogadjajiInsertRequest, Model.Requests.DogadjajiUpdateRequest>
     {
-        public DogadjajiController(ILogger<BaseController<Dogadjaji, DogadjajiSearchObject>> logger, IDogadjajiService service) : base(logger, service)
+        public DogadjajiController(ILogger<BaseController<DogadjajiListResponse, Dogadjaji, DogadjajiSearchObject>> logger, IDogadjajiService service) : base(logger, service)
         {
         }
 

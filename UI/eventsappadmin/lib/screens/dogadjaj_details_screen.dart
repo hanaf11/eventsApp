@@ -69,8 +69,7 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
                         _formKey.currentState?.saveAndValidate();
                         print(_formKey.currentState?.value);
 
-                        var request =
-                            new Map.from(_formKey.currentState!.value);
+                        var request = Map.from(_formKey.currentState!.value);
                         request['naslovna'] = _base64Image;
                         print(request['naslovna']);
 

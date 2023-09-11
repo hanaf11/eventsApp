@@ -6,13 +6,16 @@ part 'dogadjaj.g.dart';
 class Dogadjaj {
   int? dogadjajId;
   String? naziv;
+  DateTime? datumOd;
+  String? lokacija;
+  int? dobavljacId;
   String? program;
   String? opis;
   String? naslovna;
   int? kategorijaId;
 
   Dogadjaj(this.dogadjajId, this.naziv, this.program, this.opis, this.naslovna,
-      this.kategorijaId);
+      this.kategorijaId, this.datumOd, this.lokacija, this.dobavljacId);
 
   factory Dogadjaj.fromJson(Map<String, dynamic> json) =>
       _$DogadjajFromJson(json);

@@ -22,6 +22,7 @@ namespace eventsApp.Services
             CreateMap<Database.Dogadjaji, Model.Dogadjaji>();
             CreateMap<Model.Requests.DogadjajiInsertRequest, Database.Dogadjaji>();
             CreateMap<Model.Requests.DogadjajiUpdateRequest, Database.Dogadjaji>();
+            CreateMap<Database.Dogadjaji, Model.DogadjajiListResponse>();
             CreateMap<Model.Requests.KategorijeInsertRequest, Database.Kategorije>();
             CreateMap<Model.Requests.KategorijeUpdateRequest, Database.Kategorije>();
         }

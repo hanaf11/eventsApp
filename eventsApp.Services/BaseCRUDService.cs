@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace eventsApp.Services
 {
-    public class BaseCRUDService<T, TDb, TSearch, TInsert, TUpdate> : BaseService<T, TDb, TSearch> where TDb:class where T:class where TSearch:BaseSearchObject
+    public class BaseCRUDService<T, TDetails, TDb, TSearch, TInsert, TUpdate> : BaseService<T, TDetails, TDb, TSearch> where TDb:class where T:class where TDetails:class where TSearch:BaseSearchObject
     {
         public BaseCRUDService(EventsDbContext context, IMapper mapper) : base(context, mapper)
         {
@@ -20,7 +20,7 @@ namespace eventsApp.Services
 
         }
 
-        public virtual async Task<T> Insert(TInsert insert)
+        public virtual async Task<TDetails> Insert(TInsert insert)
         {
             var set = _context.Set<TDb>();
 
@@ -30,10 +30,10 @@ namespace eventsApp.Services
             await BeforeInsert(entity, insert);
             await _context.SaveChangesAsync();
 
-            return _mapper.Map<T>(entity);
+            return _mapper.Map<TDetails>(entity);
         }
 
-        public virtual async Task<T> Update(int id, TUpdate update)
+        public virtual async Task<TDetails> Update(int id, TUpdate update)
         {
             var set = _context.Set<TDb>();
 
@@ -43,7 +43,25 @@ namespace eventsApp.Services
 
             await _context.SaveChangesAsync();
 
-            return _mapper.Map<T>(entity);
+            return _mapper.Map<TDetails>(entity);
+        }
+
+        public virtual async Task<TDetails> Delete(int id)
+        {
+            var set = _context.Set<TDb>();
+
+            var entity = await set.FindAsync(id);
+
+            if (entity == null)
+            {
+                throw new Exception($"Entity with ID {id} not found.");
+            }
+
+            set.Remove(entity);
+
+            await _context.SaveChangesAsync();
+
+            return _mapper.Map<TDetails>(entity);
         }
     }
 }

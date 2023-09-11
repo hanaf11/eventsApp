@@ -11,9 +11,9 @@ namespace eventsApp.Controllers
     [ApiController]
     [Route("[controller]")]
     [AllowAnonymous]
-    public class KategorijeController : BaseCRUDController<Model.Kategorije, Model.SearchObjects.KategorijeSearchObject, Model.Requests.KategorijeInsertRequest, Model.Requests.KategorijeUpdateRequest>
+    public class KategorijeController : BaseCRUDController<Model.Kategorije, Model.Kategorije, Model.SearchObjects.KategorijeSearchObject, Model.Requests.KategorijeInsertRequest, Model.Requests.KategorijeUpdateRequest>
     {
-        public KategorijeController(ILogger<BaseController<Model.Kategorije, KategorijeSearchObject>> logger, IKategorijeService service) : base(logger, service)
+        public KategorijeController(ILogger<BaseController<Model.Kategorije, Model.Kategorije, KategorijeSearchObject>> logger, IKategorijeService service) : base(logger, service)
         {
         }
 

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace eventsApp.Services
 {
-    public interface IDobavljaciService:IService<Model.Dobavljaci,Model.SearchObjects.DobavljaciSearchObject>
+    public interface IDobavljaciService:IService<Model.Dobavljaci,Model.Dobavljaci,Model.SearchObjects.DobavljaciSearchObject>
     {
       
     }

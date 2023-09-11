@@ -8,7 +8,7 @@ using eventsApp.Model.SearchObjects;
 
 namespace eventsApp.Services
 {
-    public interface IKategorijeService : ICRUDService<Model.Kategorije, KategorijeSearchObject, Model.Requests.KategorijeInsertRequest, Model.Requests.KategorijeUpdateRequest>
+    public interface IKategorijeService : ICRUDService<Model.Kategorije, Model.Kategorije, KategorijeSearchObject, Model.Requests.KategorijeInsertRequest, Model.Requests.KategorijeUpdateRequest>
     {
 
     }

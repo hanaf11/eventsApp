@@ -8,12 +8,12 @@ namespace eventsApp.Controllers
 {
     [Route("[controller]")]
     [Authorize]
-    public class BaseController<T,TSearch> : ControllerBase where T : class where TSearch: class
+    public class BaseController<T,TDetails,TSearch> : ControllerBase where T : class where TDetails:class where TSearch: class
     {
-        protected readonly IService<T,TSearch> _service;
-        protected readonly ILogger<BaseController<T,TSearch>> _logger;
+        protected readonly IService<T, TDetails, TSearch> _service;
+        protected readonly ILogger<BaseController<T,TDetails, TSearch>> _logger;
             
-        public BaseController(ILogger<BaseController<T,TSearch>> logger, IService<T,TSearch> service)
+        public BaseController(ILogger<BaseController<T,TDetails, TSearch>> logger, IService<T, TDetails, TSearch> service)
         {
             _logger = logger;
             _service = service;
@@ -26,7 +26,7 @@ namespace eventsApp.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<T> GetById(int id)
+        public async Task<TDetails> GetById(int id)
         {
             return await _service.GetById(id);
         }

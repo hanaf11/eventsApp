@@ -8,7 +8,7 @@ using eventsApp.Model.SearchObjects;
 
 namespace eventsApp.Services
 {
-    public interface IDogadjajiService:ICRUDService<Model.Dogadjaji,DogadjajiSearchObject,Model.Requests.DogadjajiInsertRequest, Model.Requests.DogadjajiUpdateRequest>
+    public interface IDogadjajiService:ICRUDService<Model.DogadjajiListResponse, Model.Dogadjaji, DogadjajiSearchObject,Model.Requests.DogadjajiInsertRequest, Model.Requests.DogadjajiUpdateRequest>
     {
         Task<Dogadjaji> Activate(int id);
 

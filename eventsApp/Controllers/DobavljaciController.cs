@@ -7,9 +7,9 @@ namespace eventsApp.Controllers
 {
     [ApiController]
 
-    public class DobavljaciController : BaseController<Model.Dobavljaci, Model.SearchObjects.DobavljaciSearchObject>
+    public class DobavljaciController : BaseController<Model.Dobavljaci, Model.Dobavljaci, Model.SearchObjects.DobavljaciSearchObject>
     {
-        public DobavljaciController(ILogger<BaseController<Dobavljaci,Model.SearchObjects.DobavljaciSearchObject>> logger, IDobavljaciService service) : base(logger, service)
+        public DobavljaciController(ILogger<BaseController<Dobavljaci, Model.Dobavljaci, Model.SearchObjects.DobavljaciSearchObject>> logger, IDobavljaciService service) : base(logger, service)
         {
         }
     }

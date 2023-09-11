@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using eventsApp.Model;
 using eventsApp.Model.Requests;
 using eventsApp.Model.SearchObjects;
 using eventsApp.Services.Database;
@@ -15,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace eventsApp.Services
 {
-    public class DogadjajiServiceImpl : BaseCRUDService<Model.Dogadjaji, Database.Dogadjaji, DogadjajiSearchObject, Model.Requests.DogadjajiInsertRequest, Model.Requests.DogadjajiUpdateRequest>, IDogadjajiService
+    public class DogadjajiServiceImpl : BaseCRUDService<Model.DogadjajiListResponse, Model.Dogadjaji, Database.Dogadjaji, DogadjajiSearchObject, Model.Requests.DogadjajiInsertRequest, Model.Requests.DogadjajiUpdateRequest>, IDogadjajiService
     {
         public BaseState _baseState { get; set; }
         public DogadjajiServiceImpl(BaseState baseState, EventsDbContext context, IMapper mapper) : base(context, mapper)
@@ -23,7 +24,7 @@ namespace eventsApp.Services
             _baseState = baseState;
         }
 
-        public override IQueryable<Dogadjaji> AddFilter(IQueryable<Dogadjaji> query, DogadjajiSearchObject? search = null)
+        public override IQueryable<Database.Dogadjaji> AddFilter(IQueryable<Database.Dogadjaji> query, DogadjajiSearchObject? search = null)
         {
             var filteredQuery = base.AddFilter(query, search);
             if (!string.IsNullOrWhiteSpace(search?.FTS))

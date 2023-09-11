@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace eventsApp.Services
 {
-    public interface ICRUDService<T, TSearch, TInsert, TUpdate> : IService<T,TSearch> where TSearch:class
+    public interface ICRUDService<T, TDetails, TSearch, TInsert, TUpdate> : IService<T, TDetails, TSearch> where TSearch:class where TDetails:class
     {
-        Task<T> Insert(TInsert insert);
-        Task<T> Update(int id, TUpdate update);
+        Task<TDetails> Insert(TInsert insert);
+        Task<TDetails> Update(int id, TUpdate update);
+
+        Task<TDetails> Delete(int id);
     }
 }

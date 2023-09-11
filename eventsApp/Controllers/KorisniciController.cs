@@ -6,9 +6,9 @@ namespace eventsApp.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class KorisniciController : BaseCRUDController<Model.Korisnici,Model.SearchObjects.KorisniciSearchObject, Model.Requests.KorisniciInsertRequest, Model.Requests.KorisniciUpdateRequest>
+    public class KorisniciController : BaseCRUDController<Model.Korisnici, Model.Korisnici, Model.SearchObjects.KorisniciSearchObject, Model.Requests.KorisniciInsertRequest, Model.Requests.KorisniciUpdateRequest>
     {
-        public KorisniciController(ILogger<BaseController<Model.Korisnici, Model.SearchObjects.KorisniciSearchObject>> logger, IKorisniciService service):base(logger,service)
+        public KorisniciController(ILogger<BaseController<Model.Korisnici, Model.Korisnici, Model.SearchObjects.KorisniciSearchObject>> logger, IKorisniciService service):base(logger,service)
         {
         }
 

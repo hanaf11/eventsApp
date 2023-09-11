@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace eventsApp.Services
 {
-    public class KorisniciServiceImpl : BaseCRUDService<Model.Korisnici, Database.Korisnici, KorisniciSearchObject, KorisniciInsertRequest, KorisniciUpdateRequest>, IKorisniciService
+    public class KorisniciServiceImpl : BaseCRUDService<Model.Korisnici, Model.Korisnici, Database.Korisnici, KorisniciSearchObject, KorisniciInsertRequest, KorisniciUpdateRequest>, IKorisniciService
     {
         public KorisniciServiceImpl(EventsDbContext context, IMapper mapper) : base(context, mapper)
         {
