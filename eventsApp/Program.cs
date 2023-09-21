@@ -17,6 +17,7 @@ builder.Services.AddTransient<IKorisniciService, KorisniciServiceImpl>();
 //builder.Services.AddTransient<IService<eventsApp.Model.Kategorije, BaseSearchObject>, BaseService<eventsApp.Model.Kategorije, eventsApp.Services.Database.Kategorije, BaseSearchObject>>();
 builder.Services.AddTransient<IDogadjajiService, DogadjajiServiceImpl>();
 builder.Services.AddTransient<IKategorijeService, KategorijeServiceImpl>();
+builder.Services.AddTransient<IPodkategorijeService, PodkategorijeServiceImpl>();
 
 builder.Services.AddTransient<BaseState>();
 builder.Services.AddTransient<ActiveEventState>();

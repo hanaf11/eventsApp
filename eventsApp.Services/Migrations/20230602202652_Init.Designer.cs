@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using eventsApp.Services.Database;
+//using eventsApp.Services.Database;
 
 #nullable disable
 
 namespace eventsApp.Services.Migrations
 {
-    [DbContext(typeof(EventsDbContext))]
+    /*[DbContext(typeof(EventsDbContext))]
     [Migration("20230602202652_Init")]
     partial class Init
     {
@@ -1026,5 +1026,5 @@ namespace eventsApp.Services.Migrations
                 });
 #pragma warning restore 612, 618
         }
-    }
+    }*/
 }

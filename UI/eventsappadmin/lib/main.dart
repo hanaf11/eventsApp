@@ -1,5 +1,6 @@
 import 'package:eventsappadmin/providers/dogadjaj_provider.dart';
 import 'package:eventsappadmin/providers/kategorija_provider.dart';
+import 'package:eventsappadmin/providers/podkategorija_provider.dart';
 import 'package:eventsappadmin/utils/util.dart';
 import 'package:provider/provider.dart';
 
@@ -10,7 +11,8 @@ void main() {
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (_) => DogadjajProvider()),
-      ChangeNotifierProvider(create: (_) => KategorijaProvider())
+      ChangeNotifierProvider(create: (_) => KategorijaProvider()),
+      ChangeNotifierProvider(create: (_) => PodkategorijaProvider())
     ],
     child: const MyApp(),
   ));

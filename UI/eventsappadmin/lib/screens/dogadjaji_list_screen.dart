@@ -39,7 +39,9 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen> {
   void initState() {
     super.initState();
     _kategorijaProvider = context.read<KategorijaProvider>();
+    _dogadjajProvider = context.read<DogadjajProvider>();
     initForm();
+    getDogadjaji();
     /*_datumOdController = TextEditingController(text: _datumOd.toString());
     _datumDoController = TextEditingController(text: _datumDo.toString());*/
   }
@@ -47,17 +49,11 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _dogadjajProvider = context.read<DogadjajProvider>();
     //dropdownValue = kategorijeResult?.result[0].kategorijaId;
   }
 
   Future initForm() async {
     kategorijeResult = await _kategorijaProvider.get();
-
-    setState(() {
-      isLoading = false;
-      //dropdownValue = kategorijeResult!.result[0].kategorijaId!;
-    });
   }
 
   /*Future<void> _selectDate(BuildContext context) async {
@@ -88,6 +84,14 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen> {
           _datumDo = value;
         }
       });
+    });
+  }
+
+  getDogadjaji() async {
+    var data = await _dogadjajProvider.get();
+    setState(() {
+      result = data;
+      isLoading = false;
     });
   }
 
@@ -245,6 +249,17 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen> {
                     }),
                 false,
               ),
+              _buildSearchField(
+                "",
+                ElevatedButton(
+                    child: Text("New"),
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => DogadjajiDetailsScreen(),
+                      ));
+                    }),
+                false,
+              ),
             ],
           ),
         ],
@@ -377,7 +392,7 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen> {
                                     ? "${e.datumOd?.day}.${e.datumOd?.month}.${e.datumOd?.year}."
                                     : "")),
                                 DataCell(Text(e.lokacija?.toString() ?? "")),
-                                DataCell(Text(e.dobavljacId?.toString() ?? "")),
+                                DataCell(Text(e.organizator?.toString() ?? "")),
                                 DataCell(IconButton(
                                     icon: const Icon(Icons.edit),
                                     color: Color.fromRGBO(44, 152, 240, 1),
@@ -389,7 +404,7 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen> {
                                         MaterialPageRoute(
                                           builder: (context) =>
                                               DogadjajiDetailsScreen(
-                                                  dogadjaj: e),
+                                                  dogadjajId: e.dogadjajId),
                                         ),
                                       );
                                     })),

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace eventsApp.Services.DogadjajiStateMachine
 {
-    public class BaseState
+   public class BaseState
     {
         protected EventsDbContext _context;
         protected IMapper _mapper { get; set; }

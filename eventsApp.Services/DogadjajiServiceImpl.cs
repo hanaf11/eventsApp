@@ -87,11 +87,11 @@ namespace eventsApp.Services
             return await state.AllowedActions();
         }
 
-        static MLContext mlContext = null;
+       /* static MLContext mlContext = null;
         static object isLocked = new object();
         static ITransformer model = null;
 
-     /*   public List<Model.Dogadjaji> Recommend(int id)
+        public List<Model.Dogadjaji> Recommend(int id)
         {
             lock (isLocked)
             {

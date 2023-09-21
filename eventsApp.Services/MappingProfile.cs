@@ -16,6 +16,7 @@ namespace eventsApp.Services
             CreateMap<Model.Requests.KorisniciUpdateRequest, Database.Korisnici>();
             CreateMap<Database.Dobavljaci, Model.Dobavljaci>();
             CreateMap<Database.Kategorije, Model.Kategorije>();
+            CreateMap<Database.Podkategorije, Model.Podkategorije>();
             CreateMap<Database.KorisniciUloge, Model.KorisniciUloge>();
             CreateMap<Database.Uloge, Model.Uloge>();
             CreateMap<Database.Pracenje, Model.Pracenje>();
@@ -25,6 +26,8 @@ namespace eventsApp.Services
             CreateMap<Database.Dogadjaji, Model.DogadjajiListResponse>();
             CreateMap<Model.Requests.KategorijeInsertRequest, Database.Kategorije>();
             CreateMap<Model.Requests.KategorijeUpdateRequest, Database.Kategorije>();
+            CreateMap<Model.Requests.PodkategorijeCreateRequest, Database.Podkategorije>();
+            CreateMap<Model.Requests.PodkategorijeUpdateRequest, Database.Podkategorije>();
         }
     }
 }

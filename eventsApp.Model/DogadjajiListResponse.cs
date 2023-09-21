@@ -16,7 +16,9 @@ namespace eventsApp.Model
 
         public string Lokacija { get; set; } = null!;
 
-        public int? DobavljacId { get; set; }
+        public string? Organizator { get; set; }
+
+
 
     }
 }

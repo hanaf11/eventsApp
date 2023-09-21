@@ -36,18 +36,20 @@ namespace eventsApp.Model
 
         public string Status { get; set; }
 
-      /*  public virtual Dobavljaci? Dobavljac { get; set; }
+        public string? Organizator { get; set; }
 
-        public virtual ICollection<HistorijaPregledum> HistorijaPregleda { get; } = new List<HistorijaPregledum>();
+        /*  public virtual Dobavljaci? Dobavljac { get; set; }
 
-        public virtual Kategorije Kategorija { get; set; } = null!;
+          public virtual ICollection<HistorijaPregledum> HistorijaPregleda { get; } = new List<HistorijaPregledum>();
 
-        public virtual ICollection<Komentari> Komentaris { get; } = new List<Komentari>();
+          public virtual Kategorije Kategorija { get; set; } = null!;
 
-        public virtual ICollection<Saving> Savings { get; } = new List<Saving>();
+          public virtual ICollection<Komentari> Komentaris { get; } = new List<Komentari>();
 
-        public virtual ICollection<Slike> Slikes { get; } = new List<Slike>();
+          public virtual ICollection<Saving> Savings { get; } = new List<Saving>();
 
-        public virtual ICollection<TipKarte> TipKartes { get; } = new List<TipKarte>();*/
+          public virtual ICollection<Slike> Slikes { get; } = new List<Slike>();
+
+          public virtual ICollection<TipKarte> TipKartes { get; } = new List<TipKarte>();*/
     }
 }
