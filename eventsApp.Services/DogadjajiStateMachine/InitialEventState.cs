@@ -25,8 +25,26 @@ namespace eventsApp.Services.DogadjajiStateMachine
             set.Add(entity);
            // await BeforeInsert(entity, insert);
             await _context.SaveChangesAsync();
+            if (request.Galerija.Count > 0)
+            {
+                await InsertLinkedEntity(entity, request);
+            }
 
             return _mapper.Map<Dogadjaji>(entity);
+        }
+
+        public  async Task InsertLinkedEntity(Database.Dogadjaji entity, DogadjajiInsertRequest insert)
+        {
+            var set = _context.Set<Database.Slike>();
+
+            foreach (var slikaModel in insert.Galerija)
+            {
+                slikaModel.DogadjajId = entity.DogadjajId;
+                var slikaEntity = _mapper.Map<Database.Slike>(slikaModel);
+         
+                set.Add(slikaEntity);
+            }
+            await _context.SaveChangesAsync();
         }
 
         public override async Task<Dogadjaji> Update(int id, DogadjajiUpdateRequest request)

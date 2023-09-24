@@ -11,5 +11,6 @@ namespace eventsApp.Services
     {
         Task<PagedResult<T>> Get(TSearch search=null);
         Task<TDetails> GetById(int id);
+   
     }
 }

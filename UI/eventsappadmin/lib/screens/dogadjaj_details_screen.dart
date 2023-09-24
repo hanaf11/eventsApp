@@ -2,10 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:eventsappadmin/models/slika.dart';
 import 'package:eventsappadmin/providers/dogadjaj_provider.dart';
 import 'package:eventsappadmin/providers/kategorija_provider.dart';
 import 'package:eventsappadmin/providers/podkategorija_provider.dart';
 import 'package:eventsappadmin/screens/dogadjaji_list_screen.dart';
+import 'package:eventsappadmin/utils/util.dart';
 import 'package:eventsappadmin/widgets/master_screen.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +18,7 @@ import '../models/dogadjaj.dart';
 import '../models/kategorija.dart';
 import '../models/podkategorija.dart';
 import '../models/search_result.dart';
+import '../providers/galerija_provider.dart';
 
 class DogadjajiDetailsScreen extends StatefulWidget {
   int? dogadjajId;
@@ -29,16 +32,32 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
   late KategorijaProvider _kategorijaProvider;
   late DogadjajProvider _dogadjajProvider;
   late PodkategorijaProvider _podkategorijaProvider;
+  late GalerijaProvider _galerijaProvider;
   final _formKey = GlobalKey<FormBuilderState>();
+  FormBuilderState? _formStateCopy;
   Map<String, dynamic> _initialValue = {};
   SearchResult<Kategorija>? kategorijeResult;
   SearchResult<Podkategorija>? podkategorijeResult;
   bool isLoading = true;
+  bool _fetching = false;
   bool showBackButton = true;
   bool _deleted = false;
   int? kategorija;
   Dogadjaj? dogadjaj;
   Image _naslovna = Image.asset('assets/images/empty.jpg', fit: BoxFit.cover);
+  /*List<Slika> galleryItems = [
+    Slika(1,
+        "https://img.freepik.com/free-photo/cute-ai-generated-cartoon-bunny_23-2150288883.jpg?w=2000"),
+    Slika(2,
+        "https://img.freepik.com/free-photo/cute-ai-generated-cartoon-bunny_23-2150288883.jpg?w=2000"),
+    Slika(3,
+        "https://img.freepik.com/free-photo/cute-ai-generated-cartoon-bunny_23-2150288883.jpg?w=2000"),
+    Slika(4,
+        "https://img.freepik.com/free-photo/cute-ai-generated-cartoon-bunny_23-2150288883.jpg?w=2000"),
+    Slika(5,
+        "https://img.freepik.com/free-photo/cute-ai-generated-cartoon-bunny_23-2150288883.jpg?w=2000")
+  ];*/
+  List<Slika> galleryItems = [];
 
   @override
   void initState() {
@@ -59,6 +78,7 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
     _kategorijaProvider = context.read<KategorijaProvider>();
     _dogadjajProvider = context.read<DogadjajProvider>();
     _podkategorijaProvider = context.read<PodkategorijaProvider>();
+    _galerijaProvider = context.read<GalerijaProvider>();
     initForm(widget.dogadjajId);
   }
 
@@ -119,6 +139,103 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
     });
   }
 
+  handleDogadjajUpdated(id) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              title: Text("Success"),
+              content: Text("Uspješno ste uredili događaj!"),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context), child: Text("OK"))
+              ],
+            ));
+  }
+
+  handleDogadjajException(Exception e) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              title: Text("Error"),
+              content: Text(e.toString()),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      setState(() {
+                        _fetching = false;
+                      });
+                    },
+                    child: Text("OK"))
+              ],
+            ));
+    // _formKey.currentState?.reset(); //myb for update
+  }
+
+  void deleteImage(int index, int id) {
+    print(galleryItems.length);
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Potvrdite akciju'),
+        content: Text('Da li stvarno želite obrisati sliku ${index}?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'Odustani'),
+            child: const Text('Odustani'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context, 'Potvrdi');
+              if (index >= 0 && index < galleryItems.length) {
+                _galerijaProvider.delete(id).then((value) => {
+                      setState(() {
+                        galleryItems.removeAt(index);
+                      })
+                    });
+              }
+
+              print(galleryItems.length);
+            },
+            child: const Text('Potvrdi'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future initForm(dogadjajId) async {
+    kategorijeResult = await _kategorijaProvider.get();
+    if (dogadjajId != null) {
+      dogadjaj = await _dogadjajProvider.getById(dogadjajId);
+      podkategorijeResult = await _podkategorijaProvider
+          .get(filter: {'kategorijaId': dogadjaj!.kategorijaId});
+      var slikeResult =
+          await _galerijaProvider.get(filter: {'dogadjajId': dogadjajId});
+      galleryItems = slikeResult.result;
+    }
+
+    _initialValue = {
+      'naziv': dogadjaj?.naziv,
+      'opis': dogadjaj?.opis,
+      'program': dogadjaj?.program,
+      'kategorijaId': dogadjaj?.kategorijaId,
+      'podkategorijaId': dogadjaj?.podkategorijaId,
+      'lokacija': dogadjaj?.lokacija,
+      'datumOd': dogadjaj?.datumOd,
+      'datumDo': dogadjaj?.datumDo,
+      'website': dogadjaj?.website,
+      'organizator': dogadjaj?.organizator
+    };
+
+    setState(() {
+      isLoading = false;
+      _naslovna = dogadjaj != null && dogadjaj!.naslovna != null
+          ? Image.memory(base64Decode(dogadjaj!.naslovna!), fit: BoxFit.cover)
+          : _naslovna;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MasterScreenWidget(
@@ -127,7 +244,7 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
         child: Expanded(
             child: SingleChildScrollView(
                 child: Column(children: [
-          isLoading ? Container() : _buildForm(),
+          isLoading ? const CircularProgressIndicator() : _buildForm(),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -181,17 +298,23 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
                           ? null
                           : () async {
                               _formKey.currentState?.saveAndValidate();
-                              print(_formKey.currentState?.value);
 
                               var request =
                                   Map.from(_formKey.currentState!.value);
 
-                              request['naslovna'] = _base64Image;
+                              request['naslovna'] =
+                                  _base64Image ?? getDefaultImage();
                               //request['naslovna'] = "";
                               request['datumOd'] =
                                   request['datumOd']?.toIso8601String();
                               request['datumDo'] =
                                   request['datumDo']?.toIso8601String();
+                              request['galerija'] = galleryItems;
+
+                              setState(() {
+                                _fetching = true;
+                                //_initialValue = _formKey.currentState!.value;
+                              });
 
                               try {
                                 if (widget.dogadjajId == null) {
@@ -205,72 +328,23 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
                                       .update(widget.dogadjajId!,
                                           request: request)
                                       .then((value) {
-                                    print(value);
-                                    showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) =>
-                                            AlertDialog(
-                                              title: Text("Success"),
-                                              content: Text(
-                                                  "Uspješno ste uredili događaj!"),
-                                              actions: [
-                                                TextButton(
-                                                    onPressed: () =>
-                                                        Navigator.pop(context),
-                                                    child: Text("OK"))
-                                              ],
-                                            ));
+                                    handleDogadjajUpdated(value.dogadjajId);
                                   });
                                 }
                               } on Exception catch (e) {
-                                showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) =>
-                                        AlertDialog(
-                                          title: Text("Error"),
-                                          content: Text(e.toString()),
-                                          actions: [
-                                            TextButton(
-                                                onPressed: () =>
-                                                    Navigator.pop(context),
-                                                child: Text("OK"))
-                                          ],
-                                        ));
+                                handleDogadjajException(e);
+                              } finally {
+                                setState(() {
+                                  _fetching = false;
+                                });
                               }
                             },
-                      child: Text("Sačuvaj"))),
+                      child: _fetching
+                          ? const CircularProgressIndicator()
+                          : Text("Sačuvaj"))),
             ],
           )
         ]))));
-  }
-
-  Future initForm(dogadjajId) async {
-    kategorijeResult = await _kategorijaProvider.get();
-    if (dogadjajId != null) {
-      dogadjaj = await _dogadjajProvider.getById(dogadjajId);
-      podkategorijeResult = await _podkategorijaProvider
-          .get(filter: {'kategorijaId': dogadjaj!.kategorijaId});
-    }
-
-    _initialValue = {
-      'naziv': dogadjaj?.naziv,
-      'opis': dogadjaj?.opis,
-      'program': dogadjaj?.program,
-      'kategorijaId': dogadjaj?.kategorijaId,
-      'podkategorijaId': dogadjaj?.podkategorijaId,
-      'lokacija': dogadjaj?.lokacija,
-      'datumOd': dogadjaj?.datumOd,
-      'datumDo': dogadjaj?.datumDo,
-      'website': dogadjaj?.website,
-      'organizator': dogadjaj?.organizator
-    };
-
-    setState(() {
-      isLoading = false;
-      _naslovna = dogadjaj != null && dogadjaj!.naslovna != null
-          ? Image.memory(base64Decode(dogadjaj!.naslovna!), fit: BoxFit.cover)
-          : _naslovna;
-    });
   }
 
   Widget _buildForm() {
@@ -378,7 +452,7 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
                     ],
                   ),
                   Container(
-                      height: 200,
+                      height: 250,
                       child: Row(children: [
                         Expanded(
                             child: Column(children: [
@@ -392,7 +466,7 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
                                             errorText: field.errorText),
                                         child: ListTile(
                                           leading: Icon(Icons.photo),
-                                          title: Text("Select image"),
+                                          title: Text("Odaberi naslovnu sliku"),
                                           trailing: Icon(Icons.file_upload),
                                           onTap: getImage,
                                         ));
@@ -401,11 +475,46 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
                           buildNaslovna(),
                           const SizedBox(height: 15),
                         ])),
-                        _buildInputField(
+                        /* _buildInputField(
                             "Galerija:",
                             FormBuilderTextField(
                               name: 'galerija',
-                            ))
+                            ))*/
+                        Expanded(
+                          child: Column(
+                            children: [
+                              _buildInputField(
+                                  "Galerija",
+                                  FormBuilderField(
+                                      name: 'slika',
+                                      builder: ((field) {
+                                        return InputDecorator(
+                                            decoration: InputDecoration(
+                                                errorText: field.errorText),
+                                            child: ListTile(
+                                              leading: Icon(Icons.photo),
+                                              title: const Text(
+                                                  "Dodaj sliku u galeriju"),
+                                              trailing: Icon(Icons.file_upload),
+                                              onTap: addImageGallery,
+                                            ));
+                                      }))),
+                              const SizedBox(height: 15),
+                              buildGalerija(),
+                              const SizedBox(height: 15),
+                              /* Text(
+                                "Galerija:",
+                                style: TextStyle(
+                                    color: Color.fromRGBO(34, 33, 33, 1),
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(
+                                width: 8,
+                              ),*/
+                              //listview
+                            ],
+                          ),
+                        )
                       ])),
                   Row(
                     children: [
@@ -493,8 +602,8 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
 
   dynamic buildNaslovna() {
     return Container(
-        height: 120,
-        width: 350,
+        height: 140,
+        width: 400,
         decoration: BoxDecoration(
             border: Border.all(width: 1, color: Colors.grey),
             borderRadius: BorderRadius.circular(20)),
@@ -502,8 +611,51 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
             borderRadius: BorderRadius.circular(20), child: _naslovna));
   }
 
+  Widget buildGalerija() {
+    return Container(
+        height: 140,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          itemCount: galleryItems.length,
+          separatorBuilder: (context, index) => const SizedBox(width: 12),
+          itemBuilder: (context, index) =>
+              buildCard(slika: galleryItems[index], index: index),
+        ));
+  }
+
+  Widget buildCard({required Slika slika, required int index}) {
+    return Container(
+        width: 100,
+        height: 140,
+        padding: EdgeInsets.zero,
+        child: Column(children: [
+          Expanded(
+              child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            /*child: Image.network(
+              slika.slika!,
+              fit: BoxFit.cover,
+            ),*/
+            child: Image.memory(base64Decode(slika.slika!), fit: BoxFit.cover),
+          )),
+          IconButton(
+              icon: const Icon(
+                Icons.clear,
+              ),
+              iconSize: 15,
+              splashRadius: 15,
+              color: Colors.grey,
+              onPressed: () {
+                deleteImage(index, slika.slikaId!);
+              })
+        ]));
+  }
+
   File? _image;
   String? _base64Image;
+
+  File? _galleryImage;
+  String? _galleryBase64Image;
 
   Future getImage() async {
     var result = await FilePicker.platform.pickFiles(type: FileType.image);
@@ -514,6 +666,18 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
       setState(() {
         _naslovna =
             _image != null ? Image.file(_image!, fit: BoxFit.cover) : _naslovna;
+      });
+    }
+  }
+
+  Future addImageGallery() async {
+    var result = await FilePicker.platform.pickFiles(type: FileType.image);
+
+    if (result != null && result.files.single.path != null) {
+      _galleryImage = File(result.files.single.path!);
+      _galleryBase64Image = base64Encode(_galleryImage!.readAsBytesSync());
+      setState(() {
+        galleryItems.add(Slika(6, _galleryBase64Image));
       });
     }
   }

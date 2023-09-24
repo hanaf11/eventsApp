@@ -18,6 +18,8 @@ builder.Services.AddTransient<IKorisniciService, KorisniciServiceImpl>();
 builder.Services.AddTransient<IDogadjajiService, DogadjajiServiceImpl>();
 builder.Services.AddTransient<IKategorijeService, KategorijeServiceImpl>();
 builder.Services.AddTransient<IPodkategorijeService, PodkategorijeServiceImpl>();
+builder.Services.AddTransient<IGalerijaService, GalerijaServiceImpl>();
+
 
 builder.Services.AddTransient<BaseState>();
 builder.Services.AddTransient<ActiveEventState>();

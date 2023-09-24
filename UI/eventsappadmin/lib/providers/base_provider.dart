@@ -117,8 +117,12 @@ abstract class BaseProvider<T> with ChangeNotifier {
       return true;
     } else if (response.statusCode == 401) {
       throw new Exception("Unauthorized");
-    } else
+    } else if (response.statusCode == 500) {
       print(response.body);
+      throw new Exception("Server side error");
+    }
+    print(response.body);
+    print("status code ${response.statusCode}, ${response.bodyBytes}");
     throw new Exception("Something bad happened. Please try again");
   }
 

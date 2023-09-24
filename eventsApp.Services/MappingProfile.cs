@@ -28,6 +28,8 @@ namespace eventsApp.Services
             CreateMap<Model.Requests.KategorijeUpdateRequest, Database.Kategorije>();
             CreateMap<Model.Requests.PodkategorijeCreateRequest, Database.Podkategorije>();
             CreateMap<Model.Requests.PodkategorijeUpdateRequest, Database.Podkategorije>();
+            CreateMap<Model.Requests.SlikeInsertRequest, Database.Slike>();
+            CreateMap<Database.Slike, Model.Slike>();
         }
     }
 }

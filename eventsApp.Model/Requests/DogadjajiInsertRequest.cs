@@ -36,5 +36,7 @@ namespace eventsApp.Model.Requests
         public int? PodkategorijaId { get; set; }
 
         public string? Organizator { get; set; }
+
+        public List<SlikeInsertRequest>? Galerija { get; set; }
     }
 }

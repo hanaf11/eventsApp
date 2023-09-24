@@ -24,6 +24,9 @@ Dogadjaj _$DogadjajFromJson(Map<String, dynamic> json) => Dogadjaj(
       json['dobavljacId'] as int?,
       json['organizator'] as String?,
       json['website'] as String?,
+      (json['galerija'] as List<dynamic>?)
+          ?.map((e) => Slika.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$DogadjajToJson(Dogadjaj instance) => <String, dynamic>{
@@ -40,4 +43,5 @@ Map<String, dynamic> _$DogadjajToJson(Dogadjaj instance) => <String, dynamic>{
       'podkategorijaId': instance.podkategorijaId,
       'organizator': instance.organizator,
       'website': instance.website,
+      'galerija': instance.galerija,
     };

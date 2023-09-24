@@ -1,4 +1,5 @@
 import 'package:eventsappadmin/providers/dogadjaj_provider.dart';
+import 'package:eventsappadmin/providers/galerija_provider.dart';
 import 'package:eventsappadmin/providers/kategorija_provider.dart';
 import 'package:eventsappadmin/providers/podkategorija_provider.dart';
 import 'package:eventsappadmin/utils/util.dart';
@@ -12,7 +13,8 @@ void main() {
     providers: [
       ChangeNotifierProvider(create: (_) => DogadjajProvider()),
       ChangeNotifierProvider(create: (_) => KategorijaProvider()),
-      ChangeNotifierProvider(create: (_) => PodkategorijaProvider())
+      ChangeNotifierProvider(create: (_) => PodkategorijaProvider()),
+      ChangeNotifierProvider(create: (_) => GalerijaProvider())
     ],
     child: const MyApp(),
   ));
