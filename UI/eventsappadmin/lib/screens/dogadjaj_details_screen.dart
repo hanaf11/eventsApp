@@ -45,18 +45,6 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
   int? kategorija;
   Dogadjaj? dogadjaj;
   Image _naslovna = Image.asset('assets/images/empty.jpg', fit: BoxFit.cover);
-  /*List<Slika> galleryItems = [
-    Slika(1,
-        "https://img.freepik.com/free-photo/cute-ai-generated-cartoon-bunny_23-2150288883.jpg?w=2000"),
-    Slika(2,
-        "https://img.freepik.com/free-photo/cute-ai-generated-cartoon-bunny_23-2150288883.jpg?w=2000"),
-    Slika(3,
-        "https://img.freepik.com/free-photo/cute-ai-generated-cartoon-bunny_23-2150288883.jpg?w=2000"),
-    Slika(4,
-        "https://img.freepik.com/free-photo/cute-ai-generated-cartoon-bunny_23-2150288883.jpg?w=2000"),
-    Slika(5,
-        "https://img.freepik.com/free-photo/cute-ai-generated-cartoon-bunny_23-2150288883.jpg?w=2000")
-  ];*/
   List<Slika> galleryItems = [];
 
   @override
@@ -172,13 +160,13 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
     // _formKey.currentState?.reset(); //myb for update
   }
 
-  void deleteImage(int index, int id) {
+  void deleteImage(int index, int? id) {
     print(galleryItems.length);
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
         title: const Text('Potvrdite akciju'),
-        content: Text('Da li stvarno želite obrisati sliku ${index}?'),
+        content: Text('Da li stvarno želite obrisati sliku?'),
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.pop(context, 'Odustani'),
@@ -188,11 +176,17 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
             onPressed: () {
               Navigator.pop(context, 'Potvrdi');
               if (index >= 0 && index < galleryItems.length) {
-                _galerijaProvider.delete(id).then((value) => {
-                      setState(() {
-                        galleryItems.removeAt(index);
-                      })
-                    });
+                if (id != null) {
+                  _galerijaProvider.delete(id).then((value) => {
+                        setState(() {
+                          galleryItems.removeAt(index);
+                        })
+                      });
+                } else {
+                  setState(() {
+                    galleryItems.removeAt(index);
+                  });
+                }
               }
 
               print(galleryItems.length);
@@ -220,7 +214,8 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
       'opis': dogadjaj?.opis,
       'program': dogadjaj?.program,
       'kategorijaId': dogadjaj?.kategorijaId,
-      'podkategorijaId': dogadjaj?.podkategorijaId,
+      'podkategorijaId':
+          dogadjaj?.podkategorijaId == 0 ? null : dogadjaj?.podkategorijaId,
       'lokacija': dogadjaj?.lokacija,
       'datumOd': dogadjaj?.datumOd,
       'datumDo': dogadjaj?.datumDo,
@@ -406,14 +401,16 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
                                           alignment:
                                               AlignmentDirectional.center,
                                           value: item.kategorijaId,
-                                          child: Text(item.naziv ?? ""),
+                                          child: Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(item.naziv ?? "")),
                                         ))
                                     .toList() ??
                                 [],
                           )),
                       _buildInputField(
                           "Podkategorije:",
-                          FormBuilderDropdown<int>(
+                          FormBuilderDropdown<int?>(
                             name: 'podkategorijaId',
                             isExpanded: true,
                             /* decoration: InputDecoration(
@@ -430,7 +427,9 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
                                           alignment:
                                               AlignmentDirectional.center,
                                           value: item.podkategorijaId,
-                                          child: Text(item.naziv ?? ""),
+                                          child: Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(item.naziv ?? "")),
                                         ))
                                     .toList() ??
                                 [],
@@ -646,7 +645,7 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
               splashRadius: 15,
               color: Colors.grey,
               onPressed: () {
-                deleteImage(index, slika.slikaId!);
+                deleteImage(index, slika.slikaId);
               })
         ]));
   }
@@ -677,7 +676,7 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
       _galleryImage = File(result.files.single.path!);
       _galleryBase64Image = base64Encode(_galleryImage!.readAsBytesSync());
       setState(() {
-        galleryItems.add(Slika(6, _galleryBase64Image));
+        galleryItems.add(Slika(null, _galleryBase64Image));
       });
     }
   }

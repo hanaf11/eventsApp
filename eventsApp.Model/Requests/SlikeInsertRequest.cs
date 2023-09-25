@@ -9,6 +9,8 @@ namespace eventsApp.Model.Requests
 {
     public class SlikeInsertRequest
     {
+        public int? SlikaId { get; set; }
+
         [Required]
         public byte[] Slika { get; set; } = null!;
 

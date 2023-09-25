@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using eventsApp.Model;
 using eventsApp.Model.Requests;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,24 +28,56 @@ namespace eventsApp.Services.DogadjajiStateMachine
             await _context.SaveChangesAsync();
             if (request.Galerija.Count > 0)
             {
-                await InsertLinkedEntity(entity, request);
+                await InsertGallery(entity.DogadjajId, request.Galerija);
             }
 
             return _mapper.Map<Dogadjaji>(entity);
         }
 
-        public  async Task InsertLinkedEntity(Database.Dogadjaji entity, DogadjajiInsertRequest insert)
+        public Database.Slike CreateSlika(SlikeInsertRequest slikaModel, int dogadjajId)
+        {
+            slikaModel.DogadjajId = dogadjajId;
+            return  _mapper.Map<Database.Slike>(slikaModel);
+        }
+
+        public  async Task InsertGallery(int dogadjajId, List<SlikeInsertRequest> request)
         {
             var set = _context.Set<Database.Slike>();
 
-            foreach (var slikaModel in insert.Galerija)
+            foreach (var slikaModel in request)
             {
-                slikaModel.DogadjajId = entity.DogadjajId;
-                var slikaEntity = _mapper.Map<Database.Slike>(slikaModel);
+                /* slikaModel.DogadjajId = dogadjajId;
+                 var slikaEntity = _mapper.Map<Database.Slike>(slikaModel);*/
+               
          
-                set.Add(slikaEntity);
+                set.Add(CreateSlika(slikaModel, dogadjajId));
             }
             await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateGallery(int dogadjajId, List<SlikeInsertRequest> request)
+        {
+            var set = _context.Set<Database.Slike>();
+
+            List<Database.Slike> galerija = await set.Where(x => x.DogadjajId == dogadjajId).ToListAsync();
+
+            if (galerija == null)
+            {
+                await InsertGallery(dogadjajId, request);
+            }
+            else
+            {
+                foreach (var slikaModel in request)
+                {  
+                    if (slikaModel.SlikaId == null)
+                    {
+                        set.Add(CreateSlika(slikaModel, dogadjajId));
+                    }
+                   
+                }
+                await _context.SaveChangesAsync();
+            }
+           
         }
 
         public override async Task<Dogadjaji> Update(int id, DogadjajiUpdateRequest request)
@@ -58,6 +91,11 @@ namespace eventsApp.Services.DogadjajiStateMachine
             if (entity.Opis == "aa")
             {
                 throw new UserException("Opis nije dozvoljen");
+            }
+
+            if (request.Galerija.Count > 0)
+            {
+                await UpdateGallery(id, request.Galerija);
             }
 
             await _context.SaveChangesAsync();
