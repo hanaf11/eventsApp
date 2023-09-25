@@ -19,8 +19,6 @@ public partial class EventsDbContext : DbContext
 
     public virtual DbSet<Dogadjaji> Dogadjajis { get; set; }
 
-    public virtual DbSet<Galerija> Galerijas { get; set; }
-
     public virtual DbSet<HistorijaPregledum> HistorijaPregleda { get; set; }
 
     public virtual DbSet<Karte> Kartes { get; set; }
@@ -109,17 +107,6 @@ public partial class EventsDbContext : DbContext
                 .HasForeignKey(d => d.KategorijaId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Dogadjaji_Kategorije");
-        });
-
-        modelBuilder.Entity<Galerija>(entity =>
-        {
-            entity.ToTable("Galerija");
-
-            entity.Property(e => e.GalerijaId)
-                .ValueGeneratedNever()
-                .HasColumnName("GalerijaID");
-            entity.Property(e => e.DogadjajId).HasColumnName("DogadjajID");
-            entity.Property(e => e.SlikaId).HasColumnName("SlikaID");
         });
 
         modelBuilder.Entity<HistorijaPregledum>(entity =>
