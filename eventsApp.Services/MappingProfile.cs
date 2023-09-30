@@ -12,6 +12,7 @@ namespace eventsApp.Services
         public MappingProfile()
         {
            CreateMap<Database.Korisnici, Model.Korisnici>();
+            CreateMap<Database.Korisnici, Model.KorisniciListResponse>();
             CreateMap<Model.Requests.KorisniciInsertRequest,Database.Korisnici>();
             CreateMap<Model.Requests.KorisniciUpdateRequest, Database.Korisnici>();
             CreateMap<Database.Dobavljaci, Model.Dobavljaci>();

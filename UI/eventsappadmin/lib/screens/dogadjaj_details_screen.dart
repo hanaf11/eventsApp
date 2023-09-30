@@ -237,109 +237,114 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
         showBackButton: showBackButton,
         selectedIndex: 0,
         child: Expanded(
-            child: SingleChildScrollView(
-                child: Column(children: [
-          isLoading ? const CircularProgressIndicator() : _buildForm(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Padding(
-                padding: EdgeInsets.all(10),
-                child: ElevatedButton(
-                    onPressed: _deleted
-                        ? null
-                        : () {
-                            showDialog<String>(
-                              context: context,
-                              builder: (BuildContext context) => AlertDialog(
-                                title: const Text('Potvrdite akciju'),
-                                content: Text(
-                                    'Da li stvarno želite obrisati događaj ${dogadjaj?.naziv}?'),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed: () =>
-                                        Navigator.pop(context, 'Odustani'),
-                                    child: const Text('Odustani'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context, 'Potvrdi');
-                                      _dogadjajProvider
-                                          .delete(dogadjaj!.dogadjajId!)
-                                          .then((value) {
-                                        _handleDeleteSuccess(context);
+            child: Container(
+                alignment: Alignment.topCenter,
+                child: SingleChildScrollView(
+                    child: Column(children: [
+                  isLoading ? const CircularProgressIndicator() : _buildForm(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(10),
+                        child: ElevatedButton(
+                            onPressed: _deleted
+                                ? null
+                                : () {
+                                    showDialog<String>(
+                                      context: context,
+                                      builder: (BuildContext context) =>
+                                          AlertDialog(
+                                        title: const Text('Potvrdite akciju'),
+                                        content: Text(
+                                            'Da li stvarno želite obrisati događaj ${dogadjaj?.naziv}?'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () => Navigator.pop(
+                                                context, 'Odustani'),
+                                            child: const Text('Odustani'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context, 'Potvrdi');
+                                              _dogadjajProvider
+                                                  .delete(dogadjaj!.dogadjajId!)
+                                                  .then((value) {
+                                                _handleDeleteSuccess(context);
+                                              });
+                                            },
+                                            child: const Text('Potvrdi'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: _deleted
+                                    ? Color.fromARGB(255, 90, 79, 81)
+                                    : Color.fromARGB(255, 198, 28, 53)),
+                            child: Text("Obriši")),
+                      ),
+                      Padding(
+                          padding: EdgeInsets.all(10),
+                          child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: _deleted
+                                      ? Color.fromARGB(255, 90, 79, 81)
+                                      : Color.fromARGB(255, 16, 104, 198)),
+                              onPressed: _deleted
+                                  ? null
+                                  : () async {
+                                      _formKey.currentState?.saveAndValidate();
+
+                                      var request = Map.from(
+                                          _formKey.currentState!.value);
+
+                                      request['naslovna'] =
+                                          _base64Image ?? getDefaultImage();
+                                      //request['naslovna'] = "";
+                                      request['datumOd'] =
+                                          request['datumOd']?.toIso8601String();
+                                      request['datumDo'] =
+                                          request['datumDo']?.toIso8601String();
+                                      request['galerija'] = galleryItems;
+
+                                      setState(() {
+                                        _fetching = true;
+                                        //_initialValue = _formKey.currentState!.value;
                                       });
+
+                                      try {
+                                        if (widget.dogadjajId == null) {
+                                          await _dogadjajProvider
+                                              .insert(request)
+                                              .then((value) {
+                                            handleDogadjajCreated(
+                                                value.dogadjajId);
+                                          });
+                                        } else {
+                                          await _dogadjajProvider
+                                              .update(widget.dogadjajId!,
+                                                  request: request)
+                                              .then((value) {
+                                            handleDogadjajUpdated(
+                                                value.dogadjajId);
+                                          });
+                                        }
+                                      } on Exception catch (e) {
+                                        handleDogadjajException(e);
+                                      } finally {
+                                        setState(() {
+                                          _fetching = false;
+                                        });
+                                      }
                                     },
-                                    child: const Text('Potvrdi'),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: _deleted
-                            ? Color.fromARGB(255, 90, 79, 81)
-                            : Color.fromARGB(255, 198, 28, 53)),
-                    child: Text("Obriši")),
-              ),
-              Padding(
-                  padding: EdgeInsets.all(10),
-                  child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: _deleted
-                              ? Color.fromARGB(255, 90, 79, 81)
-                              : Color.fromARGB(255, 16, 104, 198)),
-                      onPressed: _deleted
-                          ? null
-                          : () async {
-                              _formKey.currentState?.saveAndValidate();
-
-                              var request =
-                                  Map.from(_formKey.currentState!.value);
-
-                              request['naslovna'] =
-                                  _base64Image ?? getDefaultImage();
-                              //request['naslovna'] = "";
-                              request['datumOd'] =
-                                  request['datumOd']?.toIso8601String();
-                              request['datumDo'] =
-                                  request['datumDo']?.toIso8601String();
-                              request['galerija'] = galleryItems;
-
-                              setState(() {
-                                _fetching = true;
-                                //_initialValue = _formKey.currentState!.value;
-                              });
-
-                              try {
-                                if (widget.dogadjajId == null) {
-                                  await _dogadjajProvider
-                                      .insert(request)
-                                      .then((value) {
-                                    handleDogadjajCreated(value.dogadjajId);
-                                  });
-                                } else {
-                                  await _dogadjajProvider
-                                      .update(widget.dogadjajId!,
-                                          request: request)
-                                      .then((value) {
-                                    handleDogadjajUpdated(value.dogadjajId);
-                                  });
-                                }
-                              } on Exception catch (e) {
-                                handleDogadjajException(e);
-                              } finally {
-                                setState(() {
-                                  _fetching = false;
-                                });
-                              }
-                            },
-                      child: _fetching
-                          ? const CircularProgressIndicator()
-                          : Text("Sačuvaj"))),
-            ],
-          )
-        ]))));
+                              child: _fetching
+                                  ? const CircularProgressIndicator()
+                                  : Text("Sačuvaj"))),
+                    ],
+                  )
+                ])))));
   }
 
   Widget _buildForm() {

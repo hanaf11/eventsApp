@@ -9,5 +9,7 @@ namespace eventsApp.Model.SearchObjects
     public class KorisniciSearchObject:BaseSearchObject
     {
         public bool? IsUlogeIncluded { get; set; }
+
+        public String? Username { get; set; }
     }
 }

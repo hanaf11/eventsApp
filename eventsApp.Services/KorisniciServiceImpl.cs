@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace eventsApp.Services
 {
-    public class KorisniciServiceImpl : BaseCRUDService<Model.Korisnici, Model.Korisnici, Database.Korisnici, KorisniciSearchObject, KorisniciInsertRequest, KorisniciUpdateRequest>, IKorisniciService
+    public class KorisniciServiceImpl : BaseCRUDService<Model.KorisniciListResponse, Model.Korisnici, Database.Korisnici, KorisniciSearchObject, KorisniciInsertRequest, KorisniciUpdateRequest>, IKorisniciService
     {
         public KorisniciServiceImpl(EventsDbContext context, IMapper mapper) : base(context, mapper)
         {
@@ -56,6 +56,15 @@ namespace eventsApp.Services
                 query = query.Include("KorisniciUloges.Uloga");
             }
             return base.AddInclude(query, search);
+        }
+
+        public override IQueryable<Korisnici> AddFilter(IQueryable<Korisnici> query, KorisniciSearchObject? search = null)
+        {
+            if (!string.IsNullOrWhiteSpace(search?.Username))
+            {
+                query = query.Where(x => x.KorisnickoIme.Contains(search.Username));
+            }
+            return base.AddFilter(query, search);
         }
 
         public async Task<Model.Korisnici> Login(string username, string password)
