@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:eventsappusers/screens/kategorije_screen.dart';
 import 'package:eventsappusers/utils/util.dart';
+import 'package:eventsappusers/widgets/master_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -39,15 +41,12 @@ class LoginPage extends StatelessWidget {
     Authorization.password = password;
 
     try {
-      /* await _dogadjajProvider.get();
+      print("Login");
+      /*   await _dogadjajProvider.get();*/
 
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => DogadjajiListScreen(
-                                  // selected: 0,
-                                  ),
-                            ),
-                          );*/
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => const KategorijeScreen()),
+      );
     } on Exception catch (e) {
       showDialog<String>(
           context: context,
