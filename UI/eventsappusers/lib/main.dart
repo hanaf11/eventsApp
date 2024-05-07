@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:eventsappusers/screens/kategorije_details_screen.dart';
 import 'package:eventsappusers/screens/kategorije_screen.dart';
+import 'package:eventsappusers/screens/spremljeno_screen.dart';
 import 'package:eventsappusers/utils/util.dart';
 import 'package:eventsappusers/widgets/master_screen.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +47,7 @@ class LoginPage extends StatelessWidget {
       /*   await _dogadjajProvider.get();*/
 
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => KategorijeDetailsScreen()),
+        MaterialPageRoute(builder: (context) => SpremljenoScreen()),
       );
     } on Exception catch (e) {
       showDialog<String>(

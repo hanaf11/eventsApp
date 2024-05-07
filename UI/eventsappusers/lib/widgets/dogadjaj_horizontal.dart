@@ -6,6 +6,7 @@ class DogadjajHorizontalWidget extends StatefulWidget {
   final DateTime datumDo;
   final String lokacija;
   final String kategorija;
+  final bool? saved;
 
   DogadjajHorizontalWidget(
       {super.key,
@@ -13,16 +14,19 @@ class DogadjajHorizontalWidget extends StatefulWidget {
       required this.datumOd,
       required this.datumDo,
       required this.lokacija,
+      this.saved,
       required this.kategorija});
 
   @override
   State<DogadjajHorizontalWidget> createState() =>
-      _DogadjajHorizontalWidgetState();
+      _DogadjajHorizontalWidgetState(saved: saved);
 }
 
 class _DogadjajHorizontalWidgetState extends State<DogadjajHorizontalWidget> {
   //_DogadjajHorizontalWidgetState();
-  bool _saved = false;
+  bool? saved;
+
+  _DogadjajHorizontalWidgetState({this.saved});
 
   List months = [
     'jan',
@@ -163,10 +167,10 @@ class _DogadjajHorizontalWidgetState extends State<DogadjajHorizontalWidget> {
                                             IconButton(
                                               onPressed: () {
                                                 setState(() {
-                                                  _saved = !_saved;
+                                                  saved = !saved!;
                                                 });
                                               },
-                                              isSelected: _saved,
+                                              isSelected: saved,
                                               selectedIcon: const Icon(
                                                   Icons.bookmark_sharp),
                                               icon: const Icon(
