@@ -3,23 +3,30 @@ import 'package:flutter/material.dart';
 class MasterScreen extends StatefulWidget {
   final int selectedIndex;
   final bool showBackButton;
+  final bool? showFollowButton;
   Widget? child;
   MasterScreen(
       {required this.selectedIndex,
       required this.showBackButton,
+      this.showFollowButton,
       this.child,
       super.key});
 
   @override
   State<MasterScreen> createState() => _MasterScreenState(
-      selectedIndex: selectedIndex, showBackButton: showBackButton);
+      selectedIndex: selectedIndex,
+      showBackButton: showBackButton,
+      showFollowButton: showFollowButton ?? false);
 }
 
 class _MasterScreenState extends State<MasterScreen> {
   int selectedIndex = 0;
   bool showBackButton;
+  bool? showFollowButton;
   _MasterScreenState(
-      {required this.selectedIndex, required this.showBackButton});
+      {required this.selectedIndex,
+      required this.showBackButton,
+      this.showFollowButton});
 
   /*final List<BottomNavigationBarItem> _items = [
     BottomNavigationBarItem(
@@ -65,7 +72,27 @@ class _MasterScreenState extends State<MasterScreen> {
                     // Handle menu button press
                   },
                 ),
-          backgroundColor: const Color.fromRGBO(244, 245, 246, 1)),
+          backgroundColor: const Color.fromRGBO(244, 245, 246, 1),
+          actions: showFollowButton != null && showFollowButton == true
+              ? [
+                  GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, "myRoute");
+                      },
+                      child: Padding(
+                        padding: EdgeInsets.all(5.0),
+                        child: Text(
+                          "+ Prati",
+                          style: TextStyle(
+                              color: Color.fromRGBO(54, 112, 232, 1),
+                              fontFamily: 'Montserrat',
+                              letterSpacing: 0.8,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500),
+                        ),
+                      ))
+                ]
+              : []),
       body: Row(
         children: [
           Container(

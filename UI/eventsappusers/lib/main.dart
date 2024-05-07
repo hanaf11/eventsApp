@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:eventsappusers/screens/kategorije_details_screen.dart';
 import 'package:eventsappusers/screens/kategorije_screen.dart';
 import 'package:eventsappusers/utils/util.dart';
 import 'package:eventsappusers/widgets/master_screen.dart';
@@ -45,7 +46,7 @@ class LoginPage extends StatelessWidget {
       /*   await _dogadjajProvider.get();*/
 
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => const KategorijeScreen()),
+        MaterialPageRoute(builder: (context) => KategorijeDetailsScreen()),
       );
     } on Exception catch (e) {
       showDialog<String>(
