@@ -12,7 +12,7 @@ namespace eventsApp.Services
     {
         Task<Dogadjaji> Activate(int id);
 
-        Task<Dogadjaji> Cancel(int id);
+        Task<Dogadjaji> Hide(int id);
 
         Task<List<string>> AllowedActions(int id);
 

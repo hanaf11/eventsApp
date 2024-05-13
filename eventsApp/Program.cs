@@ -19,6 +19,7 @@ builder.Services.AddTransient<IDogadjajiService, DogadjajiServiceImpl>();
 builder.Services.AddTransient<IKategorijeService, KategorijeServiceImpl>();
 builder.Services.AddTransient<IPodkategorijeService, PodkategorijeServiceImpl>();
 builder.Services.AddTransient<IGalerijaService, GalerijaServiceImpl>();
+builder.Services.AddTransient<GalerijaServiceImpl>();
 
 
 builder.Services.AddTransient<BaseState>();
@@ -27,6 +28,8 @@ builder.Services.AddTransient<CancelledEventState>();
 builder.Services.AddTransient<InitialEventState>();
 builder.Services.AddTransient<OnHoldEventState>();
 builder.Services.AddTransient<VerifiedEventState>();
+builder.Services.AddTransient<HiddenEventState>();
+builder.Services.AddTransient<DraftEventState>();
 
 builder.Services.AddControllers(x => { x.Filters.Add<ErrorFilter>(); });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

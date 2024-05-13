@@ -1,4 +1,5 @@
 ﻿using eventsApp.Model;
+using eventsApp.Model.Requests;
 using eventsApp.Model.SearchObjects;
 
 namespace eventsApp.Services

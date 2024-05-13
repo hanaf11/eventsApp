@@ -16,6 +16,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eventsApp.Subscriber", "..\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{29AE59AE-EB20-44DD-A0FC-8A591351C5A1}"
 	ProjectSection(SolutionItems) = preProject
+		..\Dockerfile = ..\Dockerfile
 		Dockerfile.txt = Dockerfile.txt
 	EndProjectSection
 EndProject

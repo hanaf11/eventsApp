@@ -1,4 +1,5 @@
-﻿using eventsApp.Services;
+﻿using eventsApp.Model.SearchObjects;
+using eventsApp.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -6,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace eventsApp.Controllers
 {
     [Route("[controller]")]
-    public class BaseCRUDController<T,TDetails,TSearch, TInsert, TUpdate> : BaseController<T, TDetails, TSearch> where T:class where TDetails:class where TSearch:class
+    public class BaseCRUDController<T,TDetails,TSearch, TInsert, TUpdate> : BaseController<T, TDetails, TSearch> where T:class where TDetails:class where TSearch:BaseSearchObject
     {
         protected new readonly ICRUDService<T, TDetails, TSearch, TInsert, TUpdate> _service;
         protected readonly ILogger<BaseController<T, TDetails, TSearch>> _logger;

@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using EasyNetQ;
 using eventsApp.Model;
+using eventsApp.Model.Messages;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
@@ -31,7 +32,11 @@ channel.BasicConsume(queue: "category_subscription",
 
 using (var bus = RabbitHutch.CreateBus("host=localhost"))
 {
-    bus.PubSub.Subscribe<eventsApp.Model.Dogadjaji>("test", HandleTextMessage);
+    // bus.PubSub.Subscribe<DogadjajActivated>("seminarski", HandleTextMessage;
+    bus.PubSub.Subscribe<DogadjajActivated>("seminarski", msg =>
+    {
+        Console.WriteLine($"Event activated: {msg.Dogadjaj.Naziv}");
+    });
     Console.WriteLine("Listening for messages. Hit <return> to quit.");
     Console.ReadLine();
 }

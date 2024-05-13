@@ -22,10 +22,10 @@ namespace eventsApp.Controllers
         }
 
 
-        [HttpPut("{id}/cancel")]
-        public virtual async Task<Model.Dogadjaji> Cancel(int id)
+        [HttpPut("{id}/hide")]
+        public virtual async Task<Model.Dogadjaji> Hide(int id)
         {
-            return await (_service as IDogadjajiService).Cancel(id);
+            return await (_service as IDogadjajiService).Hide(id);
         }
 
         [HttpGet("{id}/allowedActions")]

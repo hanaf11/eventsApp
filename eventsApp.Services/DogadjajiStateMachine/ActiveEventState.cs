@@ -17,7 +17,7 @@ namespace eventsApp.Services.DogadjajiStateMachine
             _logger = logger;
         }
 
-        public override async Task<Model.Dogadjaji> Cancel(int id)
+        public override async Task<Model.Dogadjaji> Hide(int id)
         {
             _logger.LogInformation($"Cancel događaja {id}");
 
@@ -25,19 +25,18 @@ namespace eventsApp.Services.DogadjajiStateMachine
 
             var entity = await set.FindAsync(id);
 
-            entity.Status = "Cancelled";
+            entity.Status = "HIDDEN";
 
             await _context.SaveChangesAsync();
 
             return _mapper.Map<Model.Dogadjaji>(entity);
         }
 
-        public override async Task<List<string>> AllowedActions()
-        {
-            var list = await base.AllowedActions();
-            list.Add("Cancel");
-
-            return list;
+        public override List<string> AllowedActions(Database.Dogadjaji entity) { 
+            return new List<string>() { nameof(Hide)};
         }
     }
-}
+
+        //ACTIVE -> HIDDEN (prosao event)
+    }
+

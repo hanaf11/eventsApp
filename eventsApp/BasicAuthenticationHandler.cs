@@ -55,5 +55,5 @@ namespace eventsApp
                 return AuthenticateResult.Success(ticket);
             }
         }
-    }
+     }
 }

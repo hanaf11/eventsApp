@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using eventsApp.Model.Requests;
 using eventsApp.Model.SearchObjects;
 using eventsApp.Services.Database;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +27,54 @@ namespace eventsApp.Services
             }
         
             return base.AddFilter(query, search);
+        }
+
+
+        public async Task InsertGallery(int dogadjajId, List<SlikeInsertRequest> request)
+        {
+            var set = _context.Set<Database.Slike>();
+
+            foreach (var slikaModel in request)
+            {
+                /* slikaModel.DogadjajId = dogadjajId;
+                 var slikaEntity = _mapper.Map<Database.Slike>(slikaModel);*/
+
+
+                set.Add(CreateSlika(slikaModel, dogadjajId));
+            }
+            await _context.SaveChangesAsync();
+        }
+
+        public Database.Slike CreateSlika(SlikeInsertRequest slikaModel, int dogadjajId)
+        {
+            slikaModel.DogadjajId = dogadjajId;
+            return _mapper.Map<Database.Slike>(slikaModel);
+        }
+
+
+        public async Task UpdateGallery(int dogadjajId, List<SlikeInsertRequest> request)
+        {
+            var set = _context.Set<Database.Slike>();
+
+            List<Database.Slike> galerija = await set.Where(x => x.DogadjajId == dogadjajId).ToListAsync();
+
+            if (galerija == null)
+            {
+                await InsertGallery(dogadjajId, request);
+            }
+            else
+            {
+                foreach (var slikaModel in request)
+                {
+                    if (slikaModel.SlikaId == null)
+                    {
+                        set.Add(CreateSlika(slikaModel, dogadjajId));
+                    }
+
+                }
+                await _context.SaveChangesAsync();
+            }
+
         }
 
 

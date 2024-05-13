@@ -5,6 +5,7 @@ using eventsApp.Model.SearchObjects;
 using eventsApp.Services.Database;
 using eventsApp.Services.DogadjajiStateMachine;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.ML;
 using Microsoft.ML.Data;
 using Microsoft.ML.Trainers;
@@ -19,9 +20,12 @@ namespace eventsApp.Services
     public class DogadjajiServiceImpl : BaseCRUDService<Model.DogadjajiListResponse, Model.Dogadjaji, Database.Dogadjaji, DogadjajiSearchObject, Model.Requests.DogadjajiInsertRequest, Model.Requests.DogadjajiUpdateRequest>, IDogadjajiService
     {
         public BaseState _baseState { get; set; }
-        public DogadjajiServiceImpl(BaseState baseState, EventsDbContext context, IMapper mapper) : base(context, mapper)
+
+        ILogger<DogadjajiServiceImpl> _logger;
+        public DogadjajiServiceImpl(BaseState baseState, EventsDbContext context, IMapper mapper, ILogger<DogadjajiServiceImpl> logger) : base(context, mapper)
         {
             _baseState = baseState;
+            _logger = logger;
         }
 
         public override IQueryable<Database.Dogadjaji> AddFilter(IQueryable<Database.Dogadjaji> query, DogadjajiSearchObject? search = null)
@@ -56,7 +60,7 @@ namespace eventsApp.Services
 
         public override Task<Model.Dogadjaji> Insert(DogadjajiInsertRequest insert)
         {
-            var state = _baseState.CreateState("Initial");
+            var state = _baseState.CreateState("INITIAL");
             return state.Insert(insert);
         }
 
@@ -74,17 +78,26 @@ namespace eventsApp.Services
             return await state.Activate(id);
         }
 
-        public async Task<Model.Dogadjaji> Cancel(int id)
+        public async Task<Model.Dogadjaji> Hide(int id)
         {
             var entity = await _context.Dogadjajis.FindAsync(id);
             var state = _baseState.CreateState(entity.Status);
-            return await state.Cancel(id);
+            return await state.Hide(id);
         }
 
         public async Task<List<string>> AllowedActions(int id) {
-            var entity = await _context.Dogadjajis.FindAsync(id);
-            var state = _baseState.CreateState(entity?.Status);
-            return await state.AllowedActions();
+            _logger.LogInformation($"Allowed actions called for id {id}");
+            if (id <= 0)
+            {
+                var state = _baseState.CreateState("INITIAL");
+                return state.AllowedActions(null);
+            }
+            else
+            {
+                var entity = await _context.Dogadjajis.FindAsync(id);
+                var state = _baseState.CreateState(entity?.Status);
+                return state.AllowedActions(entity);
+            }
         }
 
        /* static MLContext mlContext = null;

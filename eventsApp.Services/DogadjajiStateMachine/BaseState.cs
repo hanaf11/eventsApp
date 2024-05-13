@@ -33,39 +33,41 @@ namespace eventsApp.Services.DogadjajiStateMachine
             throw new UserException("Not allowed");
         }
 
+        public virtual Task<Model.Dogadjaji> Verify(int id)
+        {
+            throw new UserException("Not allowed");
+        }
+
         public virtual Task<Model.Dogadjaji> Activate(int id)
         {
             throw new UserException("Not allowed");
         }
 
-        public virtual Task<Model.Dogadjaji> Cancel(int id)
+        public virtual Task<Model.Dogadjaji> Hide(int id)
         {
             throw new UserException("Not allowed");
         }
+
 
         public BaseState CreateState(string statusName)
         {
             switch (statusName)
             {
-                case "Initial":
-                case null:
-                    return _serviceProvider.GetService<InitialEventState>();
-                    break;
-                case "Verified": return _serviceProvider.GetService<VerifiedEventState>();
-                    break;
-                case "On_Hold": return _serviceProvider.GetService<OnHoldEventState>();
-                    break;
-                case "Cancelled": return _serviceProvider.GetService<CancelledEventState>();
-                    break;
-                case "Active": return _serviceProvider.GetService<ActiveEventState>();
-                    break;
+                case "INITIAL": return _serviceProvider.GetService<InitialEventState>();
+                case "DRAFT": return _serviceProvider.GetService<DraftEventState>();
+                case "VERIFIED": return _serviceProvider.GetService<VerifiedEventState>();
+                case "ON_HOLD": return _serviceProvider.GetService<OnHoldEventState>();
+                case "CANCELLED": return _serviceProvider.GetService<CancelledEventState>();
+                case "ACTIVE": return _serviceProvider.GetService<ActiveEventState>();
+                case "HIDDEN": return _serviceProvider.GetService<HiddenEventState>();
                 default: throw new UserException("Not allowed");
             }
         }
 
-        public virtual async Task<List<string>> AllowedActions()
+        public virtual List<string> AllowedActions(Database.Dogadjaji entity)
         {
-            return new List<string>();
+            //return new List<string>();
+            throw new UserException("Not allowed");
         }
     }
 }

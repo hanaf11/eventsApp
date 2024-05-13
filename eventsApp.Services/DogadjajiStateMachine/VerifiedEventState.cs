@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EasyNetQ;
+using eventsApp.Model.Messages;
 using eventsApp.Services.Database;
 using RabbitMQ.Client;
 using System;
@@ -22,7 +23,7 @@ namespace eventsApp.Services.DogadjajiStateMachine
 
             var entity = await set.FindAsync(id);
 
-            entity.Status = "Active";
+            entity.Status = "ACTIVE";
 
             await _context.SaveChangesAsync();
 
@@ -46,18 +47,16 @@ namespace eventsApp.Services.DogadjajiStateMachine
             var mappedEntity=_mapper.Map<Model.Dogadjaji>(entity);
 
             using var bus = RabbitHutch.CreateBus("host=localhost");
-            bus.PubSub.Publish(mappedEntity);
+            DogadjajActivated message = new DogadjajActivated { Dogadjaj = mappedEntity };
+            bus.PubSub.Publish(message);
 
             return mappedEntity;
         }
 
-        public override async Task<List<string>> AllowedActions()
+        public override List<string> AllowedActions(Database.Dogadjaji entity)
         {
-            var list = await base.AllowedActions();
-            list.Add("Activate");
-            list.Add("GetTickets");
-
-            return list;
+            // list.Add("GetTickets");
+            return new List<string>() { nameof(Activate) };
         }
     }
 }

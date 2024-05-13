@@ -9,13 +9,18 @@ using System.Threading.Tasks;
 
 namespace eventsApp.Services
 {
-    public class BaseCRUDService<T, TDetails, TDb, TSearch, TInsert, TUpdate> : BaseService<T, TDetails, TDb, TSearch> where TDb:class where T:class where TDetails:class where TSearch:BaseSearchObject
+    public abstract class BaseCRUDService<T, TDetails, TDb, TSearch, TInsert, TUpdate> : BaseService<T, TDetails, TDb, TSearch> where TDb:class where T:class where TDetails:class where TSearch:BaseSearchObject
     {
         public BaseCRUDService(EventsDbContext context, IMapper mapper) : base(context, mapper)
         {
         }
 
         public virtual async Task BeforeInsert(TDb entity, TInsert insert)
+        {
+
+        }
+
+        public virtual async Task BeforeUpdate(TDb entity, TUpdate update)
         {
 
         }
@@ -40,6 +45,8 @@ namespace eventsApp.Services
             var entity = await set.FindAsync(id);
 
             _mapper.Map(update, entity);
+
+            await BeforeUpdate(entity, update);
 
             await _context.SaveChangesAsync();
 

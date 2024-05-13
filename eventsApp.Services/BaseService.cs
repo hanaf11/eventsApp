@@ -8,10 +8,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq.Dynamic;
 
 namespace eventsApp.Services
 {
-   public class BaseService<T, TDetails, TDb, TSearch>:IService<T, TDetails, TSearch> where TDb : class where TDetails:class where TSearch: BaseSearchObject
+   public abstract class BaseService<T, TDetails, TDb, TSearch>:IService<T, TDetails, TSearch> where T:class where TDb : class where TDetails:class where TSearch: BaseSearchObject
     {
         protected EventsDbContext _context;
         protected IMapper _mapper { get; set; }
@@ -33,9 +34,14 @@ namespace eventsApp.Services
 
             result.Count = await query.CountAsync();
 
+            if (!string.IsNullOrWhiteSpace(search?.OrderBy))
+            {
+               // query = query.OrderBy(search.OrderBy);
+            }
+
             if (search?.Page.HasValue==true && search?.PageSize.HasValue == true)
             {
-                query = query.Take(search.PageSize.Value).Skip(search.Page.Value * search.PageSize.Value);
+                query = query.Skip(search.Page.Value * search.PageSize.Value).Take(search.PageSize.Value);
             }
             var list = await query.ToListAsync();
 
@@ -47,7 +53,11 @@ namespace eventsApp.Services
         public virtual async Task<TDetails> GetById(int id)
         {
             var entity = await _context.Set<TDb>().FindAsync(id);
-            return _mapper.Map<TDetails>(entity);
+            if (entity != null)
+            {
+                return _mapper.Map<TDetails>(entity);
+            }
+            else return null;
         }
 
         public virtual IQueryable<TDb> AddInclude(IQueryable<TDb> query, TSearch? search = null)

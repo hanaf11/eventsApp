@@ -10,11 +10,17 @@ namespace eventsApp.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    [AllowAnonymous]
+
     public class PodkategorijeController : BaseCRUDController<Model.Podkategorije, Model.Podkategorije, Model.SearchObjects.PodkategorijeSearchObject, Model.Requests.PodkategorijeCreateRequest, Model.Requests.PodkategorijeUpdateRequest>
     {
         public PodkategorijeController(ILogger<BaseController<Model.Podkategorije, Model.Podkategorije, PodkategorijeSearchObject>> logger, IPodkategorijeService service) : base(logger, service)
         {
+        }
+
+        [AllowAnonymous]
+        public override Task<PagedResult<Podkategorije>> Get([FromQuery] PodkategorijeSearchObject? search = null)
+        {
+            return base.Get(search);
         }
 
         [Authorize(Roles = "Administrator")]
