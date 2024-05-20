@@ -21,8 +21,10 @@ class MasterScreen extends StatefulWidget {
 
 class _MasterScreenState extends State<MasterScreen> {
   int selectedIndex = 0;
+  int _selectedSideMenuIndex = 0;
   bool showBackButton;
   bool? showFollowButton;
+
   _MasterScreenState(
       {required this.selectedIndex,
       required this.showBackButton,
@@ -53,6 +55,12 @@ class _MasterScreenState extends State<MasterScreen> {
     });
   }
 
+  void _onSideMenuItemTapped(int index) {
+    setState(() {
+      _selectedSideMenuIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,12 +74,13 @@ class _MasterScreenState extends State<MasterScreen> {
                     Navigator.of(context).pop();
                   },
                 )
-              : IconButton(
-                  icon: const Icon(Icons.menu),
-                  onPressed: () {
-                    // Handle menu button press
-                  },
-                ),
+              : Builder(builder: (context) {
+                  return IconButton(
+                      icon: const Icon(Icons.menu),
+                      onPressed: () {
+                        Scaffold.of(context).openDrawer();
+                      });
+                }),
           backgroundColor: const Color.fromRGBO(244, 245, 246, 1),
           actions: showFollowButton != null && showFollowButton == true
               ? [
@@ -93,6 +102,37 @@ class _MasterScreenState extends State<MasterScreen> {
                       ))
                 ]
               : []),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text('Navigation'),
+            ),
+            ListTile(
+              leading: Icon(Icons.message),
+              title: Text('Messages'),
+              selected: _selectedSideMenuIndex == 0,
+              onTap: () {
+                _onSideMenuItemTapped(0);
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.account_circle),
+              title: Text('Profile'),
+              selected: _selectedSideMenuIndex == 1,
+              onTap: () {
+                _onSideMenuItemTapped(1);
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      ),
       body: Row(
         children: [
           Container(
