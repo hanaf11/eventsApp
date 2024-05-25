@@ -1,8 +1,11 @@
 import 'dart:convert';
 
+import 'package:eventsappusers/providers/auth_provider.dart';
+import 'package:eventsappusers/providers/kategorije_provider.dart';
 import 'package:eventsappusers/screens/home_screen.dart';
 import 'package:eventsappusers/screens/kategorije_details_screen.dart';
 import 'package:eventsappusers/screens/kategorije_screen.dart';
+import 'package:eventsappusers/screens/map_screen.dart';
 import 'package:eventsappusers/screens/spremljeno_screen.dart';
 import 'package:eventsappusers/utils/util.dart';
 import 'package:eventsappusers/widgets/master_screen.dart';
@@ -36,19 +39,19 @@ class LoginPage extends StatelessWidget {
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  login(BuildContext context) {
+  login(BuildContext context) async {
+    KategorijeProvider provider = new KategorijeProvider();
+
     var username = usernameController.text;
     var password = passwordController.text;
 
-    Authorization.username = username;
-    Authorization.password = password;
+    AuthProvider.username = usernameController.text;
+    AuthProvider.password = passwordController.text;
 
     try {
-      print("Login");
-      /*   await _dogadjajProvider.get();*/
-
+      await provider.get();
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => HomeScreen()),
+        MaterialPageRoute(builder: (context) => KategorijeScreen()),
       );
     } on Exception catch (e) {
       showDialog<String>(
@@ -193,7 +196,7 @@ class LoginPage extends StatelessWidget {
 
   Widget _buildLoginButton(BuildContext context) {
     return ElevatedButton(
-      onPressed: () {
+      onPressed: () async {
         login(context);
       },
       style: ElevatedButton.styleFrom(

@@ -1,3 +1,5 @@
+import 'package:eventsappusers/providers/auth_provider.dart';
+import 'package:eventsappusers/providers/kategorije_provider.dart';
 import 'package:eventsappusers/utils/util.dart';
 import 'package:eventsappusers/widgets/heading_widget.dart';
 import 'package:eventsappusers/widgets/master_screen.dart';
@@ -21,6 +23,21 @@ class KategorijeScreen extends StatelessWidget {
                       Container(
                         height: 10,
                       ),
+                      ElevatedButton(
+                          onPressed: () async {
+                            KategorijeProvider provider =
+                                new KategorijeProvider();
+                            //provider.get();
+                            AuthProvider.username = "test";
+                            AuthProvider.password = "test";
+                            try {
+                              var data = await provider.get();
+                              print("authenticated");
+                            } on Exception catch (e) {
+                              print("not authenticated");
+                            }
+                          },
+                          child: Text("dobavi")),
                       _buildTilesList()
                     ],
                   )));
