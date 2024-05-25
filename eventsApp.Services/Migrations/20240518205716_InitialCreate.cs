@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace eventsApp.Services.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -30,19 +30,6 @@ namespace eventsApp.Services.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Dobavljaci", x => x.DobavljacID);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Galerija",
-                columns: table => new
-                {
-                    GalerijaID = table.Column<int>(type: "int", nullable: false),
-                    SlikaID = table.Column<int>(type: "int", nullable: false),
-                    DogadjajID = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Galerija", x => x.GalerijaID);
                 });
 
             migrationBuilder.CreateTable(
@@ -95,6 +82,42 @@ namespace eventsApp.Services.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Uloge", x => x.UlogaID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Dogadjaji",
+                columns: table => new
+                {
+                    DogadjajID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Naziv = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    DatumOd = table.Column<DateTime>(type: "datetime", nullable: false),
+                    DatumDo = table.Column<DateTime>(type: "datetime", nullable: false),
+                    Program = table.Column<string>(type: "text", nullable: true),
+                    Naslovna = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    Opis = table.Column<string>(type: "text", nullable: false),
+                    Website = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    Lokacija = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    LokacijaSlika = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
+                    DobavljacID = table.Column<int>(type: "int", nullable: true),
+                    KategorijaID = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    PodkategorijaID = table.Column<int>(type: "int", nullable: true),
+                    Organizator = table.Column<string>(type: "varchar(200)", unicode: false, maxLength: 200, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Dogadjaji", x => x.DogadjajID);
+                    table.ForeignKey(
+                        name: "FK_Dogadjaji_Dobavljaci",
+                        column: x => x.DobavljacID,
+                        principalTable: "Dobavljaci",
+                        principalColumn: "DobavljacID");
+                    table.ForeignKey(
+                        name: "FK_Dogadjaji_Kategorije",
+                        column: x => x.KategorijaID,
+                        principalTable: "Kategorije",
+                        principalColumn: "KategorijaID");
                 });
 
             migrationBuilder.CreateTable(
@@ -220,46 +243,6 @@ namespace eventsApp.Services.Migrations
                         column: x => x.UlogaID,
                         principalTable: "Uloge",
                         principalColumn: "UlogaID");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Dogadjaji",
-                columns: table => new
-                {
-                    DogadjajID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Naziv = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    DatumOd = table.Column<DateTime>(type: "datetime", nullable: false),
-                    DatumDo = table.Column<DateTime>(type: "datetime", nullable: false),
-                    Program = table.Column<string>(type: "text", nullable: true),
-                    Naslovna = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
-                    Opis = table.Column<string>(type: "text", nullable: false),
-                    Website = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    Lokacija = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    LokacijaSlika = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
-                    DobavljacID = table.Column<int>(type: "int", nullable: true),
-                    KategorijaID = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    PodkategorijaID = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Dogadjaji", x => x.DogadjajID);
-                    table.ForeignKey(
-                        name: "FK_Dogadjaji_Dobavljaci",
-                        column: x => x.DobavljacID,
-                        principalTable: "Dobavljaci",
-                        principalColumn: "DobavljacID");
-                    table.ForeignKey(
-                        name: "FK_Dogadjaji_Kategorije",
-                        column: x => x.KategorijaID,
-                        principalTable: "Kategorije",
-                        principalColumn: "KategorijaID");
-                    table.ForeignKey(
-                        name: "FK_Dogadjaji_Podkategorije_PodkategorijaID",
-                        column: x => x.PodkategorijaID,
-                        principalTable: "Podkategorije",
-                        principalColumn: "PodkategorijaID");
                 });
 
             migrationBuilder.CreateTable(
@@ -464,11 +447,6 @@ namespace eventsApp.Services.Migrations
                 column: "KategorijaID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Dogadjaji_PodkategorijaID",
-                table: "Dogadjaji",
-                column: "PodkategorijaID");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_HistorijaPregleda_DogadjajID",
                 table: "HistorijaPregleda",
                 column: "DogadjajID");
@@ -591,9 +569,6 @@ namespace eventsApp.Services.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Galerija");
-
-            migrationBuilder.DropTable(
                 name: "HistorijaPregleda");
 
             migrationBuilder.DropTable(
@@ -607,6 +582,9 @@ namespace eventsApp.Services.Migrations
 
             migrationBuilder.DropTable(
                 name: "NarudzbaStavke");
+
+            migrationBuilder.DropTable(
+                name: "Podkategorije");
 
             migrationBuilder.DropTable(
                 name: "Pracenje");
@@ -640,9 +618,6 @@ namespace eventsApp.Services.Migrations
 
             migrationBuilder.DropTable(
                 name: "Dobavljaci");
-
-            migrationBuilder.DropTable(
-                name: "Podkategorije");
 
             migrationBuilder.DropTable(
                 name: "Kategorije");

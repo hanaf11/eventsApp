@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-//using eventsApp.Services.Database;
+using eventsApp.Services.Database;
 
 #nullable disable
 
 namespace eventsApp.Services.Migrations
 {
-    /*[DbContext(typeof(EventsDbContext))]
-    [Migration("20230602202652_Init")]
-    partial class Init
+    [DbContext(typeof(EventsDbContext))]
+    [Migration("20240518205716_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -125,6 +125,11 @@ namespace eventsApp.Services.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Organizator")
+                        .HasMaxLength(200)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(200)");
+
                     b.Property<int?>("PodkategorijaId")
                         .HasColumnType("int")
                         .HasColumnName("PodkategorijaID");
@@ -147,28 +152,7 @@ namespace eventsApp.Services.Migrations
 
                     b.HasIndex("KategorijaId");
 
-                    b.HasIndex("PodkategorijaId");
-
                     b.ToTable("Dogadjaji", (string)null);
-                });
-
-            modelBuilder.Entity("eventsApp.Services.Database.Galerija", b =>
-                {
-                    b.Property<int>("GalerijaId")
-                        .HasColumnType("int")
-                        .HasColumnName("GalerijaID");
-
-                    b.Property<int>("DogadjajId")
-                        .HasColumnType("int")
-                        .HasColumnName("DogadjajID");
-
-                    b.Property<int>("SlikaId")
-                        .HasColumnType("int")
-                        .HasColumnName("SlikaID");
-
-                    b.HasKey("GalerijaId");
-
-                    b.ToTable("Galerija", (string)null);
                 });
 
             modelBuilder.Entity("eventsApp.Services.Database.HistorijaPregledum", b =>
@@ -739,15 +723,9 @@ namespace eventsApp.Services.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_Dogadjaji_Kategorije");
 
-                    b.HasOne("eventsApp.Services.Database.Podkategorije", "Podkategorija")
-                        .WithMany()
-                        .HasForeignKey("PodkategorijaId");
-
                     b.Navigation("Dobavljac");
 
                     b.Navigation("Kategorija");
-
-                    b.Navigation("Podkategorija");
                 });
 
             modelBuilder.Entity("eventsApp.Services.Database.HistorijaPregledum", b =>
@@ -1026,5 +1004,5 @@ namespace eventsApp.Services.Migrations
                 });
 #pragma warning restore 612, 618
         }
-    }*/
+    }
 }

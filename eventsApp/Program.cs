@@ -31,6 +31,16 @@ builder.Services.AddTransient<VerifiedEventState>();
 builder.Services.AddTransient<HiddenEventState>();
 builder.Services.AddTransient<DraftEventState>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAnyOrigin", builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
+
 builder.Services.AddControllers(x => { x.Filters.Add<ErrorFilter>(); });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -72,7 +82,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.UseCors("AllowAnyOrigin");
+
+//app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -80,7 +92,7 @@ app.MapControllers();
 /*using (var scope = app.Services.CreateScope())
 {
     var dataContext = scope.ServiceProvider.GetRequiredService<EventsDbContext>();
-   // dataContext.Database.EnsureCreated();
+    //dataContext.Database.EnsureCreated();
     dataContext.Database.Migrate();
 }*/
 app.Run();
