@@ -30,7 +30,7 @@ class _MapScreenState extends State<MapScreen> {
     super.dispose();
   }
 
-  _extractLatitudeLongitude(String output) {
+  extractLatitudeLongitude(String output) {
     String latitudeKey = 'Latitude: ';
     String longitudeKey = 'Longitude: ';
 
@@ -59,7 +59,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   _refreshMap(String output) {
-    LatLng newCenter = _extractLatitudeLongitude(output);
+    LatLng newCenter = extractLatitudeLongitude(output);
     setState(() {
       mapKey = UniqueKey();
       initialCenter = newCenter;

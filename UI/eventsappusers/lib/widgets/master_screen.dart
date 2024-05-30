@@ -4,11 +4,13 @@ class MasterScreen extends StatefulWidget {
   final int selectedIndex;
   final bool showBackButton;
   final bool? showFollowButton;
+  final bool? showAppBar;
   Widget? child;
   MasterScreen(
       {required this.selectedIndex,
       required this.showBackButton,
       this.showFollowButton,
+      this.showAppBar,
       this.child,
       super.key});
 
@@ -16,7 +18,8 @@ class MasterScreen extends StatefulWidget {
   State<MasterScreen> createState() => _MasterScreenState(
       selectedIndex: selectedIndex,
       showBackButton: showBackButton,
-      showFollowButton: showFollowButton ?? false);
+      showFollowButton: showFollowButton ?? false,
+      showAppBar: showAppBar ?? true);
 }
 
 class _MasterScreenState extends State<MasterScreen> {
@@ -24,11 +27,13 @@ class _MasterScreenState extends State<MasterScreen> {
   int _selectedSideMenuIndex = 0;
   bool showBackButton;
   bool? showFollowButton;
+  bool? showAppBar;
 
   _MasterScreenState(
       {required this.selectedIndex,
       required this.showBackButton,
-      this.showFollowButton});
+      this.showFollowButton,
+      this.showAppBar});
 
   /*final List<BottomNavigationBarItem> _items = [
     BottomNavigationBarItem(
@@ -65,43 +70,45 @@ class _MasterScreenState extends State<MasterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(244, 245, 246, 1),
-      appBar: AppBar(
-          scrolledUnderElevation: 0.0,
-          leading: showBackButton
-              ? IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                )
-              : Builder(builder: (context) {
-                  return IconButton(
-                      icon: const Icon(Icons.menu),
+      appBar: showAppBar != null && showAppBar == false
+          ? null
+          : AppBar(
+              scrolledUnderElevation: 0.0,
+              leading: showBackButton
+                  ? IconButton(
+                      icon: const Icon(Icons.arrow_back),
                       onPressed: () {
-                        Scaffold.of(context).openDrawer();
-                      });
-                }),
-          backgroundColor: const Color.fromRGBO(244, 245, 246, 1),
-          actions: showFollowButton != null && showFollowButton == true
-              ? [
-                  GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, "myRoute");
+                        Navigator.of(context).pop();
                       },
-                      child: Padding(
-                        padding: EdgeInsets.all(5.0),
-                        child: Text(
-                          "+ Prati",
-                          style: TextStyle(
-                              color: Color.fromRGBO(54, 112, 232, 1),
-                              fontFamily: 'Montserrat',
-                              letterSpacing: 0.8,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500),
-                        ),
-                      ))
-                ]
-              : []),
+                    )
+                  : Builder(builder: (context) {
+                      return IconButton(
+                          icon: const Icon(Icons.menu),
+                          onPressed: () {
+                            Scaffold.of(context).openDrawer();
+                          });
+                    }),
+              backgroundColor: const Color.fromRGBO(244, 245, 246, 1),
+              actions: showFollowButton != null && showFollowButton == true
+                  ? [
+                      GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, "myRoute");
+                          },
+                          child: Padding(
+                            padding: EdgeInsets.all(5.0),
+                            child: Text(
+                              "+ Prati",
+                              style: TextStyle(
+                                  color: Color.fromRGBO(54, 112, 232, 1),
+                                  fontFamily: 'Montserrat',
+                                  letterSpacing: 0.8,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                          ))
+                    ]
+                  : []),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,

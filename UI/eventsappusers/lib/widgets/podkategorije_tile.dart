@@ -36,7 +36,7 @@ class _PodkategorijaTileState extends State<PodkategorijaTile> {
               color: widget.isSelected
                   ? const Color.fromRGBO(208, 227, 244, 1)
                   : Colors.white,
-              borderRadius: BorderRadius.circular(20)),
+              borderRadius: BorderRadius.circular(15)),
           child: Text(
             widget.text,
             style: const TextStyle(

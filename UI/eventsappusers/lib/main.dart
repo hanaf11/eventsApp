@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:eventsappusers/providers/auth_provider.dart';
 import 'package:eventsappusers/providers/kategorije_provider.dart';
+import 'package:eventsappusers/screens/event_details_screen.dart';
 import 'package:eventsappusers/screens/home_screen.dart';
 import 'package:eventsappusers/screens/kategorije_details_screen.dart';
 import 'package:eventsappusers/screens/kategorije_screen.dart';
@@ -49,9 +50,9 @@ class LoginPage extends StatelessWidget {
     AuthProvider.password = passwordController.text;
 
     try {
-      await provider.get();
+      // await provider.get();
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => KategorijeScreen()),
+        MaterialPageRoute(builder: (context) => EventDetailsScreen()),
       );
     } on Exception catch (e) {
       showDialog<String>(
