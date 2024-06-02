@@ -2,11 +2,13 @@ import 'dart:convert';
 
 import 'package:eventsappusers/providers/auth_provider.dart';
 import 'package:eventsappusers/providers/kategorije_provider.dart';
+import 'package:eventsappusers/screens/buy_ticket_screen.dart';
 import 'package:eventsappusers/screens/event_details_screen.dart';
 import 'package:eventsappusers/screens/home_screen.dart';
 import 'package:eventsappusers/screens/kategorije_details_screen.dart';
 import 'package:eventsappusers/screens/kategorije_screen.dart';
 import 'package:eventsappusers/screens/map_screen.dart';
+import 'package:eventsappusers/screens/profile_screen.dart';
 import 'package:eventsappusers/screens/spremljeno_screen.dart';
 import 'package:eventsappusers/utils/util.dart';
 import 'package:eventsappusers/widgets/master_screen.dart';
@@ -52,7 +54,7 @@ class LoginPage extends StatelessWidget {
     try {
       // await provider.get();
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => EventDetailsScreen()),
+        MaterialPageRoute(builder: (context) => BuyTicketScreen()),
       );
     } on Exception catch (e) {
       showDialog<String>(

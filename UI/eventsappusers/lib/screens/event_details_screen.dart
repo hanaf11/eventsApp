@@ -235,7 +235,10 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => FullScreenImage(),
+                                      builder: (context) => FullScreenImage(
+                                        tag: 'bannerImage',
+                                        imagePath: 'assets/images/banner.jpg',
+                                      ),
                                     ),
                                   );
                                 },

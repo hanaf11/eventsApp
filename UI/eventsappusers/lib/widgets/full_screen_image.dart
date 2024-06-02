@@ -1,7 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class FullScreenImage extends StatelessWidget {
+  final String imagePath;
+  final String tag;
+
+  FullScreenImage({super.key, required this.imagePath, required this.tag});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -10,9 +14,9 @@ class FullScreenImage extends StatelessWidget {
       ),
       body: Center(
         child: Hero(
-          tag: 'bannerImage',
+          tag: tag,
           child: Image.asset(
-            'assets/images/banner.jpg',
+            imagePath,
             fit: BoxFit.contain,
           ),
         ),
