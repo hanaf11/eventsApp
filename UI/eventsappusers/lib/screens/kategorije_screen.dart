@@ -1,12 +1,31 @@
 import 'package:eventsappusers/providers/auth_provider.dart';
 import 'package:eventsappusers/providers/kategorije_provider.dart';
+import 'package:eventsappusers/utils/formatting_util.dart';
 import 'package:eventsappusers/utils/util.dart';
 import 'package:eventsappusers/widgets/heading_widget.dart';
 import 'package:eventsappusers/widgets/master_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class KategorijeScreen extends StatelessWidget {
+import '../models/kategorija.dart';
+
+class KategorijeScreen extends StatefulWidget {
   const KategorijeScreen({super.key});
+
+  @override
+  State<KategorijeScreen> createState() => _KategorijeScreenState();
+}
+
+class _KategorijeScreenState extends State<KategorijeScreen> {
+  late KategorijeProvider provider;
+  List<Kategorija> kategorijeList = [];
+  TextEditingController _searchController = TextEditingController();
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    provider = context.read<KategorijeProvider>();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,54 +42,54 @@ class KategorijeScreen extends StatelessWidget {
                       Container(
                         height: 10,
                       ),
+                      /*   Expanded(
+                        child: Row(
+                          children: [
+                            TextField(
+                              controller: _searchController,
+                            ),
+                          
+                          ],
+                        ),
+                      ),*/
                       ElevatedButton(
                           onPressed: () async {
-                            KategorijeProvider provider =
-                                new KategorijeProvider();
-                            //provider.get();
-                            AuthProvider.username = "test";
-                            AuthProvider.password = "test";
-                            try {
-                              var data = await provider.get();
-                              print("authenticated");
-                            } on Exception catch (e) {
-                              print("not authenticated");
-                            }
+                            var filter = {"fts": _searchController.text};
+                            var result = await provider.get(filter: filter);
+                            print(result);
+                            setState(() {
+                              kategorijeList = result.result;
+                            });
                           },
                           child: Text("dobavi")),
-                      _buildTilesList()
+                      _buildTilesList(kategorijeList)
                     ],
                   )));
   }
 
-  Widget _buildTilesList() {
+  Widget _buildTilesList(List<Kategorija> resultList) {
     return Expanded(
-        child: CustomScrollView(
-      primary: false,
-      slivers: <Widget>[
-        SliverPadding(
-          padding: const EdgeInsets.all(20),
-          sliver: SliverGrid.count(
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-            crossAxisCount: 2,
-            children: <Widget>[
-              _buildTile("Festivali"),
-              _buildTile("Koncerti"),
-              _buildTile("Izlozbe"),
-              _buildTile("Literatura"),
-              _buildTile("Sport"),
-              _buildTile("Predstave"),
-              _buildTile("Protesti"),
-              _buildTile("Konferencije"),
-            ],
-          ),
-        ),
-      ],
-    ));
+      child: CustomScrollView(
+        primary: false,
+        slivers: <Widget>[
+          SliverPadding(
+              padding: const EdgeInsets.all(20),
+              sliver: SliverGrid.count(
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  crossAxisCount: 2,
+                  children: resultList
+                      .map((e) => _buildTile(e.naziv))
+                      .toList()
+                      .cast<Widget>()))
+        ],
+      ),
+    );
+
+    ;
   }
 
-  Container _buildTile(text) {
+  Widget _buildTile(text) {
     return Container(
         padding: const EdgeInsets.all(8),
         // color: Colors.green[400],
@@ -78,6 +97,8 @@ class KategorijeScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(15),
             color: Colors.green[400],
             image: DecorationImage(
+              //image: slika!="" ? imageFromString(slika).image : AssetImage("assets/images/banner.jpg"),
+
               image: AssetImage("assets/images/banner.jpg"),
               fit: BoxFit.cover,
             )),

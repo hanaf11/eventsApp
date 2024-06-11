@@ -8,14 +8,20 @@ import 'package:eventsappusers/screens/home_screen.dart';
 import 'package:eventsappusers/screens/kategorije_details_screen.dart';
 import 'package:eventsappusers/screens/kategorije_screen.dart';
 import 'package:eventsappusers/screens/map_screen.dart';
+import 'package:eventsappusers/screens/payment_information_screen.dart';
+import 'package:eventsappusers/screens/personal_information_screen.dart';
 import 'package:eventsappusers/screens/profile_screen.dart';
 import 'package:eventsappusers/screens/spremljeno_screen.dart';
 import 'package:eventsappusers/utils/util.dart';
 import 'package:eventsappusers/widgets/master_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider<KategorijeProvider>(
+        create: (_) => KategorijeProvider())
+  ], child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -54,7 +60,7 @@ class LoginPage extends StatelessWidget {
     try {
       // await provider.get();
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => BuyTicketScreen()),
+        MaterialPageRoute(builder: (context) => PaymentInfoScreen()),
       );
     } on Exception catch (e) {
       showDialog<String>(
