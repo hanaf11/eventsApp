@@ -7,7 +7,9 @@ import 'package:eventsappusers/screens/event_details_screen.dart';
 import 'package:eventsappusers/screens/home_screen.dart';
 import 'package:eventsappusers/screens/kategorije_details_screen.dart';
 import 'package:eventsappusers/screens/kategorije_screen.dart';
+import 'package:eventsappusers/screens/kreiraj_dogadjaj_screen.dart';
 import 'package:eventsappusers/screens/map_screen.dart';
+import 'package:eventsappusers/screens/narudzba_preview_screen.dart';
 import 'package:eventsappusers/screens/payment_information_screen.dart';
 import 'package:eventsappusers/screens/personal_information_screen.dart';
 import 'package:eventsappusers/screens/profile_screen.dart';
@@ -60,7 +62,7 @@ class LoginPage extends StatelessWidget {
     try {
       // await provider.get();
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => PaymentInfoScreen()),
+        MaterialPageRoute(builder: (context) => KreirajDogadjajScreen()),
       );
     } on Exception catch (e) {
       showDialog<String>(

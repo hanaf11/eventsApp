@@ -13,40 +13,25 @@ class NarudzbaMasterScreen extends StatefulWidget {
   int? tabActive;
 
   NarudzbaMasterScreen(
-      {/*this.selectedIndex,
-      required this.showBreadcrumbs,*/
-      required this.childHeight,
+      {required this.childHeight,
       required this.child,
       required this.naslov,
       this.tabActive,
-      //required this.naslov,
       super.key});
 
   @override
-  State<NarudzbaMasterScreen> createState() => _NarudzbaMasterScreenState(
-      /* selectedIndex: selectedIndex,
-      showBreadcrumbs: showBreadcrumbs ?? true,
-      naslov: naslov*/
-      );
+  State<NarudzbaMasterScreen> createState() => _NarudzbaMasterScreenState();
 }
 
 class _NarudzbaMasterScreenState extends State<NarudzbaMasterScreen> {
-  /*int? selectedIndex;
-  bool showBreadcrumbs = true;
-  String naslov;*/
   double footerHeight = 45;
   double headerHeight = 70;
   List selected = [false, false, false];
 
-  _NarudzbaMasterScreenState(
-      /*{this.selectedIndex,
-      required this.showBreadcrumbs,
-      required this.naslov}*/
-      );
+  _NarudzbaMasterScreenState();
 
   @override
   Widget build(BuildContext context) {
-    //print("content height" + widget.contentHeight.toString());
     return LayoutBuilder(
       builder: (context, constraints) {
         double screenHeight =
@@ -76,7 +61,9 @@ class _NarudzbaMasterScreenState extends State<NarudzbaMasterScreen> {
     if (widget.tabActive != null &&
         widget.tabActive! > 0 &&
         widget.tabActive! < 4) {
-      selected[widget.tabActive! - 1] = true;
+      for (int i = 0; i < widget.tabActive!; i++) {
+        selected[i] = true;
+      }
     }
     return Container(
         height: headerHeight,

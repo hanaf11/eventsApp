@@ -1,11 +1,18 @@
+import 'package:eventsappusers/utils/formatting_util.dart';
 import 'package:flutter/material.dart';
 
 class DogadjajSmallOverview extends StatelessWidget {
   final String naziv;
   final DateTime datumOd;
+  final List? tickets;
+  final double? ukupno;
 
   DogadjajSmallOverview(
-      {required this.naziv, required this.datumOd, super.key});
+      {required this.naziv,
+      required this.datumOd,
+      this.tickets,
+      this.ukupno,
+      super.key});
 
   final List months = [
     'jan',
@@ -26,7 +33,7 @@ class DogadjajSmallOverview extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       child: Row(
-        //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(20),
@@ -38,7 +45,8 @@ class DogadjajSmallOverview extends StatelessWidget {
           SizedBox(
             width: 10,
           ),
-          Column(
+          Expanded(
+              child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
@@ -80,30 +88,89 @@ class DogadjajSmallOverview extends StatelessWidget {
               SizedBox(
                 height: 5,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Icon(
-                    Icons.location_on_outlined,
-                    color: Color.fromRGBO(60, 71, 92, 1),
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Text(
-                    "Pozoriste Mladih Sarajevo",
-                    style: TextStyle(
-                        color: Color.fromRGBO(60, 71, 92, 1),
-                        fontSize: 13,
-                        letterSpacing: 0.7,
-                        fontWeight: FontWeight.w400),
-                  )
-                ],
-              ),
+              tickets == null || tickets!.isEmpty
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.location_on_outlined,
+                          color: Color.fromRGBO(60, 71, 92, 1),
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          "Pozoriste Mladih Sarajevo",
+                          style: TextStyle(
+                              color: Color.fromRGBO(60, 71, 92, 1),
+                              fontSize: 13,
+                              letterSpacing: 0.7,
+                              fontWeight: FontWeight.w400),
+                        )
+                      ],
+                    )
+                  : _buildTicketsContainer()
             ],
-          )
+          ))
         ],
       ),
+    );
+  }
+
+  _buildTicketsContainer() {
+    return Column(
+      children: [
+        _buildTickets(),
+        const Divider(
+          height: 20,
+          thickness: 1,
+          indent: 0,
+          endIndent: 0,
+          color: Color.fromARGB(255, 144, 143, 143),
+        ),
+        Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              formatNumber(ukupno),
+              style: TextStyle(
+                  color: Color.fromRGBO(60, 71, 92, 1),
+                  fontSize: 13,
+                  fontFamily: 'Montserrat',
+                  fontWeight: FontWeight.w800),
+            ))
+      ],
+    );
+  }
+
+  _buildTickets() {
+    return Column(
+      children:
+          tickets?.map((e) => _buildTicketGroup(e)).toList().cast<Widget>() ??
+              [],
+    );
+  }
+
+  _buildTicketGroup(ticketGroup) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          ticketGroup['naziv'],
+          style: TextStyle(
+              color: Color.fromRGBO(60, 71, 92, 1),
+              fontSize: 13,
+              fontFamily: 'Montserrat',
+              fontWeight: FontWeight.w800),
+        ),
+        Text(
+          "x${ticketGroup['kolicina']}",
+          style: TextStyle(
+              color: Color.fromRGBO(60, 71, 92, 1),
+              fontSize: 13,
+              fontFamily: 'Montserrat',
+              fontWeight: FontWeight.w800),
+        )
+      ],
     );
   }
 }

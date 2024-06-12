@@ -20,6 +20,8 @@ class _PaymentInfoScreenState extends State<PaymentInfoScreen> {
   TextEditingController datumController = TextEditingController();
   TextEditingController cvvController = TextEditingController();
 
+  int _selectedPayment = 0;
+
   _PaymentInfoScreenState();
 
   @override
@@ -68,18 +70,7 @@ class _PaymentInfoScreenState extends State<PaymentInfoScreen> {
                                   SizedBox(
                                     height: 15,
                                   ),
-                                  InputWidget(
-                                      controller: brojKarticeController,
-                                      placeholder: "Broj kartice"),
-                                  InputWidget(
-                                      controller: vlasnikController,
-                                      placeholder: "Vlasnik kartice"),
-                                  InputWidget(
-                                      controller: datumController,
-                                      placeholder: "Datum isteka"),
-                                  InputWidget(
-                                      controller: cvvController,
-                                      placeholder: "CVV"),
+                                  _buildInputs(_selectedPayment),
                                   SizedBox(
                                     height: 50,
                                   ),
@@ -90,6 +81,16 @@ class _PaymentInfoScreenState extends State<PaymentInfoScreen> {
                                         fontFamily: 'Montserrat',
                                         letterSpacing: 0.3,
                                         fontSize: 16),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      _buildPayment(
+                                          'assets/images/visa.png', 1),
+                                      SizedBox(width: 10),
+                                      _buildPayment(
+                                          'assets/images/stripe.png', 2),
+                                    ],
                                   )
                                 ]),
                           ));
@@ -105,5 +106,49 @@ class _PaymentInfoScreenState extends State<PaymentInfoScreen> {
             letterSpacing: 0.4,
             fontSize: 24),
         naslov);
+  }
+
+  Widget _buildInputs(selectedPayment) {
+    return selectedPayment == 0 || selectedPayment == 1
+        ? Column(
+            children: [
+              InputWidget(
+                  controller: brojKarticeController,
+                  placeholder: "Broj kartice"),
+              InputWidget(
+                  controller: vlasnikController,
+                  placeholder: "Vlasnik kartice"),
+              InputWidget(
+                  controller: datumController, placeholder: "Datum isteka"),
+              InputWidget(controller: cvvController, placeholder: "CVV"),
+            ],
+          )
+        : Container();
+  }
+
+  _buildPayment(String img, int index) {
+    return GestureDetector(
+      child: Container(
+        decoration: _selectedPayment == index
+            ? BoxDecoration(
+                border: Border.all(
+                  color: Color.fromRGBO(54, 112, 232, 1),
+                  width: 2,
+                ),
+              )
+            : null,
+        child: Image.asset(
+          img,
+          height: 50,
+          width: 70,
+          fit: BoxFit.contain,
+        ),
+      ),
+      onTap: () {
+        setState(() {
+          _selectedPayment = index;
+        });
+      },
+    );
   }
 }

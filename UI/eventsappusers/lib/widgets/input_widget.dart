@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:country_picker/country_picker.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 class InputWidget extends StatefulWidget {
   final TextEditingController controller;
-  final String placeholder;
+  final String? placeholder;
   final String? type;
+  final String? label;
 
   InputWidget(
       {super.key,
       required this.controller,
-      required this.placeholder,
-      this.type});
+      this.placeholder,
+      this.type,
+      this.label});
 
   @override
   State<InputWidget> createState() => _InputWidgetState();
@@ -23,41 +26,59 @@ class _InputWidgetState extends State<InputWidget> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 0, vertical: 4),
-      child: Container(
-          height: 35,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-            border: Border.all(color: Color.fromRGBO(200, 200, 200, 1)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.4),
-                spreadRadius: 1,
-                blurRadius: 3,
-                offset: Offset(2, 3),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                  child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                child: TextField(
-                    controller: widget.controller,
-                    keyboardType:
-                        widget.type != null ? TextInputType.number : null,
-                    inputFormatters: widget.type == 'number'
-                        ? <TextInputFormatter>[
-                            FilteringTextInputFormatter.digitsOnly
-                          ]
-                        : null,
-                    decoration: new InputDecoration.collapsed(
-                      hintText: widget.placeholder,
+        padding: EdgeInsets.symmetric(horizontal: 0, vertical: 4),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            widget.label != null
+                ? Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    child: Text(
+                      widget.label ?? '',
+                      style: TextStyle(
+                          color: Color.fromRGBO(60, 71, 92, 1),
+                          fontFamily: 'Montserrat',
+                          fontSize: 15,
+                          letterSpacing: 0.3),
+                    ),
+                  )
+                : Container(),
+            Container(
+                height: widget.type == 'multiline' ? 100 : 35,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  border: Border.all(color: Color.fromRGBO(200, 200, 200, 1)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.4),
+                      spreadRadius: 1,
+                      blurRadius: 3,
+                      offset: Offset(2, 3),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                        child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      child: TextField(
+                        controller: widget.controller,
+                        keyboardType: _getType(),
+                        inputFormatters: widget.type == 'number'
+                            ? <TextInputFormatter>[
+                                FilteringTextInputFormatter.digitsOnly
+                              ]
+                            : null,
+                        decoration: new InputDecoration.collapsed(
+                          hintText: widget.placeholder,
+                        ),
+                        minLines: 1,
+                        maxLines: widget.type == 'multiline' ? null : 1,
+                      ),
                     )),
-              )),
-              /* Container(
+                    /* Container(
                   child: IconButton(
                 onPressed: () {
                   //   search();
@@ -67,8 +88,21 @@ class _InputWidgetState extends State<InputWidget> {
                 color: Colors.black,
                 splashRadius: 10,
               ))*/
-            ],
-          )),
-    );
+                  ],
+                ))
+          ],
+        ));
+  }
+
+  _getType() {
+    if (widget.type != null) {
+      switch (widget.type) {
+        case 'number':
+          return TextInputType.number;
+        case 'multiline':
+          return TextInputType.multiline;
+      }
+    }
+    return null;
   }
 }
