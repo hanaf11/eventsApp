@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
 class FullScreenGallery extends StatefulWidget {
-  final List<String> imageList;
+  final List<String>? imagePathList;
+  final List<Image>? imageList;
   final int initialIndex;
 
-  FullScreenGallery({required this.imageList, required this.initialIndex});
+  FullScreenGallery(
+      {this.imagePathList, this.imageList, required this.initialIndex});
 
   @override
   _FullScreenGalleryState createState() => _FullScreenGalleryState();
@@ -21,25 +23,33 @@ class _FullScreenGalleryState extends State<FullScreenGallery> {
 
   @override
   Widget build(BuildContext context) {
+    var length = widget.imageList != null && widget.imageList!.isNotEmpty
+        ? widget.imageList!.length
+        : widget.imagePathList != null && widget.imagePathList!.isNotEmpty
+            ? widget.imagePathList!.length
+            : 0;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black,
       ),
       body: PageView.builder(
-        controller: _pageController,
-        itemCount: widget.imageList.length,
-        itemBuilder: (context, index) {
-          return Center(
-            child: Hero(
-              tag: 'image$index',
-              child: Image.asset(
-                widget.imageList[index],
-                fit: BoxFit.contain,
-              ),
-            ),
-          );
-        },
-      ),
+          controller: _pageController,
+          itemCount: length,
+          itemBuilder: (context, index) {
+            return Center(
+                child: widget.imageList != null && widget.imageList!.isNotEmpty
+                    ? Hero(tag: 'image$index', child: widget.imageList![index])
+                    : widget.imagePathList != null &&
+                            widget.imagePathList!.isNotEmpty
+                        ? Hero(
+                            tag: 'image$index',
+                            child: Image.asset(
+                              widget.imagePathList![index],
+                              fit: BoxFit.contain,
+                            ))
+                        : Container());
+          }),
       backgroundColor: Colors.black,
     );
   }

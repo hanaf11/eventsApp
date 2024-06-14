@@ -1,10 +1,17 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:eventsappusers/widgets/input_widget.dart';
 import 'package:eventsappusers/widgets/list_input_widget.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:multiselect_formfield/multiselect_formfield.dart';
 
+import '../utils/formatting_util.dart';
+import '../widgets/full_screen_image.dart';
 import '../widgets/master_screen.dart';
 import '../widgets/narudzba_master_screen.dart';
+import '../widgets/photo_gallery.dart';
 
 class KreirajDogadjajScreen extends StatefulWidget {
   KreirajDogadjajScreen({super.key});
@@ -21,12 +28,32 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
   TextEditingController websiteController = TextEditingController();
   TextEditingController opisController = TextEditingController();
   TextEditingController programController = TextEditingController();
+  TextEditingController datumOdDateController = TextEditingController();
+  TextEditingController datumDoDateController = TextEditingController();
+  TextEditingController datumOdTimeController = TextEditingController();
+  TextEditingController datumDoTimeController = TextEditingController();
 
   List<String> kategorije = ['Festivali', 'Koncerti', 'Predstave', 'Trke', '-'];
   final formKey = new GlobalKey<FormState>();
   List? _myActivities = [];
   String _kategorijaSelected = "-";
   late String _myActivitiesResult = '';
+  TimeOfDay timeOfDay = TimeOfDay.now();
+  //Image _naslovna = Image.asset('assets/images/empty.jpg', fit: BoxFit.cover);
+  Image? _naslovna;
+  Image? _program;
+  /*final List<String> imageList = [
+    'assets/images/banner.jpg',
+    'assets/images/banner.jpg',
+    'assets/images/banner.jpg',
+    'assets/images/banner.jpg',
+    'assets/images/banner.jpg',
+    'assets/images/banner.jpg',
+    'assets/images/banner.jpg',
+
+    // Add more image paths
+  ];*/
+  final List<Image> imageList = [];
 
   _saveForm() {
     var form = formKey.currentState!;
@@ -36,6 +63,89 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
         _myActivitiesResult = _myActivities.toString();
       });
     }
+  }
+
+  Future<void> _selectDate(BuildContext context, String caller) async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2015, 8),
+        lastDate: DateTime(2101));
+    if (picked != null && picked != DateTime.now()) {
+      setState(() {
+        caller == 'datumOd'
+            ? datumOdDateController.text = printDate(picked)
+            : datumDoDateController.text = printDate(picked);
+      });
+    }
+  }
+
+  Future<void> _selectTime(BuildContext context, String caller) async {
+    var picked = await showTimePicker(context: context, initialTime: timeOfDay);
+
+    if (picked != null) {
+      setState(() {
+        caller == 'datumOd'
+            ? datumOdTimeController.text = printTime(picked)
+            : datumDoTimeController.text = printTime(picked);
+      });
+    }
+  }
+
+  Future getImage(Function(Image) onImageSelected) async {
+    File? file;
+    String? base64Image;
+    var result = await FilePicker.platform.pickFiles(type: FileType.image);
+
+    if (result != null && result.files.single.path != null) {
+      file = File(result.files.single.path!);
+      base64Image = base64Encode(file!.readAsBytesSync());
+      final image = Image.file(
+        file,
+        fit: BoxFit.cover,
+      );
+      print("image: ${image}");
+      print("baase64: $base64Image");
+      onImageSelected(image);
+    }
+  }
+
+  void deleteImage(int index) {
+    print(imageList.length);
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Potvrdite akciju'),
+        content: Text('Da li stvarno želite obrisati sliku?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'Odustani'),
+            child: const Text('Odustani'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context, 'Potvrdi');
+              if (index >= 0 && index < imageList.length) {
+                /*if (id != null) {
+                    _galerijaProvider.delete(id).then((value) => {
+                        setState(() {
+                          galleryItems.removeAt(index);
+                        })
+                      });*/
+                //} else {
+                setState(() {
+                  imageList.removeAt(index);
+                });
+                //}
+              }
+
+              print(imageList.length);
+            },
+            child: const Text('Potvrdi'),
+          ),
+        ],
+      ),
+    );
   }
 
   _KreirajDogadjajScreenState();
@@ -85,6 +195,7 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
                                     controller: nazivController,
                                     label: 'Naziv',
                                   ),
+                                  _buildDatePicker(),
                                   InputWidget(
                                       controller: lokacijaController,
                                       label: 'Lokacija'),
@@ -105,21 +216,88 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
                                       controller: programController,
                                       label: 'Program',
                                       type: 'multiline'),
-                                  Align(
-                                      alignment: Alignment.centerRight,
-                                      child: InkWell(
-                                        child: Text(
-                                          "+ Dodajte sliku",
-                                          style: TextStyle(
-                                              fontSize: 15,
-                                              fontFamily: 'Montserrat',
-                                              letterSpacing: 0.3,
-                                              color: Color.fromRGBO(
-                                                  54, 112, 232, 1)),
-                                        ),
-                                        onTap: () {},
+                                  Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 8),
+                                      child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              'Program slika:',
+                                              style: TextStyle(
+                                                  color: Color.fromRGBO(
+                                                      60, 71, 92, 1),
+                                                  fontFamily: 'Montserrat',
+                                                  fontSize: 15,
+                                                  letterSpacing: 0.3),
+                                            ),
+                                            _dodajSliku((image) {
+                                              setState(() {
+                                                _program = image;
+                                              });
+                                            }),
+                                          ])),
+                                  _buildImage(_program, 'programSlika'),
+                                  SizedBox(height: 15),
+                                  Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 8),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            'Naslovna slika:',
+                                            style: TextStyle(
+                                                color: Color.fromRGBO(
+                                                    60, 71, 92, 1),
+                                                fontFamily: 'Montserrat',
+                                                fontSize: 15,
+                                                letterSpacing: 0.3),
+                                          ),
+                                          _dodajSliku((image) {
+                                            setState(() {
+                                              _naslovna = image;
+                                            });
+                                          }),
+                                        ],
                                       )),
-                                  SizedBox(height: 30),
+                                  _buildImage(_naslovna, 'naslovnaSlika'),
+                                  SizedBox(
+                                    height: 15,
+                                  ),
+                                  Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 8),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            'Galerija:',
+                                            style: TextStyle(
+                                                color: Color.fromRGBO(
+                                                    60, 71, 92, 1),
+                                                fontFamily: 'Montserrat',
+                                                fontSize: 15,
+                                                letterSpacing: 0.3),
+                                          ),
+                                          _dodajSliku((image) {
+                                            setState(() {
+                                              imageList.add(image);
+                                            });
+                                          }),
+                                        ],
+                                      )),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  PhotoGallery(
+                                      imageList: imageList,
+                                      delete: true,
+                                      onDelete: deleteImage),
+                                  SizedBox(height: 20),
                                   Center(
                                       child: ElevatedButton(
                                           onPressed: () {},
@@ -134,7 +312,6 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
                                                   vertical: 10),
                                               backgroundColor: Colors.blue,
                                               foregroundColor: Colors.white,
-                                              // minimumSize: Size(300, 30),
                                               textStyle: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.bold),
@@ -145,6 +322,95 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
                                 ]),
                           ));
                     }))));
+  }
+
+  _dodajSliku(Function(Image) onImageSelected) {
+    return Align(
+        alignment: Alignment.centerRight,
+        child: InkWell(
+          child: Text(
+            "+ Dodajte sliku",
+            style: TextStyle(
+                fontSize: 15,
+                fontFamily: 'Montserrat',
+                letterSpacing: 0.3,
+                color: Color.fromRGBO(54, 112, 232, 1)),
+          ),
+          onTap: () {
+            getImage(onImageSelected);
+          },
+        ));
+  }
+
+  _buildDatePicker() {
+    return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+        child: Column(children: [
+          Row(
+            children: [
+              Expanded(
+                  child: InkWell(
+                      onTap: () {
+                        _selectDate(context, 'datumOd');
+                      },
+                      child: IgnorePointer(
+                          child: InputWidget(
+                        label: 'Od:',
+                        controller: datumOdDateController,
+                      )))),
+              Expanded(
+                  child: InkWell(
+                      onTap: () {
+                        _selectTime(context, 'datumOd');
+                      },
+                      child: IgnorePointer(
+                          child: InputWidget(
+                        controller: datumOdTimeController,
+                      )))),
+            ],
+          ),
+          Row(children: [
+            Expanded(
+                child: InkWell(
+                    onTap: () {
+                      _selectDate(context, 'datumDo');
+                    },
+                    child: IgnorePointer(
+                        child: InputWidget(
+                            label: 'Do:', controller: datumDoDateController)))),
+            Expanded(
+                child: InkWell(
+                    onTap: () {
+                      _selectTime(context, 'datumDo');
+                    },
+                    child: IgnorePointer(
+                        child: InputWidget(
+                      controller: datumDoTimeController,
+                    )))),
+          ])
+        ]));
+  }
+
+  _buildImage(Image? image, String tag) {
+    return image != null
+        ? GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FullScreenImage(tag: tag, image: image),
+                ),
+              );
+            },
+            child: Container(
+                height: 140,
+                width: 400,
+                decoration: BoxDecoration(
+                    border: Border.all(width: 1, color: Colors.grey),
+                    borderRadius: BorderRadius.circular(20)),
+                child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20), child: image)))
+        : Container();
   }
 
   _buildHeading(String naslov) {

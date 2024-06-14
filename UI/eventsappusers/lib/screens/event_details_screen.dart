@@ -267,7 +267,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                               height: 20,
                             ),
                             _buildNaslov("Galerija"),
-                            PhotoGallery(imageList: imageList),
+                            PhotoGallery(imagePathList: imageList),
                             SizedBox(
                               height: 20,
                             ),

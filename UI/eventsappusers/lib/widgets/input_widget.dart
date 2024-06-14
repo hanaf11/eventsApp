@@ -42,7 +42,9 @@ class _InputWidgetState extends State<InputWidget> {
                           letterSpacing: 0.3),
                     ),
                   )
-                : Container(),
+                : Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    child: Text('')),
             Container(
                 height: widget.type == 'multiline' ? 100 : 35,
                 decoration: BoxDecoration(
@@ -58,38 +60,23 @@ class _InputWidgetState extends State<InputWidget> {
                     ),
                   ],
                 ),
-                child: Row(
-                  children: [
-                    Expanded(
-                        child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      child: TextField(
-                        controller: widget.controller,
-                        keyboardType: _getType(),
-                        inputFormatters: widget.type == 'number'
-                            ? <TextInputFormatter>[
-                                FilteringTextInputFormatter.digitsOnly
-                              ]
-                            : null,
-                        decoration: new InputDecoration.collapsed(
-                          hintText: widget.placeholder,
-                        ),
-                        minLines: 1,
-                        maxLines: widget.type == 'multiline' ? null : 1,
-                      ),
-                    )),
-                    /* Container(
-                  child: IconButton(
-                onPressed: () {
-                  //   search();
-                },
-                icon: const Icon(Icons.search),
-                iconSize: 25,
-                color: Colors.black,
-                splashRadius: 10,
-              ))*/
-                  ],
-                ))
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  child: TextField(
+                    controller: widget.controller,
+                    keyboardType: _getType(),
+                    inputFormatters: widget.type == 'number'
+                        ? <TextInputFormatter>[
+                            FilteringTextInputFormatter.digitsOnly
+                          ]
+                        : null,
+                    decoration: InputDecoration.collapsed(
+                      hintText: widget.placeholder,
+                    ),
+                    minLines: 1,
+                    maxLines: widget.type == 'multiline' ? null : 1,
+                  ),
+                )),
           ],
         ));
   }
