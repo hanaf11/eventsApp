@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:eventsappusers/providers/auth_provider.dart';
 import 'package:eventsappusers/providers/kategorije_provider.dart';
 import 'package:eventsappusers/screens/buy_ticket_screen.dart';
+import 'package:eventsappusers/screens/edit_profile_screen.dart';
 import 'package:eventsappusers/screens/event_details_screen.dart';
 import 'package:eventsappusers/screens/home_screen.dart';
 import 'package:eventsappusers/screens/kategorije_details_screen.dart';
@@ -62,7 +63,7 @@ class LoginPage extends StatelessWidget {
     try {
       // await provider.get();
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => KreirajDogadjajScreen()),
+        MaterialPageRoute(builder: (context) => EditProfileScreen()),
       );
     } on Exception catch (e) {
       showDialog<String>(

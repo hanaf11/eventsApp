@@ -34,6 +34,15 @@ String printDate(DateTime date) {
       ".";
 }
 
+String formatDate(DateTime date) {
+  return date.day.toString() +
+      ". " +
+      months[date.month - 1] +
+      " " +
+      date.year.toString() +
+      ".";
+}
+
 String printTime(TimeOfDay time) {
   final hours = time.hour.toString().padLeft(2, '0');
   final minutes = time.minute.toString().padLeft(2, '0');

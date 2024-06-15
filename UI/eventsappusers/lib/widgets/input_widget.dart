@@ -8,12 +8,14 @@ class InputWidget extends StatefulWidget {
   final String? placeholder;
   final String? type;
   final String? label;
+  final bool? readOnly;
 
   InputWidget(
       {super.key,
       required this.controller,
       this.placeholder,
       this.type,
+      this.readOnly,
       this.label});
 
   @override
@@ -75,6 +77,9 @@ class _InputWidgetState extends State<InputWidget> {
                     ),
                     minLines: 1,
                     maxLines: widget.type == 'multiline' ? null : 1,
+                    readOnly: widget.readOnly != null && widget.readOnly == true
+                        ? true
+                        : false,
                   ),
                 )),
           ],
