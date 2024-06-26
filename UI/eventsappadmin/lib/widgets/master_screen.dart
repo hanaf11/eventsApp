@@ -1,5 +1,6 @@
 import 'package:eventsappadmin/main.dart';
 import 'package:eventsappadmin/screens/dogadjaj_details_screen.dart';
+import 'package:eventsappadmin/screens/kategorije_screen.dart';
 import 'package:eventsappadmin/screens/narudzbe_list_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -29,6 +30,7 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> {
     "Zahtjevi",
     "Korisnici",
     "Narudžbe",
+    "Kategorije",
     "Log out"
   ];
 
@@ -42,6 +44,8 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.blue,
+          foregroundColor: Colors.white,
           automaticallyImplyLeading: showBackButton ?? false,
           title: Row(
             children: [
@@ -119,6 +123,8 @@ Widget getScreen(int index) {
     case 3:
       return NarudzbeListScreen(selected: index);
     case 4:
+      return KategorijeScreen(selected: index);
+    case 5:
       return LoginPage();
     default:
       return DogadjajiListScreen();

@@ -8,5 +8,6 @@ namespace eventsApp.Model.SearchObjects
 {
     public class KategorijeSearchObject:BaseSearchObject
     {
+        public string? fts { get; set; }
     }
 }

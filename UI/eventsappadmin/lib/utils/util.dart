@@ -12,8 +12,32 @@ class Authorization {
   static String? password;
 }
 
-Image imageFromBase64String(String base64Image) {
-  return Image.memory(base64Decode(base64Image));
+class ImageObj {
+  Image? image;
+  String? base64Image;
+
+  ImageObj(this.image, this.base64Image);
+  /* {
+    image = image;
+    base64Image = base64image;
+  }*/
+}
+
+Image imageFromBase64String(String? base64Image) {
+  if (base64Image != null) {
+    try {
+      return Image.memory(
+        base64Decode(base64Image),
+        fit: BoxFit.cover,
+      );
+    } on Exception catch (e) {
+      return Image.asset(
+        'assets/images/no_picture.jpg',
+        fit: BoxFit.cover,
+      );
+    }
+  }
+  return Image.asset('assets/images/no_picture.jpg', fit: BoxFit.cover);
 }
 
 String formatNumber(dynamic) {

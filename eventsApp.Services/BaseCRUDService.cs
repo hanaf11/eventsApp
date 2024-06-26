@@ -25,6 +25,11 @@ namespace eventsApp.Services
 
         }
 
+        public virtual  void BeforeDelete(TDb entity)
+        {
+
+        }
+
         public virtual async Task<TDetails> Insert(TInsert insert)
         {
             var set = _context.Set<TDb>();
@@ -64,11 +69,14 @@ namespace eventsApp.Services
                 throw new Exception($"Entity with ID {id} not found.");
             }
 
-            set.Remove(entity);
+                BeforeDelete(entity);
 
-            await _context.SaveChangesAsync();
+                set.Remove(entity);
 
-            return _mapper.Map<TDetails>(entity);
+                await _context.SaveChangesAsync();
+
+                return _mapper.Map<TDetails>(entity);
+
         }
     }
 }

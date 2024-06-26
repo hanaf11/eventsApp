@@ -13,5 +13,7 @@ namespace eventsApp.Model.Requests
         public string Naziv { get; set; } = null!;
 
         public string? Opis { get; set; }
+
+        public byte[] Slika { get; set; }
     }
 }

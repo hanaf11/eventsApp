@@ -45,6 +45,7 @@ dependencies:
   intl: ^0.19.0
   multiselect_formfield: ^0.1.7
   file_picker: ^7.0.2
+  flutter_form_builder: ^9.2.0
 
 dev_dependencies:
   build_runner: ^2.4.9

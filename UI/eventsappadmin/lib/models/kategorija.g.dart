@@ -10,6 +10,7 @@ Kategorija _$KategorijaFromJson(Map<String, dynamic> json) => Kategorija(
       json['kategorijaId'] as int?,
       json['naziv'] as String?,
       json['opis'] as String?,
+      json['slika'] as String?,
     );
 
 Map<String, dynamic> _$KategorijaToJson(Kategorija instance) =>
@@ -17,4 +18,5 @@ Map<String, dynamic> _$KategorijaToJson(Kategorija instance) =>
       'kategorijaId': instance.kategorijaId,
       'naziv': instance.naziv,
       'opis': instance.opis,
+      'slika': instance.slika,
     };

@@ -13,7 +13,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
   BaseProvider(String endpoint) {
     _endpoint = endpoint;
     _baseUrl = const String.fromEnvironment("baseUrl",
-        defaultValue: "https://localhost:7294/");
+        defaultValue: "http://localhost:7294/");
   }
 
   Future<SearchResult<T>> get({dynamic filter}) async {
@@ -104,7 +104,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
       var data = jsonDecode(response.body);
       return fromJson(data);
     } else {
-      throw new Exception("Unknown exception");
+      throw Exception("Unknown exception");
     }
   }
 
@@ -120,9 +120,15 @@ abstract class BaseProvider<T> with ChangeNotifier {
     } else if (response.statusCode == 500) {
       print(response.body);
       throw new Exception("Server side error");
+    } else if (response.statusCode == 400) {
+      print(response.body);
+      var jsonResponse = jsonDecode(response.body);
+      var userErrors = jsonResponse['errors']['userError'];
+      var errorMessage = userErrors.join("\n");
+      throw Exception("\n User exception: \n $errorMessage");
     }
     print(response.body);
-    print("status code ${response.statusCode}, ${response.bodyBytes}");
+    print("status code ${response.statusCode}");
     throw new Exception("Something bad happened. Please try again");
   }
 
