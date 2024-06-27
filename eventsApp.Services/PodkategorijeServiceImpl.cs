@@ -9,6 +9,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using eventsApp.Model;
 
 namespace eventsApp.Services
 {
@@ -30,6 +31,16 @@ namespace eventsApp.Services
                 filteredQuery = filteredQuery.Where(x => x.KategorijaId.Equals(search.KategorijaId));
             }
             return filteredQuery;
+        }
+
+        public override  void ValidateInsert(PodkategorijeCreateRequest insert)
+        {
+            bool kategorijaExists = _context.Kategorijes.Where(k => k.KategorijaId == insert.KategorijaId).Count() == 1;
+
+            if (!kategorijaExists)
+            {
+                throw new UserException("Kategorija za koju pokusavate dodati podkategoriju ne postoji");
+            }
         }
 
 

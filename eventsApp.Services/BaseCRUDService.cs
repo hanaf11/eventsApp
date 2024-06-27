@@ -25,7 +25,12 @@ namespace eventsApp.Services
 
         }
 
-        public virtual  void BeforeDelete(TDb entity)
+        public virtual void ValidateInsert(TInsert insert)
+        {
+
+        }
+
+        public virtual  void ValidateDelete(TDb entity)
         {
 
         }
@@ -34,10 +39,14 @@ namespace eventsApp.Services
         {
             var set = _context.Set<TDb>();
 
+            ValidateInsert(insert);
+
             TDb entity = _mapper.Map<TDb>(insert);
 
             set.Add(entity);
+
             await BeforeInsert(entity, insert);
+
             await _context.SaveChangesAsync();
 
             return _mapper.Map<TDetails>(entity);
@@ -69,7 +78,7 @@ namespace eventsApp.Services
                 throw new Exception($"Entity with ID {id} not found.");
             }
 
-                BeforeDelete(entity);
+                ValidateDelete(entity);
 
                 set.Remove(entity);
 

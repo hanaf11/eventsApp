@@ -29,7 +29,7 @@ namespace eventsApp.Services
             return filteredQuery;
         }
 
-        public override  void BeforeDelete(Database.Kategorije entity)
+        public override  void ValidateDelete(Database.Kategorije entity)
         {
             bool notEmpty = _context.Dogadjajis.Where(e=>e.KategorijaId==entity.KategorijaId).Count() > 0;
 

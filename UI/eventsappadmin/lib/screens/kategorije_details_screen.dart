@@ -11,6 +11,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:provider/provider.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 
 import '../widgets/searchField.dart';
 
@@ -48,6 +49,7 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
   final _formKey = GlobalKey<FormBuilderState>();
   final _podkategorijaFormKey = GlobalKey<FormBuilderState>();
   Map<String, dynamic> _initialValue = {};
+  String? _slikaError;
 
   late KategorijaProvider kategorijaProvider;
   late PodkategorijaProvider podkategorijaProvider;
@@ -94,6 +96,19 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
     );
   }
 
+  checkCustomValidations() {
+    if (slika.base64Image == null) {
+      setState(
+        () {
+          _slikaError = "Slika je obavezna";
+        },
+      );
+      _formKey.currentState?.fields['Slika']?.invalidate(_slikaError ?? '');
+      return false;
+    }
+    return true;
+  }
+
   getPodkategorije(int kategorijaId) async {
     var data = await podkategorijaProvider.get(filter: {
       'KategorijaId': kategorijaId,
@@ -135,21 +150,22 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
   }
 
   savePodkategorija(int? id) async {
-    _podkategorijaFormKey.currentState?.saveAndValidate();
+    if (_podkategorijaFormKey.currentState?.saveAndValidate() ?? false) {
+      var request = Map.from(_podkategorijaFormKey.currentState!.value);
+      request['KategorijaId'] = widget.selectedKategorija?.kategorijaId ?? 0;
 
-    var request = Map.from(_podkategorijaFormKey.currentState!.value);
-    request['KategorijaId'] = widget.selectedKategorija?.kategorijaId;
-
-    try {
-      if (id == null) {
-        await podkategorijaProvider.insert(request).then((value) =>
-            handlePodkategorijaSuccess("Uspješno ste dodali podkategoriju"));
-      } else {
-        await podkategorijaProvider.update(id, request: request).then((value) =>
-            handlePodkategorijaSuccess("Uspješno ste uredili podkategoriju"));
+      try {
+        if (id == null) {
+          await podkategorijaProvider.insert(request).then((value) =>
+              handlePodkategorijaSuccess("Uspješno ste dodali podkategoriju"));
+        } else {
+          await podkategorijaProvider.update(id, request: request).then(
+              (value) => handlePodkategorijaSuccess(
+                  "Uspješno ste uredili podkategoriju"));
+        }
+      } on Exception catch (ex) {
+        handleException(ex);
       }
-    } on Exception catch (ex) {
-      handleException(ex);
     }
   }
 
@@ -163,30 +179,35 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
               ? Text("Uredi podkategoriju")
               : Text('Dodaj podkategoriju'),
           content: SingleChildScrollView(
-              child: FormBuilder(
-            key: _podkategorijaFormKey,
-            child: ListBody(
-              children: <Widget>[
-                Row(children: [
-                  InputField(
-                    name: "Naziv:",
-                    field: FormBuilderTextField(
-                      name: 'Naziv',
-                      initialValue: p?.naziv,
-                      onChanged: (val) {},
+              child: Container(
+                  width: MediaQuery.of(context).size.width * 0.3,
+                  child: FormBuilder(
+                    key: _podkategorijaFormKey,
+                    child: ListBody(
+                      children: <Widget>[
+                        Row(children: [
+                          InputField(
+                            name: "Naziv:",
+                            field: FormBuilderTextField(
+                              name: 'Naziv',
+                              initialValue: p?.naziv,
+                              validator: FormBuilderValidators.compose([
+                                FormBuilderValidators.required(
+                                    errorText:
+                                        'Naziv podkategorije je obavezan')
+                              ]),
+                            ),
+                          )
+                        ]),
+                      ],
                     ),
-                  )
-                ]),
-              ],
-            ),
-          )),
+                  ))),
           actions: <Widget>[
             TextButton(
               style: buttonPrimary,
               child: const Text('Sačuvaj'),
               onPressed: () {
                 savePodkategorija(p?.podkategorijaId);
-                Navigator.of(context).pop();
               },
             ),
           ],
@@ -230,6 +251,7 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
                       widget.refresh(widget.selectedKategorija?.kategorijaId);
                       getPodkategorije(
                           widget.selectedKategorija!.kategorijaId!);
+                      Navigator.of(context).pop();
                     },
                     child: Text("OK"))
               ],
@@ -254,27 +276,30 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Container(
-                        height: 100,
+                        height: 120,
                         child: Column(
                           children: [
                             InputField(
                               name: "Naziv:",
                               field: FormBuilderTextField(
                                 name: 'Naziv',
+                                validator: FormBuilderValidators.compose([
+                                  FormBuilderValidators.required(
+                                      errorText: 'Naziv je obavezan')
+                                ]),
                               ),
-                              clearable: this,
                             ),
                             InputField(
                               name: "Opis:",
                               field: FormBuilderTextField(
                                 name: 'Opis',
                               ),
-                              clearable: this,
                             ),
                           ],
                         )),
                     SizedBox(height: 20),
                     Row(
+                      //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           "Slika: ",
@@ -284,7 +309,43 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
                           ),
                         ),
                         Spacer(),
-                        InkWell(
+                        FormBuilderField(
+                            name: "Slika",
+                            builder: (FormFieldState<dynamic> field) {
+                              return SizedBox(
+                                  width: 120,
+                                  child: InputDecorator(
+                                    decoration: InputDecoration(
+                                        errorText: _slikaError,
+                                        border: InputBorder.none),
+                                    child: InkWell(
+                                      onTap: () async {
+                                        var imageObj = await getImage();
+                                        setState(() {
+                                          slika = imageObj;
+                                          widget.base64Image =
+                                              imageObj.base64Image;
+                                          _slikaError = null;
+                                          _formKey.currentState?.fields['Slika']
+                                              ?.validate();
+                                        });
+                                        widget.imageChanged!(imageObj);
+                                      },
+                                      //ako mi bude trebalo radi validacije pogledati v11 custom form builder
+                                      child: Text(
+                                        "+ Promijeni sliku",
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          letterSpacing: 0.3,
+                                          color:
+                                              Color.fromRGBO(54, 112, 232, 1),
+                                        ),
+                                      ),
+                                    ),
+                                  ));
+                            }),
+
+                        /*InkWell(
                           onTap: () async {
                             var imageObj = await getImage();
                             setState(() {
@@ -302,7 +363,7 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
                               color: Color.fromRGBO(54, 112, 232, 1),
                             ),
                           ),
-                        ),
+                        ),*/
                       ],
                     ),
                     SizedBox(height: 10),
@@ -360,25 +421,26 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
           child: ElevatedButton(
             style: buttonPrimary,
             onPressed: () async {
-              _formKey.currentState?.saveAndValidate();
+              if ((_formKey.currentState?.saveAndValidate() ?? false) &&
+                  await checkCustomValidations()) {
+                var request = Map.from(_formKey.currentState!.value);
+                request['Slika'] = slika.base64Image ?? getDefaultImage();
 
-              var request = Map.from(_formKey.currentState!.value);
-              request['Slika'] = slika.base64Image ?? getDefaultImage();
-
-              try {
-                if (widget.selectedKategorija == null) {
-                  await kategorijaProvider.insert(request).then((value) =>
-                      handleKategorijaSuccess(
-                          value, "Uspješno ste dodali kategoriju"));
-                } else {
-                  await kategorijaProvider
-                      .update(widget.selectedKategorija!.kategorijaId!,
-                          request: request)
-                      .then((value) => handleKategorijaSuccess(
-                          null, "Uspješno ste uredili kategoriju"));
+                try {
+                  if (widget.selectedKategorija == null) {
+                    await kategorijaProvider.insert(request).then((value) =>
+                        handleKategorijaSuccess(
+                            value, "Uspješno ste dodali kategoriju"));
+                  } else {
+                    await kategorijaProvider
+                        .update(widget.selectedKategorija!.kategorijaId!,
+                            request: request)
+                        .then((value) => handleKategorijaSuccess(
+                            null, "Uspješno ste uredili kategoriju"));
+                  }
+                } on Exception catch (ex) {
+                  handleException(ex);
                 }
-              } on Exception catch (ex) {
-                handleException(ex);
               }
             },
             child: Text("Sačuvaj"),

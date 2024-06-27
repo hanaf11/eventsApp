@@ -23,6 +23,18 @@ class ImageObj {
   }*/
 }
 
+String formErrorMessage(dynamic jsonResponse) {
+  var errors = jsonResponse['errors'];
+  return errors.entries
+      .map((entry) {
+        String fieldName = entry.key;
+        List<dynamic> fieldErrors = entry.value;
+        return "$fieldName: ${fieldErrors.join(', ')}";
+      })
+      .join('; ')
+      .toString();
+}
+
 Image imageFromBase64String(String? base64Image) {
   if (base64Image != null) {
     try {

@@ -122,10 +122,11 @@ abstract class BaseProvider<T> with ChangeNotifier {
       throw new Exception("Server side error");
     } else if (response.statusCode == 400) {
       print(response.body);
+      print(response.statusCode);
       var jsonResponse = jsonDecode(response.body);
-      var userErrors = jsonResponse['errors']['userError'];
-      var errorMessage = userErrors.join("\n");
-      throw Exception("\n User exception: \n $errorMessage");
+      var errorMessage = formErrorMessage(jsonResponse);
+      print(errorMessage);
+      throw Exception("\n $errorMessage");
     }
     print(response.body);
     print("status code ${response.statusCode}");
