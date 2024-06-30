@@ -24,7 +24,7 @@ namespace eventsApp.Services
         public override async Task BeforeInsert(Korisnici entity, KorisniciInsertRequest insert)
         {
             _logger.LogInformation($"Adding user: {entity.KorisnickoIme}");
-            base.BeforeInsert(entity, insert);
+            await base.BeforeInsert(entity, insert);
             entity.LozinkaSalt = GenerateSalt();
             entity.LozinkaHash = GenerateHash(entity.LozinkaSalt, insert.Password);
             entity.Created=DateTime.Now;

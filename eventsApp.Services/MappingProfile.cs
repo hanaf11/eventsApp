@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using eventsApp.Model.Requests;
 
 namespace eventsApp.Services
 {
@@ -16,6 +17,8 @@ namespace eventsApp.Services
             CreateMap<Model.Requests.KorisniciInsertRequest,Database.Korisnici>();
             CreateMap<Model.Requests.KorisniciUpdateRequest, Database.Korisnici>();
             CreateMap<Database.Dobavljaci, Model.Dobavljaci>();
+            CreateMap<Model.Requests.DobavljaciInsertRequest, Database.Dobavljaci>();
+            CreateMap<Model.Requests.DobavljaciUpdateRequest, Database.Dobavljaci>();
             CreateMap<Database.Kategorije, Model.Kategorije>();
             CreateMap<Database.Podkategorije, Model.Podkategorije>();
             CreateMap<Database.KorisniciUloge, Model.KorisniciUloge>();

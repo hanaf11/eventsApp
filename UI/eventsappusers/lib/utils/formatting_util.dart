@@ -52,3 +52,37 @@ String printTime(TimeOfDay time) {
 Image imageFromString(String input) {
   return Image.memory(base64Decode(input));
 }
+
+ImageProvider imageProviderFromBase64String(String? base64Image) {
+  if (base64Image != null) {
+    try {
+      return MemoryImage(
+        base64Decode(base64Image),
+      );
+    } on Exception catch (e) {
+      return AssetImage('assets/images/no_picture.jpg');
+    }
+  }
+  return AssetImage('assets/images/no_picture.jpg');
+}
+
+Image imageFromBase64String(String? base64Image) {
+  if (base64Image != null) {
+    try {
+      return Image.memory(
+        base64Decode(base64Image),
+        fit: BoxFit.cover,
+      );
+    } on Exception catch (e) {
+      return Image.asset(
+        'assets/images/no_picture.jpg',
+        fit: BoxFit.cover,
+      );
+    }
+  }
+  return Image.asset('assets/images/no_picture.jpg', fit: BoxFit.cover);
+}
+
+MemoryImage getDecorationImage(String base64Image) {
+  return MemoryImage(base64Decode(base64Image));
+}

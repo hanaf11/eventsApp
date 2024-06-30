@@ -13,5 +13,6 @@ namespace eventsApp.Model.SearchObjects
         public string? Lokacija { get; set; }
         public DateTime? DatumOd { get; set; }
         public DateTime? DatumDo { get; set; }
+        public int? DobavljacId { get; set; }
     }
 }

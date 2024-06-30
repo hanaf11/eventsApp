@@ -260,7 +260,9 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
 
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Uredi kategoriju'),
+      title: widget.selectedKategorija == null
+          ? Text('Dodaj kategoriju')
+          : Text("Uredi kategoriju"),
       content: Container(
         width: MediaQuery.of(context).size.width * 0.8,
         height: 400,
@@ -299,7 +301,6 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
                         )),
                     SizedBox(height: 20),
                     Row(
-                      //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           "Slika: ",
@@ -331,7 +332,6 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
                                         });
                                         widget.imageChanged!(imageObj);
                                       },
-                                      //ako mi bude trebalo radi validacije pogledati v11 custom form builder
                                       child: Text(
                                         "+ Promijeni sliku",
                                         style: TextStyle(
@@ -344,26 +344,6 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
                                     ),
                                   ));
                             }),
-
-                        /*InkWell(
-                          onTap: () async {
-                            var imageObj = await getImage();
-                            setState(() {
-                              slika = imageObj;
-                              widget.base64Image = imageObj.base64Image;
-                            });
-                            widget.imageChanged!(imageObj);
-                          },
-                          //ako mi bude trebalo radi validacije pogledati v11 custom form builder
-                          child: Text(
-                            "+ Promijeni sliku",
-                            style: TextStyle(
-                              fontSize: 15,
-                              letterSpacing: 0.3,
-                              color: Color.fromRGBO(54, 112, 232, 1),
-                            ),
-                          ),
-                        ),*/
                       ],
                     ),
                     SizedBox(height: 10),

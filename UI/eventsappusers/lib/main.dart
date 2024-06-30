@@ -63,7 +63,7 @@ class LoginPage extends StatelessWidget {
     try {
       // await provider.get();
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => EditProfileScreen()),
+        MaterialPageRoute(builder: (context) => KategorijeScreen()),
       );
     } on Exception catch (e) {
       showDialog<String>(

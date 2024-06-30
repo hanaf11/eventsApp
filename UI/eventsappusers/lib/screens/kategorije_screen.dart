@@ -1,7 +1,6 @@
-import 'package:eventsappusers/providers/auth_provider.dart';
 import 'package:eventsappusers/providers/kategorije_provider.dart';
+import 'package:eventsappusers/screens/kategorije_details_screen.dart';
 import 'package:eventsappusers/utils/formatting_util.dart';
-import 'package:eventsappusers/utils/util.dart';
 import 'package:eventsappusers/widgets/heading_widget.dart';
 import 'package:eventsappusers/widgets/master_screen.dart';
 import 'package:flutter/material.dart';
@@ -17,19 +16,32 @@ class KategorijeScreen extends StatefulWidget {
 }
 
 class _KategorijeScreenState extends State<KategorijeScreen> {
-  late KategorijeProvider provider;
-  List<Kategorija> kategorijeList = [];
-  TextEditingController _searchController = TextEditingController();
+  bool isLoading = true;
+  late KategorijeProvider _kategorijeProvider;
+  List<Kategorija> _kategorijeList = [];
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    provider = context.read<KategorijeProvider>();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _kategorijeProvider = context.read<KategorijeProvider>();
+    getKategorije();
+  }
+
+  getKategorije() async {
+    var kategorijeResult = await _kategorijeProvider.get();
+    setState(() {
+      _kategorijeList = kategorijeResult.result;
+      isLoading = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    var isLoading = false;
     return MasterScreen(
         selectedIndex: 0,
         showBackButton: true,
@@ -38,31 +50,12 @@ class _KategorijeScreenState extends State<KategorijeScreen> {
                 ? const CircularProgressIndicator()
                 : Column(
                     children: [
-                      HeadingWidget(text: "Odaberite kategoriju"),
+                      const HeadingWidget(text: "Odaberite kategoriju"),
                       Container(
                         height: 10,
                       ),
-                      /*   Expanded(
-                        child: Row(
-                          children: [
-                            TextField(
-                              controller: _searchController,
-                            ),
-                          
-                          ],
-                        ),
-                      ),*/
-                      ElevatedButton(
-                          onPressed: () async {
-                            var filter = {"fts": _searchController.text};
-                            var result = await provider.get(filter: filter);
-                            print(result);
-                            setState(() {
-                              kategorijeList = result.result;
-                            });
-                          },
-                          child: Text("dobavi")),
-                      _buildTilesList(kategorijeList)
+                      if (_kategorijeList.isNotEmpty)
+                        _buildTilesList(_kategorijeList)
                     ],
                   )));
   }
@@ -79,7 +72,7 @@ class _KategorijeScreenState extends State<KategorijeScreen> {
                   mainAxisSpacing: 10,
                   crossAxisCount: 2,
                   children: resultList
-                      .map((e) => _buildTile(e.naziv))
+                      .map((e) => _buildTile(e))
                       .toList()
                       .cast<Widget>()))
         ],
@@ -89,38 +82,43 @@ class _KategorijeScreenState extends State<KategorijeScreen> {
     ;
   }
 
-  Widget _buildTile(text) {
-    return Container(
-        padding: const EdgeInsets.all(8),
-        // color: Colors.green[400],
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            color: Colors.green[400],
-            image: DecorationImage(
-              //image: slika!="" ? imageFromString(slika).image : AssetImage("assets/images/banner.jpg"),
-
-              image: AssetImage("assets/images/banner.jpg"),
-              fit: BoxFit.cover,
-            )),
-        child: Align(
-            alignment: Alignment.bottomLeft,
-            child: Padding(
-                padding: const EdgeInsets.all(5.0), // Adjust as needed
-                child: Text(
-                  text,
-                  style: const TextStyle(
-                    color: Colors.white, // Text color
-                    fontSize: 22,
-                    fontFamily: 'Magra',
-                    letterSpacing: 1,
-                    shadows: [
-                      Shadow(
-                        color: Color.fromARGB(255, 72, 71, 71),
-                        blurRadius: 3.0,
-                        offset: Offset(2.0, 2.0),
+  Widget _buildTile(Kategorija e) {
+    return InkWell(
+        child: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                image: DecorationImage(
+                    image: imageProviderFromBase64String(e.slika),
+                    fit: BoxFit.cover)),
+            child: Align(
+                alignment: Alignment.bottomLeft,
+                child: Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Text(
+                      e.naziv!,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontFamily: 'Magra',
+                        letterSpacing: 1,
+                        shadows: [
+                          Shadow(
+                            color: Color.fromARGB(255, 72, 71, 71),
+                            blurRadius: 3.0,
+                            offset: Offset(2.0, 2.0),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ))));
+                    )))),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => KategorijeDetailsScreen(
+                      kategorijaId: e.kategorijaId!,
+                    )),
+          );
+        });
   }
 }

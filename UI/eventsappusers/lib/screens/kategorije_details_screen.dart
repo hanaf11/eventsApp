@@ -7,7 +7,8 @@ import '../widgets/input_field.dart';
 import '../widgets/master_screen.dart';
 
 class KategorijeDetailsScreen extends StatefulWidget {
-  KategorijeDetailsScreen({super.key});
+  int kategorijaId;
+  KategorijeDetailsScreen({super.key, required this.kategorijaId});
 
   @override
   State<KategorijeDetailsScreen> createState() =>

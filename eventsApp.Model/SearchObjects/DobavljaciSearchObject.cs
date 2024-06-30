@@ -10,5 +10,6 @@ namespace eventsApp.Model.SearchObjects
     {
         public string? Naziv { get; set; }
         public string? Adresa { get; set; }
+        public string? Dogadjaj { get; set; }
     }
 }

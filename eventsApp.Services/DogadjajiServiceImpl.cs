@@ -55,6 +55,10 @@ namespace eventsApp.Services
             {
                 filteredQuery = filteredQuery.Where(x => x.DatumOd >= (search.DatumOd)).Where(x=>x.DatumOd<=search.DatumDo);
             }
+            if (search?.DobavljacId != null)
+            {
+                filteredQuery = filteredQuery.Where(x => x.DobavljacId.Equals(search.DobavljacId));
+            }
             return filteredQuery;
         }
 
