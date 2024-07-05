@@ -40,7 +40,7 @@ class _SpremljenoScreenState extends State<SpremljenoScreen> {
       child: ListView(
         scrollDirection: Axis.vertical,
         children: [
-          DogadjajHorizontalWidget(
+          /*DogadjajHorizontalWidget(
             naslov: "Test naslov",
             datumOd: DateTime.now(),
             datumDo: DateTime.now(),
@@ -88,7 +88,7 @@ class _SpremljenoScreenState extends State<SpremljenoScreen> {
             kategorija: "Konferencije",
             lokacija: "Spanija",
             saved: true,
-          ),
+          ),*/
         ],
       ),
     );

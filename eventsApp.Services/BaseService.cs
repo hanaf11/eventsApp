@@ -52,7 +52,9 @@ namespace eventsApp.Services
 
         public virtual async Task<TDetails> GetById(int id)
         {
-            var entity = await _context.Set<TDb>().FindAsync(id);
+            //var entity = await _context.Set<TDb>().FindAsync(id);
+            var entity = await FindEntity(id);
+
             if (entity != null)
             {
                 return _mapper.Map<TDetails>(entity);
@@ -68,6 +70,11 @@ namespace eventsApp.Services
         public virtual IQueryable<TDb> AddFilter(IQueryable<TDb> query, TSearch? search = null)
         {
             return query;
+        }
+
+        public virtual async Task<TDb> FindEntity(int id)
+        {
+            return await _context.Set<TDb>().FindAsync(id);
         }
     }
 }

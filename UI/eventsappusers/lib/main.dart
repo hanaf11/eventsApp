@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:eventsappusers/providers/auth_provider.dart';
+import 'package:eventsappusers/providers/dogadjaj_provider.dart';
 import 'package:eventsappusers/providers/kategorije_provider.dart';
 import 'package:eventsappusers/screens/buy_ticket_screen.dart';
 import 'package:eventsappusers/screens/edit_profile_screen.dart';
@@ -15,6 +16,7 @@ import 'package:eventsappusers/screens/payment_information_screen.dart';
 import 'package:eventsappusers/screens/personal_information_screen.dart';
 import 'package:eventsappusers/screens/profile_screen.dart';
 import 'package:eventsappusers/screens/spremljeno_screen.dart';
+import 'package:eventsappusers/utils/category_color_util.dart';
 import 'package:eventsappusers/utils/util.dart';
 import 'package:eventsappusers/widgets/master_screen.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +25,8 @@ import 'package:provider/provider.dart';
 void main() {
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider<KategorijeProvider>(
-        create: (_) => KategorijeProvider())
+        create: (_) => KategorijeProvider()),
+    ChangeNotifierProvider<DogadjajProvider>(create: (_) => DogadjajProvider())
   ], child: const MyApp()));
 }
 
@@ -61,7 +64,9 @@ class LoginPage extends StatelessWidget {
     AuthProvider.password = passwordController.text;
 
     try {
-      // await provider.get();
+      var data = await provider.get();
+      CategoryColorManager(data.result);
+
       Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => KategorijeScreen()),
       );

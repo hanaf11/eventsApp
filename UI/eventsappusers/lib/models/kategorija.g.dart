@@ -11,6 +11,9 @@ Kategorija _$KategorijaFromJson(Map<String, dynamic> json) => Kategorija(
       naziv: json['naziv'] as String?,
       opis: json['opis'] as String?,
       slika: json['slika'] as String?,
+      podkategorijes: (json['podkategorijes'] as List<dynamic>?)
+          ?.map((e) => Podkategorija.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$KategorijaToJson(Kategorija instance) =>
@@ -19,4 +22,5 @@ Map<String, dynamic> _$KategorijaToJson(Kategorija instance) =>
       'naziv': instance.naziv,
       'opis': instance.opis,
       'slika': instance.slika,
+      'podkategorijes': instance.podkategorijes,
     };

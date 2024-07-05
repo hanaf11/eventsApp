@@ -1,6 +1,14 @@
+import 'package:eventsappusers/models/dogadjaj.dart';
+import 'package:eventsappusers/models/kategorija.dart';
+import 'package:eventsappusers/models/podkategorija.dart';
+import 'package:eventsappusers/models/search_result.dart';
+import 'package:eventsappusers/providers/dogadjaj_provider.dart';
+import 'package:eventsappusers/providers/kategorije_provider.dart';
+import 'package:eventsappusers/utils/style_util.dart';
 import 'package:eventsappusers/widgets/dogadjaj_horizontal.dart';
 import 'package:eventsappusers/widgets/podkategorije_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../widgets/heading_widget.dart';
 import '../widgets/input_field.dart';
@@ -17,28 +25,67 @@ class KategorijeDetailsScreen extends StatefulWidget {
 
 class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
     implements Clearable {
-  int? selectedPodkategorija = -1;
+  Podkategorija? _selectedPodkategorija;
+  int _selectedPodkategorijaInd = -1;
+  bool isLoading = true;
   late TextEditingController _datumOdController;
   late TextEditingController _datumDoController;
   bool locationFilter = false;
   DateTime? _datumOd;
   DateTime? _datumDo;
+  late KategorijeProvider _kategorijaProvider;
+  late DogadjajProvider _dogadjajProvider;
+  late Kategorija _selectedKategorija;
+  late SearchResult? _dogadjajiResult;
+  late List<Podkategorija> _podkategorijeList;
   _KategorijeDetailsScreenState();
 
-  List<String> podkategorije = [
-    "Finansije",
-    "IT",
-    "Menadžment",
-    "Zdravstvo",
-    "Ekologija",
-    "Welness"
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _kategorijaProvider = context.read<KategorijeProvider>();
+    _dogadjajProvider = context.read<DogadjajProvider>();
+    getKategorija(widget.kategorijaId);
+  }
 
-  void _handleSelection(int index) {
-    setState(() {
-      selectedPodkategorija = index;
-      print("selected kategorija  ${index}");
+  getKategorija(int id) {
+    _kategorijaProvider.getById(id).then((value) {
+      setState(() {
+        _selectedKategorija = value;
+        _podkategorijeList = value.podkategorijes ?? [];
+      });
     });
+    _dogadjajProvider.get(filter: {
+      'Kategorija': widget.kategorijaId,
+      'KategorijaIncluded': true
+    }).then((value) {
+      setState(() {
+        _dogadjajiResult = value;
+        isLoading = false;
+      });
+    });
+  }
+
+  filtriraj() async {
+    var myFilter = {
+      'Kategorija': widget.kategorijaId,
+      'KategorijaIncluded': true,
+      'Podkategorija': _selectedPodkategorija?.podkategorijaId,
+      'DatumOd': _datumOd,
+      'DatumDo': _datumDo
+    };
+    var data = await _dogadjajProvider.get(filter: myFilter);
+    setState(() {
+      _dogadjajiResult = data;
+    });
+  }
+
+  void _handleSelection(Podkategorija? p, int index) {
+    setState(() {
+      _selectedPodkategorija = p;
+      _selectedPodkategorijaInd = index;
+    });
+    filtriraj();
   }
 
   void _showDatePicker(caller) {
@@ -46,15 +93,17 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
             context: context,
             initialDate: DateTime.now(),
             firstDate: DateTime(2020),
-            lastDate: DateTime(2025))
+            lastDate: DateTime(2026))
         .then((value) {
-      setState(() {
-        if (caller == "_datumOd") {
-          _datumOd = value;
-        } else {
-          _datumDo = value;
-        }
-      });
+      if (value != null) {
+        setState(() {
+          if (caller == "_datumOd") {
+            _datumOd = value;
+          } else {
+            _datumDo = DateTime(value.year, value.month, value.day, 23, 59, 59);
+          }
+        });
+      }
     });
   }
 
@@ -80,7 +129,6 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
 
   @override
   Widget build(BuildContext context) {
-    var isLoading = false;
     return MasterScreen(
         selectedIndex: 0,
         showBackButton: true,
@@ -90,15 +138,14 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
                 ? const CircularProgressIndicator()
                 : Column(
                     children: [
-                      HeadingWidget(text: "Konferencije"),
-                      /* Container(
-                        height: 10,
-                      ),*/
+                      HeadingWidget(text: _selectedKategorija.naziv ?? ''),
                       _buildFilters(),
                       SizedBox(
                         height: 20,
                       ),
-                      _buildDogadjajiTiles()
+                      if (_dogadjajiResult != null &&
+                          _dogadjajiResult!.result.isNotEmpty)
+                        _buildDogadjajiTiles()
                     ],
                   )));
   }
@@ -108,7 +155,19 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
       children: [
         _buildPodkategorijeList(),
         _buildDateSearch(),
-        _buildLocationCheckbox()
+        Row(
+          children: [
+            Expanded(
+              child: _buildLocationCheckbox(),
+            ),
+            Expanded(
+                child: ElevatedButton(
+              onPressed: () => filtriraj(),
+              child: Text("Filtriraj"),
+              style: buttonPrimary,
+            ))
+          ],
+        )
       ],
     );
   }
@@ -119,12 +178,15 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
       height: 35,
       child: ListView(
           scrollDirection: Axis.horizontal,
-          children: List.generate(podkategorije.length, (index) {
+          children: List.generate(_podkategorijeList.length, (index) {
             return PodkategorijaTile(
-                text: podkategorije[index],
-                isSelected: selectedPodkategorija == index,
-                onSelect: (isSelected) =>
-                    {_handleSelection(isSelected ? index : -1)});
+                text: _podkategorijeList[index].naziv,
+                isSelected: _selectedPodkategorijaInd == index,
+                onSelect: (isSelected) => {
+                      _handleSelection(
+                          isSelected ? _podkategorijeList[index] : null,
+                          isSelected ? index : -1)
+                    });
           })),
     );
   }
@@ -212,54 +274,12 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
 
   _buildDogadjajiTiles() {
     return Expanded(
-      child: ListView(
-        scrollDirection: Axis.vertical,
-        children: [
-          DogadjajHorizontalWidget(
-            naslov: "Test naslov",
-            datumOd: DateTime.now(),
-            datumDo: DateTime.now(),
-            kategorija: "Konferencije",
-            lokacija: "Spanija",
-          ),
-          DogadjajHorizontalWidget(
-            naslov:
-                "TBosnian pyramids show in pyramid valley in visoko pls come hey hi hello hahaahha",
-            datumOd: DateTime.now(),
-            datumDo: DateTime.now(),
-            kategorija: "Konferencije",
-            lokacija: "Visoko, BIH",
-          ),
-          DogadjajHorizontalWidget(
-            naslov: "Queen tribute",
-            datumOd: DateTime.now(),
-            datumDo: DateTime.now(),
-            kategorija: "Konferencije",
-            lokacija: "Sarajevo, BiH",
-          ),
-          DogadjajHorizontalWidget(
-            naslov: "Test naslov",
-            datumOd: DateTime.now(),
-            datumDo: DateTime.now(),
-            kategorija: "Konferencije",
-            lokacija: "Spanija",
-          ),
-          DogadjajHorizontalWidget(
-            naslov: "Test naslov",
-            datumOd: DateTime.now(),
-            datumDo: DateTime.now(),
-            kategorija: "Konferencije",
-            lokacija: "Spanija",
-          ),
-          DogadjajHorizontalWidget(
-            naslov: "Test naslov",
-            datumOd: DateTime.now(),
-            datumDo: DateTime.now(),
-            kategorija: "Konferencije",
-            lokacija: "Spanija",
-          ),
-        ],
-      ),
+      child: ListView.builder(
+          itemCount: _dogadjajiResult?.count,
+          itemBuilder: (BuildContext context, int index) {
+            Dogadjaj d = _dogadjajiResult?.result[index];
+            return DogadjajHorizontalWidget(dogadjaj: d);
+          }),
     );
   }
 }

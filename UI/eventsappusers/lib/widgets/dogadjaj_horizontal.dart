@@ -1,32 +1,24 @@
+import 'package:eventsappusers/models/dogadjaj.dart';
+import 'package:eventsappusers/screens/event_details_screen.dart';
+import 'package:eventsappusers/utils/category_color_util.dart';
+import 'package:eventsappusers/utils/formatting_util.dart';
 import 'package:flutter/material.dart';
 
 class DogadjajHorizontalWidget extends StatefulWidget {
-  final String naslov;
-  final DateTime datumOd;
-  final DateTime datumDo;
-  final String lokacija;
-  final String kategorija;
-  final bool? saved;
+  Dogadjaj dogadjaj;
 
-  DogadjajHorizontalWidget(
-      {super.key,
-      required this.naslov,
-      required this.datumOd,
-      required this.datumDo,
-      required this.lokacija,
-      this.saved,
-      required this.kategorija});
+  DogadjajHorizontalWidget({super.key, required this.dogadjaj});
 
   @override
   State<DogadjajHorizontalWidget> createState() =>
-      _DogadjajHorizontalWidgetState(saved: saved);
+      _DogadjajHorizontalWidgetState();
 }
 
 class _DogadjajHorizontalWidgetState extends State<DogadjajHorizontalWidget> {
   //_DogadjajHorizontalWidgetState();
   bool? saved;
 
-  _DogadjajHorizontalWidgetState({this.saved});
+  _DogadjajHorizontalWidgetState();
 
   List months = [
     'jan',
@@ -42,6 +34,15 @@ class _DogadjajHorizontalWidgetState extends State<DogadjajHorizontalWidget> {
     'nov',
     'dec'
   ];
+
+  navigateToEventDetails() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) =>
+              EventDetailsScreen(dogadjajId: widget.dogadjaj.dogadjajId!)),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,14 +65,15 @@ class _DogadjajHorizontalWidgetState extends State<DogadjajHorizontalWidget> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              ClipRRect(
-                  borderRadius: BorderRadius.circular(20.0),
-                  child: Image.asset(
-                    "assets/images/banner.jpg",
-                    height: 120,
-                    width: 100,
-                    fit: BoxFit.fill,
-                  )),
+              SizedBox(
+                  width: 140,
+                  height: 130,
+                  child: InkWell(
+                      onTap: navigateToEventDetails,
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20.0),
+                          child: imageFromBase64String(
+                              widget.dogadjaj.naslovna)))),
               Expanded(
                   child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -81,19 +83,21 @@ class _DogadjajHorizontalWidgetState extends State<DogadjajHorizontalWidget> {
                           children: [
                             SizedBox(
                                 width: MediaQuery.of(context).size.width * 0.58,
-                                child: Text(
-                                  widget.naslov,
-                                  textAlign: TextAlign.start,
-                                  overflow: TextOverflow.ellipsis,
-                                  softWrap: false,
-                                  maxLines: 3,
-                                  style: TextStyle(
-                                      color: Color.fromRGBO(31, 48, 83, 1),
-                                      fontFamily: 'Montserrat',
-                                      fontWeight: FontWeight.w800,
-                                      letterSpacing: 1.0,
-                                      fontSize: 16),
-                                )),
+                                child: InkWell(
+                                    onTap: navigateToEventDetails,
+                                    child: Text(
+                                      widget.dogadjaj.naziv ?? '',
+                                      textAlign: TextAlign.start,
+                                      overflow: TextOverflow.ellipsis,
+                                      softWrap: false,
+                                      maxLines: 3,
+                                      style: TextStyle(
+                                          color: Color.fromRGBO(31, 48, 83, 1),
+                                          fontFamily: 'Montserrat',
+                                          fontWeight: FontWeight.w800,
+                                          letterSpacing: 1.0,
+                                          fontSize: 16),
+                                    ))),
                             Expanded(
                                 child: Container(
                                     alignment: Alignment.bottomLeft,
@@ -111,9 +115,13 @@ class _DogadjajHorizontalWidgetState extends State<DogadjajHorizontalWidget> {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                formatDate(widget.datumOd) +
+                                                dayAndMonth(widget
+                                                            .dogadjaj.datumOd ??
+                                                        DateTime.now()) +
                                                     " - " +
-                                                    formatDate(widget.datumDo),
+                                                    dayAndMonth(widget
+                                                            .dogadjaj.datumDo ??
+                                                        DateTime.now()),
                                                 textAlign: TextAlign.start,
                                                 style: TextStyle(
                                                     color: Color.fromRGBO(
@@ -130,9 +138,15 @@ class _DogadjajHorizontalWidgetState extends State<DogadjajHorizontalWidget> {
                                                     color: Color.fromRGBO(
                                                         156, 156, 168, 1),
                                                   ),
-                                                  Text(
-                                                    widget.lokacija,
+                                                  Expanded(
+                                                      child: Text(
+                                                    widget.dogadjaj.lokacija ??
+                                                        '',
                                                     textAlign: TextAlign.start,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    softWrap: false,
+                                                    maxLines: 1,
                                                     style: TextStyle(
                                                         color: Color.fromRGBO(
                                                             156, 156, 168, 1),
@@ -140,21 +154,10 @@ class _DogadjajHorizontalWidgetState extends State<DogadjajHorizontalWidget> {
                                                             'Montserrat',
                                                         letterSpacing: 1,
                                                         fontSize: 12),
-                                                  ),
+                                                  )),
                                                 ],
                                               ),
-                                              Text(
-                                                widget.kategorija,
-                                                textAlign: TextAlign.start,
-                                                style: TextStyle(
-                                                    color: Color.fromRGBO(
-                                                        127, 48, 227, 1),
-                                                    fontFamily: 'Montserrat',
-                                                    letterSpacing: 1,
-                                                    fontSize: 10,
-                                                    fontWeight:
-                                                        FontWeight.w800),
-                                              )
+                                              _buildKategorija()
                                             ],
                                           ),
                                         ),
@@ -180,7 +183,9 @@ class _DogadjajHorizontalWidgetState extends State<DogadjajHorizontalWidget> {
                                               iconSize: 22,
                                             ),
                                             IconButton(
-                                              onPressed: () {},
+                                              onPressed: () {
+                                                navigateToEventDetails();
+                                              },
                                               icon: const Icon(
                                                   Icons.arrow_forward),
                                               color:
@@ -195,7 +200,18 @@ class _DogadjajHorizontalWidgetState extends State<DogadjajHorizontalWidget> {
             ]));
   }
 
-  String formatDate(DateTime date) {
-    return date.day.toString() + "." + months[date.month - 1];
+  Text _buildKategorija() {
+    Color categoryColor = CategoryColorManager()
+        .getColorForCategory(widget.dogadjaj.kategorija!.kategorijaId!);
+    return Text(
+      widget.dogadjaj.kategorija?.naziv ?? '',
+      textAlign: TextAlign.start,
+      style: TextStyle(
+          color: categoryColor,
+          fontFamily: 'Montserrat',
+          letterSpacing: 1,
+          fontSize: 10,
+          fontWeight: FontWeight.w800),
+    );
   }
 }

@@ -59,7 +59,20 @@ namespace eventsApp.Services
             {
                 filteredQuery = filteredQuery.Where(x => x.DobavljacId.Equals(search.DobavljacId));
             }
+            if (search?.Podkategorija != null)
+            {
+                filteredQuery = filteredQuery.Where(x => x.PodkategorijaId.Equals(search.Podkategorija));
+            }
             return filteredQuery;
+        }
+
+        public override IQueryable<Database.Dogadjaji> AddInclude(IQueryable<Database.Dogadjaji> query, DogadjajiSearchObject? search = null)
+        {
+            if (search?.KategorijaIncluded == true)
+            {
+                query = query.Include("Kategorija");
+            }
+            return base.AddInclude(query, search);
         }
 
         public override Task<Model.Dogadjaji> Insert(DogadjajiInsertRequest insert)

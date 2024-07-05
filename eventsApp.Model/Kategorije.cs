@@ -15,5 +15,7 @@ namespace eventsApp.Model
         public string? Opis { get; set; }
 
         public byte[] Slika { get; set; } = null!;
+
+        public virtual ICollection<Podkategorije> Podkategorijes { get; } = new List<Podkategorije>();
     }
 }

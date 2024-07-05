@@ -29,6 +29,20 @@ namespace eventsApp.Services
             return filteredQuery;
         }
 
+        public override IQueryable<Database.Kategorije> AddInclude(IQueryable<Database.Kategorije> query, KategorijeSearchObject? search = null)
+        {
+            if (search?.podkategorijeIncluded == true)
+            {
+                query = query.Include("Podkategorijes");
+            }
+            return base.AddInclude(query, search);
+        }
+
+        public override async Task<Database.Kategorije> FindEntity(int id)
+        {
+            return await  _context.Set<Database.Kategorije>().Include(k=>k.Podkategorijes).FirstOrDefaultAsync(k=>k.KategorijaId==id);
+        }
+
         public override  void ValidateDelete(Database.Kategorije entity)
         {
             bool notEmpty = _context.Dogadjajis.Where(e=>e.KategorijaId==entity.KategorijaId).Count() > 0;

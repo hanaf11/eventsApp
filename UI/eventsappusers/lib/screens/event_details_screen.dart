@@ -13,7 +13,8 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:geocoding/geocoding.dart';
 
 class EventDetailsScreen extends StatefulWidget {
-  EventDetailsScreen({super.key});
+  int dogadjajId;
+  EventDetailsScreen({super.key, required this.dogadjajId});
 
   @override
   State<EventDetailsScreen> createState() => _EventDetailsScreenState();

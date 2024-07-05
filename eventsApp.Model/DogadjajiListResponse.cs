@@ -14,10 +14,15 @@ namespace eventsApp.Model
 
         public DateTime DatumOd { get; set; }
 
+        public DateTime DatumDo { get; set; }
+
         public string Lokacija { get; set; } = null!;
 
         public string? Organizator { get; set; }
 
+        public Kategorije? Kategorija { get; set; }
+
+        public byte[] Naslovna { get; set; }
 
 
     }

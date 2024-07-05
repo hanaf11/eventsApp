@@ -14,5 +14,7 @@ namespace eventsApp.Model.SearchObjects
         public DateTime? DatumOd { get; set; }
         public DateTime? DatumDo { get; set; }
         public int? DobavljacId { get; set; }
+        public int? Podkategorija { get; set; }
+        public bool? KategorijaIncluded { get; set; }
     }
 }

@@ -43,6 +43,10 @@ String formatDate(DateTime date) {
       ".";
 }
 
+String dayAndMonth(DateTime date) {
+  return date.day.toString() + ". " + months[date.month - 1];
+}
+
 String printTime(TimeOfDay time) {
   final hours = time.hour.toString().padLeft(2, '0');
   final minutes = time.minute.toString().padLeft(2, '0');

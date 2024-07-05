@@ -17,6 +17,10 @@ Dogadjaj _$DogadjajFromJson(Map<String, dynamic> json) => Dogadjaj(
           ? null
           : DateTime.parse(json['datumDo'] as String),
       json['lokacija'] as String?,
+      json['kategorija'] == null
+          ? null
+          : Kategorija.fromJson(json['kategorija'] as Map<String, dynamic>),
+      json['naslovna'] as String?,
     );
 
 Map<String, dynamic> _$DogadjajToJson(Dogadjaj instance) => <String, dynamic>{
@@ -26,4 +30,6 @@ Map<String, dynamic> _$DogadjajToJson(Dogadjaj instance) => <String, dynamic>{
       'datumDo': instance.datumDo?.toIso8601String(),
       'lokacija': instance.lokacija,
       'kategorijaId': instance.kategorijaId,
+      'kategorija': instance.kategorija,
+      'naslovna': instance.naslovna,
     };
