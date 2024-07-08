@@ -4,36 +4,29 @@ class MasterScreen extends StatefulWidget {
   final int selectedIndex;
   final bool showBackButton;
   final bool? showFollowButton;
+  bool? following;
   final bool? showAppBar;
   Widget? child;
+  Function? followFunc;
   MasterScreen(
       {required this.selectedIndex,
       required this.showBackButton,
       this.showFollowButton,
+      this.following,
       this.showAppBar,
       this.child,
+      this.followFunc,
       super.key});
 
   @override
-  State<MasterScreen> createState() => _MasterScreenState(
-      selectedIndex: selectedIndex,
-      showBackButton: showBackButton,
-      showFollowButton: showFollowButton ?? false,
-      showAppBar: showAppBar ?? true);
+  State<MasterScreen> createState() => _MasterScreenState();
 }
 
 class _MasterScreenState extends State<MasterScreen> {
   int selectedIndex = 0;
   int _selectedSideMenuIndex = 0;
-  bool showBackButton;
-  bool? showFollowButton;
-  bool? showAppBar;
 
-  _MasterScreenState(
-      {required this.selectedIndex,
-      required this.showBackButton,
-      this.showFollowButton,
-      this.showAppBar});
+  _MasterScreenState();
 
   /*final List<BottomNavigationBarItem> _items = [
     BottomNavigationBarItem(
@@ -66,15 +59,25 @@ class _MasterScreenState extends State<MasterScreen> {
     });
   }
 
+  String _getFollowingText() {
+    if (widget.following != null && widget.following == true)
+      return "- Odprati";
+    else if (widget.following != null && widget.following == false) {
+      return "+ Prati";
+    } else
+      return '';
+  }
+
   @override
   Widget build(BuildContext context) {
+    String followingText = _getFollowingText();
     return Scaffold(
       backgroundColor: const Color.fromRGBO(244, 245, 246, 1),
-      appBar: showAppBar != null && showAppBar == false
+      appBar: widget.showAppBar != null && widget.showAppBar == false
           ? null
           : AppBar(
               scrolledUnderElevation: 0.0,
-              leading: showBackButton
+              leading: widget.showBackButton
                   ? IconButton(
                       icon: const Icon(Icons.arrow_back),
                       onPressed: () {
@@ -89,16 +92,19 @@ class _MasterScreenState extends State<MasterScreen> {
                           });
                     }),
               backgroundColor: const Color.fromRGBO(244, 245, 246, 1),
-              actions: showFollowButton != null && showFollowButton == true
+              actions: widget.showFollowButton != null &&
+                      widget.showFollowButton == true
                   ? [
                       GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(context, "myRoute");
+                            if (widget.followFunc != null) {
+                              widget.followFunc!();
+                            }
                           },
                           child: Padding(
                             padding: EdgeInsets.all(5.0),
                             child: Text(
-                              "+ Prati",
+                              followingText,
                               style: TextStyle(
                                   color: Color.fromRGBO(54, 112, 232, 1),
                                   fontFamily: 'Montserrat',

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:eventsappusers/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
@@ -113,7 +114,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
     throw Exception("Method not implemented");
   }
 
-  bool isValidResponse(Response response) {
+  static bool isValidResponse(Response response) {
     if (response.statusCode < 299) {
       return true;
     } else if (response.statusCode == 401) {
@@ -121,13 +122,20 @@ abstract class BaseProvider<T> with ChangeNotifier {
     } else if (response.statusCode == 500) {
       print(response.body);
       throw new Exception("Server side error");
+    } else if (response.statusCode == 400) {
+      print(response.body);
+      print(response.statusCode);
+      var jsonResponse = jsonDecode(response.body);
+      var errorMessage = formErrorMessage(jsonResponse);
+      print(errorMessage);
+      throw Exception("\n $errorMessage");
     }
     print(response.body);
     print("status code ${response.statusCode}, ${response.bodyBytes}");
     throw new Exception("Something bad happened. Please try again");
   }
 
-  Map<String, String> createHeaders() {
+  static Map<String, String> createHeaders() {
     String username = AuthProvider.username ?? "";
     String password = AuthProvider.password ?? "";
 
@@ -142,7 +150,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
     return headers;
   }
 
-  String getQueryString(Map params,
+  static String getQueryString(Map params,
       {String prefix = '&', bool inRecursion = false}) {
     String query = '';
     params.forEach((key, value) {

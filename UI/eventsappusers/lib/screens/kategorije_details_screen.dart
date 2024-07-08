@@ -4,10 +4,12 @@ import 'package:eventsappusers/models/podkategorija.dart';
 import 'package:eventsappusers/models/search_result.dart';
 import 'package:eventsappusers/providers/dogadjaj_provider.dart';
 import 'package:eventsappusers/providers/kategorije_provider.dart';
+import 'package:eventsappusers/providers/pracenje_provider.dart';
 import 'package:eventsappusers/utils/style_util.dart';
 import 'package:eventsappusers/widgets/dogadjaj_horizontal.dart';
 import 'package:eventsappusers/widgets/podkategorije_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/heading_widget.dart';
@@ -28,6 +30,9 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
   Podkategorija? _selectedPodkategorija;
   int _selectedPodkategorijaInd = -1;
   bool isLoading = true;
+  bool kategorijeLoaded = false;
+  bool pracenjeLoaded = false;
+  bool dogadjajiLoaded = false;
   late TextEditingController _datumOdController;
   late TextEditingController _datumDoController;
   bool locationFilter = false;
@@ -35,9 +40,11 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
   DateTime? _datumDo;
   late KategorijeProvider _kategorijaProvider;
   late DogadjajProvider _dogadjajProvider;
+  late PracenjeProvider _pracenjeProvider;
   late Kategorija _selectedKategorija;
   late SearchResult? _dogadjajiResult;
   late List<Podkategorija> _podkategorijeList;
+  bool pratim = false;
   _KategorijeDetailsScreenState();
 
   @override
@@ -45,15 +52,44 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
     super.initState();
     _kategorijaProvider = context.read<KategorijeProvider>();
     _dogadjajProvider = context.read<DogadjajProvider>();
-    getKategorija(widget.kategorijaId);
+    _pracenjeProvider = context.read<PracenjeProvider>();
+    loadData(widget.kategorijaId);
   }
 
-  getKategorija(int id) {
+  handleLoading() {
+    if (kategorijeLoaded == true &&
+        dogadjajiLoaded == true &&
+        pracenjeLoaded == true) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  handleException(Exception e) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Exception'),
+        content: Text(e.toString()),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'OK'),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  loadData(int id) {
     _kategorijaProvider.getById(id).then((value) {
       setState(() {
         _selectedKategorija = value;
         _podkategorijeList = value.podkategorijes ?? [];
+        kategorijeLoaded = true;
       });
+      handleLoading();
     });
     _dogadjajProvider.get(filter: {
       'Kategorija': widget.kategorijaId,
@@ -61,8 +97,17 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
     }).then((value) {
       setState(() {
         _dogadjajiResult = value;
-        isLoading = false;
+        dogadjajiLoaded = true;
       });
+      handleLoading();
+    });
+    _pracenjeProvider.isFollowing(
+        {'KategorijaId': widget.kategorijaId, 'KorisnikId': 2}).then((value) {
+      setState(() {
+        pratim = value;
+        pracenjeLoaded = true;
+      });
+      handleLoading();
     });
   }
 
@@ -107,6 +152,26 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
     });
   }
 
+  follow() async {
+    bool? value;
+    var request = {
+      "KategorijaId": _selectedKategorija.kategorijaId,
+      "KorisnikId": 2
+    };
+    try {
+      if (!pratim) {
+        value = await _pracenjeProvider.follow(request);
+      } else {
+        value = await _pracenjeProvider.unfollow(request);
+      }
+    } on Exception catch (e) {
+      handleException(e);
+    }
+    setState(() {
+      pratim = value ?? pratim;
+    });
+  }
+
   @override
   clear(dynamic input) {
     if (input is TextField) {
@@ -129,25 +194,33 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
 
   @override
   Widget build(BuildContext context) {
-    return MasterScreen(
-        selectedIndex: 0,
-        showBackButton: true,
-        showFollowButton: true,
-        child: Expanded(
-            child: isLoading
-                ? const CircularProgressIndicator()
-                : Column(
-                    children: [
-                      HeadingWidget(text: _selectedKategorija.naziv ?? ''),
-                      _buildFilters(),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      if (_dogadjajiResult != null &&
-                          _dogadjajiResult!.result.isNotEmpty)
-                        _buildDogadjajiTiles()
-                    ],
-                  )));
+    return isLoading
+        ? MasterScreen(
+            selectedIndex: 0,
+            showBackButton: true,
+            showFollowButton: false,
+            child: Expanded(
+                child: Container(
+                    child: Center(child: const CircularProgressIndicator()))))
+        : MasterScreen(
+            selectedIndex: 0,
+            showBackButton: true,
+            showFollowButton: true,
+            following: pratim,
+            followFunc: follow,
+            child: Expanded(
+                child: Column(
+              children: [
+                HeadingWidget(text: _selectedKategorija.naziv ?? ''),
+                _buildFilters(),
+                SizedBox(
+                  height: 20,
+                ),
+                if (_dogadjajiResult != null &&
+                    _dogadjajiResult!.result.isNotEmpty)
+                  _buildDogadjajiTiles()
+              ],
+            )));
   }
 
   Widget _buildFilters() {
@@ -193,7 +266,6 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
 
   Widget _buildDateSearch() {
     return Container(
-        //  color: Colors.yellow,
         padding: EdgeInsets.symmetric(horizontal: 10.0),
         height: 33,
         child: Row(
@@ -208,12 +280,10 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
                     letterSpacing: 0.3,
                     fontFamily: 'Montserrat'),
                 decoration: InputDecoration.collapsed(hintText: 'Datum od'),
-                controller:
-                    // TextEditingController(text: _datumOd.toString()),
-                    _datumOdController = TextEditingController(
-                        text: _datumOd == null
-                            ? ""
-                            : "${_datumOd?.day}.${_datumOd?.month}.${_datumOd?.year}."),
+                controller: _datumOdController = TextEditingController(
+                    text: _datumOd == null
+                        ? ""
+                        : "${_datumOd?.day}.${_datumOd?.month}.${_datumOd?.year}."),
                 readOnly: true,
                 key: const Key("_datumOd"),
                 onTap: () {
@@ -234,12 +304,10 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
                     letterSpacing: 0.3,
                     fontFamily: 'Montserrat'),
                 decoration: InputDecoration.collapsed(hintText: 'Datum do'),
-                controller:
-                    // TextEditingController(text: _datumOd.toString()),
-                    _datumDoController = TextEditingController(
-                        text: _datumDo == null
-                            ? ""
-                            : "${_datumDo?.day}.${_datumDo?.month}.${_datumDo?.year}."),
+                controller: _datumDoController = TextEditingController(
+                    text: _datumDo == null
+                        ? ""
+                        : "${_datumDo?.day}.${_datumDo?.month}.${_datumDo?.year}."),
                 readOnly: true,
                 key: const Key("_datumDo"),
                 onTap: () {

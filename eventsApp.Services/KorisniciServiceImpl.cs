@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
+
 namespace eventsApp.Services
 {
     public class KorisniciServiceImpl : BaseCRUDService<Model.KorisniciListResponse, Model.Korisnici, Database.Korisnici, KorisniciSearchObject, KorisniciInsertRequest, KorisniciUpdateRequest>, IKorisniciService
@@ -100,6 +101,19 @@ namespace eventsApp.Services
             }
 
             return _mapper.Map<Model.Korisnici>(entity);
+        }
+
+        public async Task<List<Model.DogadjajiListResponse>> GetEventsFromFollowingCategories(int korisnikId)
+        {
+            bool korisnikExists = await _context.Korisnicis.AnyAsync(k => k.KorisnikId == korisnikId);
+            if (!korisnikExists)
+            {
+                throw new Model.UserException("Korisnik nije pronadjen");
+            }
+
+            var dogadjajiList = await _context.Korisnicis.Where(k => k.KorisnikId == korisnikId).SelectMany(k => k.Pracenjes).Select(p => p.Kategorija).SelectMany(k => k.Dogadjajis).ToListAsync();
+
+            return _mapper.Map<List<Model.DogadjajiListResponse>>(dogadjajiList);
         }
     }
 }

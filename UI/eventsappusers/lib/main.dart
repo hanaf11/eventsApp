@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:eventsappusers/providers/auth_provider.dart';
 import 'package:eventsappusers/providers/dogadjaj_provider.dart';
 import 'package:eventsappusers/providers/kategorije_provider.dart';
+import 'package:eventsappusers/providers/pracenje_provider.dart';
 import 'package:eventsappusers/screens/buy_ticket_screen.dart';
 import 'package:eventsappusers/screens/edit_profile_screen.dart';
 import 'package:eventsappusers/screens/event_details_screen.dart';
@@ -26,7 +27,8 @@ void main() {
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider<KategorijeProvider>(
         create: (_) => KategorijeProvider()),
-    ChangeNotifierProvider<DogadjajProvider>(create: (_) => DogadjajProvider())
+    ChangeNotifierProvider<DogadjajProvider>(create: (_) => DogadjajProvider()),
+    ChangeNotifierProvider<PracenjeProvider>(create: (_) => PracenjeProvider())
   ], child: const MyApp()));
 }
 

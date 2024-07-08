@@ -20,5 +20,12 @@ namespace eventsApp.Controllers
             return (_service as IKorisniciService).Login(username, password);
         }
 
+
+        [HttpGet("{id}/following-categories")]
+        public async Task<List<Model.DogadjajiListResponse>> GetEventsFromFollowingCategories(int id)
+        {
+            return await (_service as IKorisniciService).GetEventsFromFollowingCategories(id);
+        }
+
     }
 }

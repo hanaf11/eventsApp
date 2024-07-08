@@ -34,6 +34,7 @@ namespace eventsApp.Services
             CreateMap<Model.Requests.PodkategorijeUpdateRequest, Database.Podkategorije>();
             CreateMap<Model.Requests.SlikeInsertRequest, Database.Slike>();
             CreateMap<Database.Slike, Model.Slike>();
+            CreateMap<Model.Requests.PracenjeObject, Database.Pracenje>();
         }
     }
 }
