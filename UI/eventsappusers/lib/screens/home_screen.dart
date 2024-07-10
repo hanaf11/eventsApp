@@ -58,14 +58,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var isLoading = false;
     return MasterScreen(
         selectedIndex: 0,
         showBackButton: false,
         showFollowButton: false,
         child: Expanded(
             child: isLoading
-                ? const CircularProgressIndicator()
+                ? Container(
+                    child: Center(child: const CircularProgressIndicator()))
                 : ListView(
                     scrollDirection: Axis.vertical,
                     children: [

@@ -1,3 +1,6 @@
+import 'package:eventsappusers/screens/kategorije_screen.dart';
+import 'package:eventsappusers/screens/kreiraj_dogadjaj_screen.dart';
+import 'package:eventsappusers/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 
 class MasterScreen extends StatefulWidget {
@@ -24,7 +27,7 @@ class MasterScreen extends StatefulWidget {
 
 class _MasterScreenState extends State<MasterScreen> {
   int selectedIndex = 0;
-  int _selectedSideMenuIndex = 0;
+  int _selectedSideMenuIndex = -1;
 
   _MasterScreenState();
 
@@ -53,13 +56,25 @@ class _MasterScreenState extends State<MasterScreen> {
     });
   }
 
-  void _onSideMenuItemTapped(int index) {
+  getScreen(index) {
+    switch (index) {
+      case 0:
+        return KategorijeScreen();
+      case 1:
+        return KreirajDogadjajScreen();
+    }
+  }
+
+  void onSideMenuItemTapped(int index) {
     setState(() {
       _selectedSideMenuIndex = index;
     });
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => getScreen(index)),
+    );
   }
 
-  String _getFollowingText() {
+  String getFollowingText() {
     if (widget.following != null && widget.following == true)
       return "- Odprati";
     else if (widget.following != null && widget.following == false) {
@@ -70,7 +85,7 @@ class _MasterScreenState extends State<MasterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    String followingText = _getFollowingText();
+    String followingText = getFollowingText();
     return Scaffold(
       backgroundColor: const Color.fromRGBO(244, 245, 246, 1),
       appBar: widget.showAppBar != null && widget.showAppBar == false
@@ -123,24 +138,22 @@ class _MasterScreenState extends State<MasterScreen> {
               decoration: BoxDecoration(
                 color: Colors.blue,
               ),
-              child: Text('Navigation'),
+              child: Text('Navigacija'),
             ),
             ListTile(
-              leading: Icon(Icons.message),
-              title: Text('Messages'),
+              leading: Icon(Icons.auto_awesome_motion_rounded),
+              title: Text('Kategorije'),
               selected: _selectedSideMenuIndex == 0,
               onTap: () {
-                _onSideMenuItemTapped(0);
-                Navigator.pop(context);
+                onSideMenuItemTapped(0);
               },
             ),
             ListTile(
-              leading: Icon(Icons.account_circle),
-              title: Text('Profile'),
+              leading: Icon(Icons.add_circle_outline),
+              title: Text('Objavi događaj'),
               selected: _selectedSideMenuIndex == 1,
               onTap: () {
-                _onSideMenuItemTapped(1);
-                Navigator.pop(context);
+                onSideMenuItemTapped(1);
               },
             ),
           ],
