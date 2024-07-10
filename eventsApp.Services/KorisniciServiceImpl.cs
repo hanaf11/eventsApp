@@ -11,7 +11,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
-
 namespace eventsApp.Services
 {
     public class KorisniciServiceImpl : BaseCRUDService<Model.KorisniciListResponse, Model.Korisnici, Database.Korisnici, KorisniciSearchObject, KorisniciInsertRequest, KorisniciUpdateRequest>, IKorisniciService
@@ -91,13 +90,16 @@ namespace eventsApp.Services
 
             var entity = await _context.Korisnicis.Include(x=>x.KorisniciUloges).ThenInclude(y=>y.Uloga).FirstOrDefaultAsync(x => x.KorisnickoIme == username);
 
-            if (entity == null) return null;
+            if (entity == null)
+            {
+                throw new Model.UserException("Korisnik nije pronadjen");
+            }
 
             var hash = GenerateHash(entity.LozinkaSalt, password);
 
             if (hash != entity.LozinkaHash)
             {
-                return null;
+                throw new Model.UserException("Lozinka nije ispravna");
             }
 
             return _mapper.Map<Model.Korisnici>(entity);

@@ -1,8 +1,11 @@
 import 'dart:convert';
 
+import 'package:eventsappusers/models/korisnik.dart';
+import 'package:eventsappusers/models/korisnik_global.dart';
 import 'package:eventsappusers/providers/auth_provider.dart';
 import 'package:eventsappusers/providers/dogadjaj_provider.dart';
 import 'package:eventsappusers/providers/kategorije_provider.dart';
+import 'package:eventsappusers/providers/korisnik_provider.dart';
 import 'package:eventsappusers/providers/pracenje_provider.dart';
 import 'package:eventsappusers/screens/buy_ticket_screen.dart';
 import 'package:eventsappusers/screens/edit_profile_screen.dart';
@@ -28,7 +31,8 @@ void main() {
     ChangeNotifierProvider<KategorijeProvider>(
         create: (_) => KategorijeProvider()),
     ChangeNotifierProvider<DogadjajProvider>(create: (_) => DogadjajProvider()),
-    ChangeNotifierProvider<PracenjeProvider>(create: (_) => PracenjeProvider())
+    ChangeNotifierProvider<PracenjeProvider>(create: (_) => PracenjeProvider()),
+    ChangeNotifierProvider<KorisnikProvider>(create: (_) => KorisnikProvider()),
   ], child: const MyApp()));
 }
 
@@ -57,20 +61,25 @@ class LoginPage extends StatelessWidget {
   TextEditingController passwordController = TextEditingController();
 
   login(BuildContext context) async {
-    KategorijeProvider provider = new KategorijeProvider();
+    KorisnikProvider _korisnikprovider = new KorisnikProvider();
 
     var username = usernameController.text;
     var password = passwordController.text;
 
-    AuthProvider.username = usernameController.text;
-    AuthProvider.password = passwordController.text;
+    AuthProvider.username = username;
+    AuthProvider.password = password;
 
     try {
-      var data = await provider.get();
-      CategoryColorManager(data.result);
+      var credentials = {
+        'username': AuthProvider.username,
+        'password': AuthProvider.password
+      };
+
+      Korisnik data = await _korisnikprovider.login(credentials);
+      KorisnikGlobal(data);
 
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => KategorijeScreen()),
+        MaterialPageRoute(builder: (context) => HomeScreen()),
       );
     } on Exception catch (e) {
       showDialog<String>(

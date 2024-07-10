@@ -1,5 +1,11 @@
+import 'package:eventsappusers/models/korisnik.dart';
+import 'package:eventsappusers/models/korisnik_global.dart';
+import 'package:eventsappusers/providers/kategorije_provider.dart';
+import 'package:eventsappusers/providers/korisnik_provider.dart';
+import 'package:eventsappusers/utils/category_color_util.dart';
 import 'package:eventsappusers/widgets/input_field.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../widgets/dogadjaj_horizontal.dart';
 import '../widgets/dogadjaj_vertical.dart';
@@ -15,7 +21,36 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String searchController = "";
+  bool isLoading = true;
+  late KorisnikProvider _korisnikProvider;
+  late KategorijeProvider _kategorijeProvider;
+
   _HomeScreenState();
+
+  @override
+  void initState() {
+    super.initState();
+    // _korisnikProvider = context.read<KorisnikProvider>();
+
+    _kategorijeProvider = context.read<KategorijeProvider>();
+    loadKategorije();
+  }
+
+  loadKategorije() async {
+    var data = await _kategorijeProvider.get();
+    CategoryColorManager(data.result);
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  /* getKorisnik() async {
+    /* await _korisnikProvider.getById();
+    setState(() {
+      _kategorijeList = kategorijeResult.result;
+      isLoading = false;
+    });*/
+  }*/
 
   search() {
     print(searchController);
@@ -38,7 +73,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           alignment: Alignment.topLeft,
                           child: Padding(
                               padding: EdgeInsets.only(left: 40),
-                              child: HeadingWidget(text: "Dobar dan, Hana"))),
+                              child: HeadingWidget(
+                                  text: "Dobar dan, ${KorisnikGlobal.ime}"))),
                       SizedBox(
                         height: 15,
                       ),

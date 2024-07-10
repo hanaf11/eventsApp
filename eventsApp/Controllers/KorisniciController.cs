@@ -13,7 +13,7 @@ namespace eventsApp.Controllers
         {
         }
 
-        [HttpPost("login")]
+        [HttpGet("login")]
         [AllowAnonymous]
         public Task<Model.Korisnici> login(string username, string password)
         {
