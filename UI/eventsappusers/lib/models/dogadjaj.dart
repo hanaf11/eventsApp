@@ -13,9 +13,28 @@ class Dogadjaj {
   int? kategorijaId;
   Kategorija? kategorija;
   String? naslovna;
+  String? program;
+  String? programSlika;
+  String? opis;
+  String? website;
+  String? lokacijaSlika;
+  int? podkategorijaId;
 
-  Dogadjaj(this.dogadjajId, this.naziv, this.kategorijaId, this.datumOd,
-      this.datumDo, this.lokacija, this.kategorija, this.naslovna);
+  Dogadjaj(
+      this.dogadjajId,
+      this.naziv,
+      this.kategorijaId,
+      this.datumOd,
+      this.datumDo,
+      this.lokacija,
+      this.kategorija,
+      this.naslovna,
+      this.program,
+      this.programSlika,
+      this.opis,
+      this.website,
+      this.lokacijaSlika,
+      this.podkategorijaId);
 
   factory Dogadjaj.fromJson(Map<String, dynamic> json) =>
       _$DogadjajFromJson(json);

@@ -35,6 +35,9 @@ namespace eventsApp.Services
             CreateMap<Model.Requests.SlikeInsertRequest, Database.Slike>();
             CreateMap<Database.Slike, Model.Slike>();
             CreateMap<Model.Requests.PracenjeObject, Database.Pracenje>();
+            CreateMap<Database.Komentari, Model.Komentari>();
+            CreateMap<Model.Requests.KomentarInsertObject, Database.Komentari>();
+            CreateMap<Model.Requests.SavingObject, Database.Saving>();
         }
     }
 }

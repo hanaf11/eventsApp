@@ -1,7 +1,21 @@
+import 'package:eventsappusers/models/dogadjaj.dart';
+import 'package:eventsappusers/models/komentar.dart';
+import 'package:eventsappusers/models/korisnik.dart';
+import 'package:eventsappusers/models/korisnik_global.dart';
+import 'package:eventsappusers/models/podkategorija.dart';
+import 'package:eventsappusers/providers/dogadjaj_provider.dart';
+import 'package:eventsappusers/providers/komentari_provider.dart';
+import 'package:eventsappusers/providers/podkategorija_provider.dart';
+import 'package:eventsappusers/providers/saving_provider.dart';
+import 'package:eventsappusers/screens/buy_ticket_screen.dart';
+import 'package:eventsappusers/utils/category_color_util.dart';
+import 'package:eventsappusers/utils/formatting_util.dart';
 import 'package:eventsappusers/widgets/comment_widget.dart';
 import 'package:eventsappusers/widgets/heading_widget.dart';
+import 'package:eventsappusers/widgets/input_field.dart';
 import 'package:eventsappusers/widgets/podkategorije_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../widgets/full_screen_image.dart';
 import '../widgets/master_screen.dart';
@@ -21,16 +35,167 @@ class EventDetailsScreen extends StatefulWidget {
 }
 
 class _EventDetailsScreenState extends State<EventDetailsScreen> {
-  DateTime datumOd = DateTime.now();
-  DateTime datumDo = DateTime.now();
-  String opis =
-      "Omladinski Film Festival Sarajevo se ove godine vraća u velikom stilu. Dvije otvorene kino lokacije - jedna nova koju ćete apsolutno voljeti! Preko 40 filmova, više od 200 gostiju, blizu 8000 hiljada posjetilaca. Dva koncerta, dva partija i mnogo dobrih filmova i zabave! Program i detalji dostupni na www.omladinski.ba od 01.06.2022.godine.";
-  String program =
-      "Omladinski Film Festival Sarajevo se ove godine vraća u velikom stilu. Dvije otvorene kino lokacije - jedna nova koju ćete apsolutno voljeti! Preko 40 filmova, više od 200 gostiju, blizu 8000 hiljada posjetilaca. Dva koncerta, dva partija i mnogo dobrih filmova i zabave! Program i detalji dostupni na www.omladinski.ba od 01.06.2022.godine.";
-  String lokacija = "Visoko";
   bool saved = false;
+  bool isLoading = true;
+  bool dogadjajLoaded = false;
+  bool podkategorijaLoaded = false;
+  bool komentariLoaded = false;
+  bool savingLoaded = false;
+  late DogadjajProvider _dogadjajProvider;
+  late PodkategorijaProvider _podkategorijaProvider;
+  late KomentariProvider _komentariProvider;
+  late SavingProvider _savingProvider;
+  late Dogadjaj _dogadjaj;
+  late Podkategorija _podkategorija;
+  TextEditingController _komentarController = new TextEditingController();
+  late List<Komentar> _komentariList;
 
   _EventDetailsScreenState();
+
+  @override
+  void initState() {
+    super.initState();
+    _dogadjajProvider = context.read<DogadjajProvider>();
+    _podkategorijaProvider = context.read<PodkategorijaProvider>();
+    _komentariProvider = context.read<KomentariProvider>();
+    _savingProvider = context.read<SavingProvider>();
+    loadData();
+  }
+
+  handleLoading() {
+    if (dogadjajLoaded == true &&
+        podkategorijaLoaded == true &&
+        komentariLoaded == true &&
+        savingLoaded == true) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  void showSuccessDialog(String msg) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              title: Text("Success"),
+              content: Text(msg),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                    },
+                    child: Text("OK"))
+              ],
+            ));
+  }
+
+  loadData() {
+    _dogadjajProvider.getById(widget.dogadjajId).then((value) {
+      setState(() {
+        _dogadjaj = value;
+        print("evo ga dogadjaj ${_dogadjaj.naziv}");
+        dogadjajLoaded = true;
+      });
+
+      _podkategorijaProvider
+          .getById(_dogadjaj.podkategorijaId)
+          .then((podkategorijaValue) {
+        setState(() {
+          _podkategorija = podkategorijaValue;
+          podkategorijaLoaded = true;
+          print("evo ga podkategorija ${_podkategorija.naziv}");
+        });
+        handleLoading();
+
+        _komentariProvider.get(filter: {
+          'korisnikId': KorisnikGlobal.korisnikId,
+          'dogadjajId': widget.dogadjajId
+        }).then((value) {
+          setState(() {
+            _komentariList = value.result;
+            komentariLoaded = true;
+          });
+          handleLoading();
+        });
+
+        _savingProvider.isSaved({
+          'DogadjajId': widget.dogadjajId,
+          'KorisnikId': KorisnikGlobal.korisnikId
+        }).then((value) {
+          setState(() {
+            saved = value;
+            savingLoaded = true;
+          });
+          handleLoading();
+        });
+      }).catchError((e) {
+        handleException(e);
+      });
+    });
+  }
+
+  Future<void> showKomentariDialog() async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Dodaj komentar'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                TextField(
+                  controller: _komentarController,
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                )
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Pošalji'),
+              onPressed: () {
+                var request = {
+                  'dogadjajId': widget.dogadjajId,
+                  'korisnikId': KorisnikGlobal.korisnikId,
+                  'komentar': _komentarController.text
+                };
+                try {
+                  _komentariProvider.post(request).then(
+                    (value) {
+                      showSuccessDialog("Komentar uspješno dodan");
+                      setState(() {
+                        _komentariList = value.result;
+                      });
+                    },
+                  );
+                } on Exception catch (e) {
+                  handleException(e);
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  handleException(Exception e) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Exception'),
+        content: Text(e.toString()),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'OK'),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
 
   void _handleSelection(int index) {}
 
@@ -46,53 +211,53 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
     // Add more image paths
   ];
 
-  final commentList = [
-    {'username': 'John Doe', 'text': 'This is a comment'},
-    {'username': 'Jane Smith', 'text': 'This is another comment'},
-    {'username': 'Alice Johnson', 'text': 'Yet another comment'},
-  ];
-
-  List months = [
-    'jan',
-    'feb',
-    'mar',
-    'apr',
-    'may',
-    'jun',
-    'jul',
-    'aug',
-    'sep',
-    'oct',
-    'nov',
-    'dec'
-  ];
-
-  _savedClicked() {
+  _savedClicked() async {
+    bool? value;
+    var request = {
+      "DogadjajId": widget.dogadjajId,
+      "KorisnikId": KorisnikGlobal.korisnikId
+    };
+    try {
+      if (!saved) {
+        value = await _savingProvider.save(request);
+      } else {
+        value = await _savingProvider.delete(request);
+      }
+    } on Exception catch (e) {
+      handleException(e);
+    }
     setState(() {
-      saved = !saved;
+      saved = value ?? saved;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    var isLoading = false;
     return MasterScreen(
         selectedIndex: 0,
         showBackButton: true,
         showAppBar: false,
         child: Expanded(
           child: isLoading
-              ? const CircularProgressIndicator()
+              ? Container(
+                  child: Center(child: const CircularProgressIndicator()))
               : Stack(children: [
                   ListView(scrollDirection: Axis.vertical, children: [
-                    Image.asset('assets/images/banner.jpg',
-                        height: 210, fit: BoxFit.cover),
+                    SizedBox(
+                        height: 200,
+                        child: imageFromBase64String(_dogadjaj.naslovna)),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         IconButton(
                             iconSize: 22,
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => BuyTicketScreen()),
+                              );
+                            },
                             icon: Icon(
                               Icons.shopping_bag_outlined,
                               color: Color.fromRGBO(60, 71, 92, 1),
@@ -113,8 +278,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                                   ))
                       ],
                     ),
-                    HeadingWidget(
-                        text: "14. Omladinski film festival u Sarajevu"),
+                    HeadingWidget(text: _dogadjaj.naziv ?? ''),
                     SizedBox(
                       height: 15,
                     ),
@@ -125,20 +289,12 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                Text(
-                                  "Festival",
-                                  style: TextStyle(
-                                      color: Color.fromRGBO(227, 48, 70, 1),
-                                      fontFamily: 'Montserrat',
-                                      fontWeight: FontWeight.w700,
-                                      letterSpacing: 0.8,
-                                      fontSize: 14),
-                                ),
+                                _buildKategorija(),
                                 SizedBox(
                                   width: 5,
                                 ),
                                 PodkategorijaTile(
-                                    text: "Film",
+                                    text: _podkategorija.naziv,
                                     isSelected: false,
                                     onSelect: (isSelected) =>
                                         {_handleSelection(-1)})
@@ -158,15 +314,11 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                                   width: 5,
                                 ),
                                 Text(
-                                  datumOd.day.toString() +
-                                      ". " +
-                                      months[datumOd.month - 1] +
+                                  formatDate(
+                                          _dogadjaj.datumOd ?? DateTime.now()) +
                                       " - " +
-                                      datumDo.day.toString() +
-                                      ". " +
-                                      months[datumDo.month - 1] +
-                                      " " +
-                                      datumDo.year.toString(),
+                                      formatDate(
+                                          _dogadjaj.datumDo ?? DateTime.now()),
                                   style: TextStyle(
                                       color: Color.fromRGBO(60, 71, 92, 1),
                                       fontSize: 14,
@@ -186,7 +338,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                                   width: 5,
                                 ),
                                 Text(
-                                  "Pozoriste Mladih Sarajevo",
+                                  _dogadjaj.lokacija ?? '',
                                   style: TextStyle(
                                       color: Color.fromRGBO(60, 71, 92, 1),
                                       fontSize: 13,
@@ -206,7 +358,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                                   width: 5,
                                 ),
                                 Text(
-                                  "www.omladinski.ba",
+                                  _dogadjaj.website ?? '',
                                   style: TextStyle(
                                       color: Color.fromRGBO(113, 126, 148, 1),
                                       fontSize: 12,
@@ -219,14 +371,16 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                               height: 20,
                             ),
                             _buildNaslov("Opis"),
-                            Text(
-                              opis,
-                              style: TextStyle(
-                                  color: Color.fromRGBO(60, 71, 92, 1),
-                                  fontSize: 12,
-                                  letterSpacing: 0.3,
-                                  fontFamily: 'Montserrat'),
-                            ),
+                            Align(
+                                alignment: Alignment.topLeft,
+                                child: Text(
+                                  _dogadjaj.opis ?? '',
+                                  style: TextStyle(
+                                      color: Color.fromRGBO(60, 71, 92, 1),
+                                      fontSize: 12,
+                                      letterSpacing: 0.3,
+                                      fontFamily: 'Montserrat'),
+                                )),
                             SizedBox(
                               height: 20,
                             ),
@@ -252,18 +406,21 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                                           height: 170,
                                           fit: BoxFit.cover,
                                         )))),
-                            if (program != null)
+                            if (_dogadjaj.program != null)
                               SizedBox(
                                 height: 10,
                               ),
-                            Text(
-                              program,
-                              style: TextStyle(
-                                  color: Color.fromRGBO(60, 71, 92, 1),
-                                  fontSize: 12,
-                                  letterSpacing: 0.3,
-                                  fontFamily: 'Montserrat'),
-                            ),
+                            Align(
+                                alignment: Alignment.topLeft,
+                                child: Text(
+                                  _dogadjaj.program ?? '',
+                                  style: TextStyle(
+                                    color: Color.fromRGBO(60, 71, 92, 1),
+                                    fontSize: 12,
+                                    letterSpacing: 0.3,
+                                    fontFamily: 'Montserrat',
+                                  ),
+                                )),
                             SizedBox(
                               height: 20,
                             ),
@@ -273,11 +430,29 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                               height: 20,
                             ),
                             _buildNaslov("Prikaži na mapi"),
-                            _buildMap(lokacija),
+                            _buildMap(_dogadjaj.lokacija),
                             SizedBox(
-                              height: 20,
+                              height: 30,
                             ),
-                            _buildNaslov("Komentari"),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                _buildNaslov("Komentari"),
+                                InkWell(
+                                  child: Text(
+                                    "+ Dodaj komentar",
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        fontFamily: 'Montserrat',
+                                        letterSpacing: 0.3,
+                                        color: Color.fromRGBO(54, 112, 232, 1)),
+                                  ),
+                                  onTap: () {
+                                    showKomentariDialog();
+                                  },
+                                )
+                              ],
+                            ),
                             _buildKomentari(),
                             SizedBox(
                               height: 20,
@@ -320,7 +495,8 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                         icon: Icon(Icons.arrow_back),
                         color: Color.fromRGBO(60, 71, 92, 1),
                         onPressed: () {
-                          Navigator.of(context).pop();
+                          print("kliknuto pop");
+                          Navigator.pop(context, true);
                         },
                       )),
                 ]),
@@ -356,24 +532,39 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
   }
 */
   Widget _buildKomentari() {
-    if (commentList == null || commentList.isEmpty) {
+    if (_komentariList == null || _komentariList.isEmpty) {
       return Center(
         child: Text('No comments available'),
       );
     }
 
     return Column(
-      children: commentList.map((comment) {
+      children: _komentariList.map((comment) {
         return CommentWidget(
-          username: comment['username'] ?? 'Unknown user',
-          text: comment['text'] ?? 'No text',
+          username: comment.korisnik?.korisnickoIme ?? 'Unknown user',
+          text: comment.komentar ?? 'No text',
         );
       }).toList(),
     );
   }
+
+  _buildKategorija() {
+    Color categoryColor =
+        CategoryColorManager().getColorForCategory(_dogadjaj!.kategorijaId!);
+    return Text(
+      _dogadjaj!.kategorija!.naziv ?? '',
+      style: TextStyle(
+          color: categoryColor,
+          fontFamily: 'Montserrat',
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.8,
+          fontSize: 14),
+    );
+  }
 }
 
-Widget _buildMap(String lokacija) {
+Widget _buildMap(String? lokacija) {
+  if (lokacija == null) return Text("Greška prilikom učitavanja lokacije");
   return FutureBuilder(
     future: locationFromAddress(lokacija),
     builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {

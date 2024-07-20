@@ -1,5 +1,6 @@
 import 'package:eventsappusers/models/dogadjaj.dart';
 import 'package:eventsappusers/models/kategorija.dart';
+import 'package:eventsappusers/models/korisnik_global.dart';
 import 'package:eventsappusers/models/podkategorija.dart';
 import 'package:eventsappusers/models/search_result.dart';
 import 'package:eventsappusers/providers/dogadjaj_provider.dart';
@@ -83,6 +84,7 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
   }
 
   loadData(int id) {
+    print("load data called");
     _kategorijaProvider.getById(id).then((value) {
       setState(() {
         _selectedKategorija = value;
@@ -99,10 +101,13 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
         _dogadjajiResult = value;
         dogadjajiLoaded = true;
       });
+      print("dogadajaj result je ${_dogadjajiResult}");
       handleLoading();
     });
-    _pracenjeProvider.isFollowing(
-        {'KategorijaId': widget.kategorijaId, 'KorisnikId': 2}).then((value) {
+    _pracenjeProvider.isFollowing({
+      'KategorijaId': widget.kategorijaId,
+      'KorisnikId': KorisnikGlobal.korisnikId
+    }).then((value) {
       setState(() {
         pratim = value;
         pracenjeLoaded = true;
@@ -156,7 +161,7 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
     bool? value;
     var request = {
       "KategorijaId": _selectedKategorija.kategorijaId,
-      "KorisnikId": 2
+      "KorisnikId": KorisnikGlobal.korisnikId
     };
     try {
       if (!pratim) {

@@ -5,8 +5,11 @@ import 'package:eventsappusers/models/korisnik_global.dart';
 import 'package:eventsappusers/providers/auth_provider.dart';
 import 'package:eventsappusers/providers/dogadjaj_provider.dart';
 import 'package:eventsappusers/providers/kategorije_provider.dart';
+import 'package:eventsappusers/providers/komentari_provider.dart';
 import 'package:eventsappusers/providers/korisnik_provider.dart';
+import 'package:eventsappusers/providers/podkategorija_provider.dart';
 import 'package:eventsappusers/providers/pracenje_provider.dart';
+import 'package:eventsappusers/providers/saving_provider.dart';
 import 'package:eventsappusers/screens/buy_ticket_screen.dart';
 import 'package:eventsappusers/screens/edit_profile_screen.dart';
 import 'package:eventsappusers/screens/event_details_screen.dart';
@@ -33,6 +36,11 @@ void main() {
     ChangeNotifierProvider<DogadjajProvider>(create: (_) => DogadjajProvider()),
     ChangeNotifierProvider<PracenjeProvider>(create: (_) => PracenjeProvider()),
     ChangeNotifierProvider<KorisnikProvider>(create: (_) => KorisnikProvider()),
+    ChangeNotifierProvider<PodkategorijaProvider>(
+        create: (_) => PodkategorijaProvider()),
+    ChangeNotifierProvider<KomentariProvider>(
+        create: (_) => KomentariProvider()),
+    ChangeNotifierProvider<SavingProvider>(create: (_) => SavingProvider()),
   ], child: const MyApp()));
 }
 

@@ -81,6 +81,11 @@ namespace eventsApp.Services
             return state.Insert(insert);
         }
 
+        public override async Task<Database.Dogadjaji> FindEntity(int id)
+        {
+            return await _context.Set<Database.Dogadjaji>().Include(d => d.Kategorija).FirstOrDefaultAsync(d => d.DogadjajId==id);
+        }
+
         public override async Task<Model.Dogadjaji> Update(int id, DogadjajiUpdateRequest update)
         {
             var entity = await _context.Dogadjajis.FindAsync(id);

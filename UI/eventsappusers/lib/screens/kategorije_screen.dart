@@ -47,7 +47,8 @@ class _KategorijeScreenState extends State<KategorijeScreen> {
         showBackButton: true,
         child: Expanded(
             child: isLoading
-                ? const CircularProgressIndicator()
+                ? Container(
+                    child: Center(child: const CircularProgressIndicator()))
                 : Column(
                     children: [
                       const HeadingWidget(text: "Odaberite kategoriju"),

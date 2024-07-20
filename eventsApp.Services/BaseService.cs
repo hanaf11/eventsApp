@@ -57,7 +57,7 @@ namespace eventsApp.Services
 
             if (entity != null)
             {
-                return _mapper.Map<TDetails>(entity);
+               return _mapper.Map<TDetails>(entity);
             }
             else return null;
         }

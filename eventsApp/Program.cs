@@ -20,6 +20,8 @@ builder.Services.AddTransient<IKategorijeService, KategorijeServiceImpl>();
 builder.Services.AddTransient<IPodkategorijeService, PodkategorijeServiceImpl>();
 builder.Services.AddTransient<IGalerijaService, GalerijaServiceImpl>();
 builder.Services.AddTransient<IPracenjeService, PracenjeServiceImpl>();
+builder.Services.AddTransient<IKomentariService, KomentariServiceImpl>();
+builder.Services.AddTransient<ISavingService, SavingServiceImpl>();
 builder.Services.AddTransient<GalerijaServiceImpl>();
 
 
