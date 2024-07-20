@@ -385,27 +385,8 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                               height: 20,
                             ),
                             _buildNaslov("Program"),
-                            GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => FullScreenImage(
-                                        tag: 'bannerImage',
-                                        imagePath: 'assets/images/banner.jpg',
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: Container(
-                                    width: MediaQuery.of(context).size.width,
-                                    child: Hero(
-                                        tag: 'bannerImage',
-                                        child: Image.asset(
-                                          'assets/images/banner.jpg',
-                                          height: 170,
-                                          fit: BoxFit.cover,
-                                        )))),
+                            if (_dogadjaj.programSlika != null)
+                              _buildProgramSlika(),
                             if (_dogadjaj.program != null)
                               SizedBox(
                                 height: 10,
@@ -514,6 +495,25 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                 letterSpacing: 0.4,
                 fontSize: 24),
             text));
+  }
+
+  Widget _buildProgramSlika() {
+    Image programSlika = imageFromBase64String(_dogadjaj.programSlika);
+    String tag = "programSlika";
+    return GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  FullScreenImage(tag: tag, image: programSlika),
+            ),
+          );
+        },
+        child: Container(
+            width: MediaQuery.of(context).size.width,
+            child: Hero(
+                tag: tag, child: SizedBox(height: 170, child: programSlika))));
   }
 
   /*Widget _buildKomentari() {

@@ -18,6 +18,8 @@ namespace eventsApp.Model
 
         public string? Program { get; set; }
 
+        public byte[]? ProgramSlika { get; set; }
+
         public byte[] Naslovna { get; set; } = null!;
 
         public string Opis { get; set; } = null!;
