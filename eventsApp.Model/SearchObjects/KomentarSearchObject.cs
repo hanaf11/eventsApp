@@ -10,8 +10,6 @@ namespace eventsApp.Model.SearchObjects
     {
         public int? DogadjajId { get; set; }
 
-        public int? KorisnikId { get; set; }
-
         public bool? KorisnikIncluded { get; set; }
     }
 }

@@ -22,6 +22,16 @@ namespace eventsApp.Services
             _logger = logger;
         }
 
+        public override IQueryable<Database.Komentari> AddFilter(IQueryable<Database.Komentari> query, KomentarSearchObject? search = null)
+        {
+            if (search?.DogadjajId != null)
+            {
+                query = query.Where(x => x.DogadjajId == search.DogadjajId);
+            }
+
+            return base.AddFilter(query, search);
+        }
+
 
         public override IQueryable<Database.Komentari> AddInclude(IQueryable<Database.Komentari> query, KomentarSearchObject? search = null)
         {
@@ -46,7 +56,7 @@ namespace eventsApp.Services
             set.Add(entity);
             await _context.SaveChangesAsync();
 
-            return await Get(new KomentarSearchObject { KorisnikIncluded = true });
+            return await Get(new KomentarSearchObject {DogadjajId=insert.DogadjajId, KorisnikIncluded = true });
         }
 
             private async Task ValidateRequest(KomentarInsertObject insert)

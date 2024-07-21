@@ -3,7 +3,9 @@ import 'package:eventsappusers/models/komentar.dart';
 import 'package:eventsappusers/models/korisnik.dart';
 import 'package:eventsappusers/models/korisnik_global.dart';
 import 'package:eventsappusers/models/podkategorija.dart';
+import 'package:eventsappusers/models/slika.dart';
 import 'package:eventsappusers/providers/dogadjaj_provider.dart';
+import 'package:eventsappusers/providers/galerija_provider.dart';
 import 'package:eventsappusers/providers/komentari_provider.dart';
 import 'package:eventsappusers/providers/podkategorija_provider.dart';
 import 'package:eventsappusers/providers/saving_provider.dart';
@@ -16,6 +18,7 @@ import 'package:eventsappusers/widgets/input_field.dart';
 import 'package:eventsappusers/widgets/podkategorije_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:eventsappusers/utils/style_util.dart';
 
 import '../widgets/full_screen_image.dart';
 import '../widgets/master_screen.dart';
@@ -41,14 +44,17 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
   bool podkategorijaLoaded = false;
   bool komentariLoaded = false;
   bool savingLoaded = false;
+  bool galerijaLoaded = false;
   late DogadjajProvider _dogadjajProvider;
   late PodkategorijaProvider _podkategorijaProvider;
   late KomentariProvider _komentariProvider;
   late SavingProvider _savingProvider;
+  late GalerijaProvider _galerijaProvider;
   late Dogadjaj _dogadjaj;
   late Podkategorija _podkategorija;
   TextEditingController _komentarController = new TextEditingController();
-  late List<Komentar> _komentariList;
+  late List<Komentar>? _komentariList;
+  late List<Slika>? _galerija;
 
   _EventDetailsScreenState();
 
@@ -59,6 +65,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
     _podkategorijaProvider = context.read<PodkategorijaProvider>();
     _komentariProvider = context.read<KomentariProvider>();
     _savingProvider = context.read<SavingProvider>();
+    _galerijaProvider = context.read<GalerijaProvider>();
     loadData();
   }
 
@@ -66,7 +73,8 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
     if (dogadjajLoaded == true &&
         podkategorijaLoaded == true &&
         komentariLoaded == true &&
-        savingLoaded == true) {
+        savingLoaded == true &&
+        galerijaLoaded == true) {
       setState(() {
         isLoading = false;
       });
@@ -108,10 +116,8 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
         });
         handleLoading();
 
-        _komentariProvider.get(filter: {
-          'korisnikId': KorisnikGlobal.korisnikId,
-          'dogadjajId': widget.dogadjajId
-        }).then((value) {
+        _komentariProvider
+            .get(filter: {'dogadjajId': widget.dogadjajId}).then((value) {
           setState(() {
             _komentariList = value.result;
             komentariLoaded = true;
@@ -126,6 +132,15 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
           setState(() {
             saved = value;
             savingLoaded = true;
+          });
+          handleLoading();
+        });
+
+        _galerijaProvider
+            .get(filter: {'DogadjajId': widget.dogadjajId}).then((value) {
+          setState(() {
+            _galerija = value.result;
+            galerijaLoaded = true;
           });
           handleLoading();
         });
@@ -375,41 +390,24 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                                 alignment: Alignment.topLeft,
                                 child: Text(
                                   _dogadjaj.opis ?? '',
-                                  style: TextStyle(
-                                      color: Color.fromRGBO(60, 71, 92, 1),
-                                      fontSize: 12,
-                                      letterSpacing: 0.3,
-                                      fontFamily: 'Montserrat'),
+                                  style: paragaph,
                                 )),
                             SizedBox(
                               height: 20,
                             ),
                             _buildNaslov("Program"),
-                            if (_dogadjaj.programSlika != null)
+                            if (_dogadjaj.programSlika != null &&
+                                _dogadjaj.programSlika!.isNotEmpty)
                               _buildProgramSlika(),
                             if (_dogadjaj.program != null)
-                              SizedBox(
-                                height: 10,
-                              ),
-                            Align(
-                                alignment: Alignment.topLeft,
-                                child: Text(
-                                  _dogadjaj.program ?? '',
-                                  style: TextStyle(
-                                    color: Color.fromRGBO(60, 71, 92, 1),
-                                    fontSize: 12,
-                                    letterSpacing: 0.3,
-                                    fontFamily: 'Montserrat',
-                                  ),
-                                )),
+                              Align(
+                                  alignment: Alignment.topLeft,
+                                  child: Text(_dogadjaj.program ?? '',
+                                      style: paragaph)),
                             SizedBox(
                               height: 20,
                             ),
-                            _buildNaslov("Galerija"),
-                            PhotoGallery(imagePathList: imageList),
-                            SizedBox(
-                              height: 20,
-                            ),
+                            _buildGalerija(),
                             _buildNaslov("Prikaži na mapi"),
                             _buildMap(_dogadjaj.lokacija),
                             SizedBox(
@@ -497,6 +495,22 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
             text));
   }
 
+  Widget _buildGalerija() {
+    List<Image>? imageList = imageListFromBase64String(_galerija);
+    if (imageList != null && imageList.isNotEmpty) {
+      return Column(
+        children: [
+          _buildNaslov("Galerija"),
+          PhotoGallery(imageList: imageList),
+          SizedBox(
+            height: 30,
+          )
+        ],
+      );
+    } else
+      return Container();
+  }
+
   Widget _buildProgramSlika() {
     Image programSlika = imageFromBase64String(_dogadjaj.programSlika);
     String tag = "programSlika";
@@ -532,14 +546,17 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
   }
 */
   Widget _buildKomentari() {
-    if (_komentariList == null || _komentariList.isEmpty) {
+    if (_komentariList == null || _komentariList!.isEmpty) {
       return Center(
-        child: Text('No comments available'),
+        child: Text(
+          'Nema komentara',
+          style: paragaph,
+        ),
       );
     }
 
     return Column(
-      children: _komentariList.map((comment) {
+      children: _komentariList!.map((comment) {
         return CommentWidget(
           username: comment.korisnik?.korisnickoIme ?? 'Unknown user',
           text: comment.komentar ?? 'No text',
@@ -571,7 +588,7 @@ Widget _buildMap(String? lokacija) {
       if (snapshot.connectionState == ConnectionState.waiting) {
         return CircularProgressIndicator();
       } else if (snapshot.hasError) {
-        return Text('Could not load map');
+        return Text('Could not load map', style: paragaph);
       } else {
         var locations = snapshot.data;
         var output = 'No results found.';

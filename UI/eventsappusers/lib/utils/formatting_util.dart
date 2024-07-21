@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:eventsappusers/models/slika.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
@@ -89,4 +90,15 @@ Image imageFromBase64String(String? base64Image) {
 
 MemoryImage getDecorationImage(String base64Image) {
   return MemoryImage(base64Decode(base64Image));
+}
+
+List<Image>? imageListFromBase64String(List<Slika>? galerija) {
+  if (galerija == null || galerija.isEmpty) {
+    print("galerija null ili empty");
+    return null;
+  }
+
+  List<Image> imageList = [];
+  galerija.forEach((img) => imageList.add(imageFromBase64String(img.slika)));
+  return imageList;
 }
