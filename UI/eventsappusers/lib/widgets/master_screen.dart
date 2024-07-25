@@ -1,6 +1,9 @@
+import 'package:eventsappusers/screens/home_screen.dart';
 import 'package:eventsappusers/screens/kategorije_screen.dart';
 import 'package:eventsappusers/screens/kreiraj_dogadjaj_screen.dart';
+import 'package:eventsappusers/screens/map_screen.dart';
 import 'package:eventsappusers/screens/profile_screen.dart';
+import 'package:eventsappusers/screens/spremljeno_screen.dart';
 import 'package:flutter/material.dart';
 
 class MasterScreen extends StatefulWidget {
@@ -54,6 +57,25 @@ class _MasterScreenState extends State<MasterScreen> {
     setState(() {
       selectedIndex = index;
     });
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => _getPage(index),
+      ),
+    );
+  }
+
+  _getPage(index) {
+    switch (index) {
+      case 0:
+        return HomeScreen();
+      case 1:
+        return MapScreen();
+      case 2:
+        return SpremljenoScreen();
+      case 3:
+        return ProfileScreen();
+    }
   }
 
   getScreen(index) {
