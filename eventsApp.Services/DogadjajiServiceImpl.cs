@@ -63,6 +63,10 @@ namespace eventsApp.Services
             {
                 filteredQuery = filteredQuery.Where(x => x.PodkategorijaId.Equals(search.Podkategorija));
             }
+            if (search?.Status != null)
+            {
+                filteredQuery = filteredQuery.Where(x => x.Status.Equals(search.Podkategorija));
+            }
             return filteredQuery;
         }
 
@@ -122,79 +126,91 @@ namespace eventsApp.Services
             }
         }
 
-       /* static MLContext mlContext = null;
-        static object isLocked = new object();
-        static ITransformer model = null;
-
-        public List<Model.Dogadjaji> Recommend(int id)
+        public async Task<List<Model.DogadjajiListResponse>> GetEventsFromFollowingCategories(int korisnikId)
         {
-            lock (isLocked)
+            bool korisnikExists = await _context.Korisnicis.AnyAsync(k => k.KorisnikId == korisnikId);
+            if (!korisnikExists)
             {
-                if (mlContext == null)
-                {
-                    mlContext = new MLContext();
-
-                    var tmpData = _context.Narudzbes.Include("NarudzbaStavkes").ToList();
-                    var data = new List<ProductEntry>();
-
-                    foreach(var x in tmpData)
-                    {
-                        if (x.NarudzbaStavkes.Count > 1)
-                        {
-                            var distinctItemId = x.NarudzbaStavkes.Select(y => y.Id).ToList();//??
-
-                            distinctItemId.forEach(y =>
-                            {
-                                var relatedItems = x.NarudzbaStavkes.Where(z => z.Id != y);
-
-                                foreach(var z in relatedItems)
-                                {
-                                    data.Add(new ProductEntry()
-                                    {
-                                        ProductID = (uint)y,
-                                        CoPurchaseProductID = (uint)z.Id
-                                    });
-                                }
-                            });
-                        }
-                    }
-
-                    var trainData = mlContext.Data.LoadFromEnumerable(data);
-
-                    MatrixFactorizationTrainer.Options options = new MatrixFactorizationTrainer.Options();
-                    options.MatrixColumnIndexColumnName = nameof(ProductEntry.ProductID);
-                    options.MatrixRowIndexColumnName=nameof(ProductEntry.CoPurchaseProductID);
-                    options.LabelColumnName = "Label";
-                    options.LossFunction = MatrixFactorizationTrainer.LossFunctionType.SquareLossOneClass;
-                    options.Alpha = 0.01;
-                    options.Lambda = 0.025;
-                    options.NumberOfIterations = 100;
-                    options.C = 0.00001;
-
-                    var est = mlContext.Recommendation().Trainers.MatrixFactorization(options);
-
-                    model=est.Fit(trainData);
-                }
+                throw new Model.UserException("Korisnik nije pronadjen");
             }
+             var dogadjajiList=  await _context.Korisnicis.Where(k => k.KorisnikId == korisnikId).SelectMany(k => k.Pracenjes).Select(p => p.Kategorija).SelectMany(k => k.Dogadjajis).Include(d=>d.Kategorija).OrderByDescending(d=>d.Created).ToListAsync();
 
-            var products = _context.Dogadjajis.Where(x => x.DogadjajId != id);
-            var predictionResult = new List<Tuple<Database.Dogadjaji, float>>();
+            return _mapper.Map<List<Model.DogadjajiListResponse>>(dogadjajiList);
+        }
 
-            foreach(var product in products)
-            {
-                var predictionEngine = mlContext.Model.CreatePredictionEngine<ProductEntry, Copurchase_prediction>(model);
-                var prediction = predictionEngine.Predict(new ProductEntry()
-                {
-                    ProductID = (uint)id,
-                    CoPurchaseProductID = (uint)product.DogadjajId
-                });
+        /* static MLContext mlContext = null;
+         static object isLocked = new object();
+         static ITransformer model = null;
 
-                predictionResult.Add(new Tuple<Database.Dogadjaji, float>(product, prediction.Score));
-            }
+         public List<Model.Dogadjaji> Recommend(int id)
+         {
+             lock (isLocked)
+             {
+                 if (mlContext == null)
+                 {
+                     mlContext = new MLContext();
 
-            var finalResult = predictionResult.OrderByDescending(x => x.Item2).Select(x => x.Item1).Take(3).ToList();
-            return _mapper.Map<List<Model.Dogadjaji>>(finalResult);
-        }*/
+                     var tmpData = _context.Narudzbes.Include("NarudzbaStavkes").ToList();
+                     var data = new List<ProductEntry>();
+
+                     foreach(var x in tmpData)
+                     {
+                         if (x.NarudzbaStavkes.Count > 1)
+                         {
+                             var distinctItemId = x.NarudzbaStavkes.Select(y => y.Id).ToList();//??
+
+                             distinctItemId.forEach(y =>
+                             {
+                                 var relatedItems = x.NarudzbaStavkes.Where(z => z.Id != y);
+
+                                 foreach(var z in relatedItems)
+                                 {
+                                     data.Add(new ProductEntry()
+                                     {
+                                         ProductID = (uint)y,
+                                         CoPurchaseProductID = (uint)z.Id
+                                     });
+                                 }
+                             });
+                         }
+                     }
+
+                     var trainData = mlContext.Data.LoadFromEnumerable(data);
+
+                     MatrixFactorizationTrainer.Options options = new MatrixFactorizationTrainer.Options();
+                     options.MatrixColumnIndexColumnName = nameof(ProductEntry.ProductID);
+                     options.MatrixRowIndexColumnName=nameof(ProductEntry.CoPurchaseProductID);
+                     options.LabelColumnName = "Label";
+                     options.LossFunction = MatrixFactorizationTrainer.LossFunctionType.SquareLossOneClass;
+                     options.Alpha = 0.01;
+                     options.Lambda = 0.025;
+                     options.NumberOfIterations = 100;
+                     options.C = 0.00001;
+
+                     var est = mlContext.Recommendation().Trainers.MatrixFactorization(options);
+
+                     model=est.Fit(trainData);
+                 }
+             }
+
+             var products = _context.Dogadjajis.Where(x => x.DogadjajId != id);
+             var predictionResult = new List<Tuple<Database.Dogadjaji, float>>();
+
+             foreach(var product in products)
+             {
+                 var predictionEngine = mlContext.Model.CreatePredictionEngine<ProductEntry, Copurchase_prediction>(model);
+                 var prediction = predictionEngine.Predict(new ProductEntry()
+                 {
+                     ProductID = (uint)id,
+                     CoPurchaseProductID = (uint)product.DogadjajId
+                 });
+
+                 predictionResult.Add(new Tuple<Database.Dogadjaji, float>(product, prediction.Score));
+             }
+
+             var finalResult = predictionResult.OrderByDescending(x => x.Item2).Select(x => x.Item1).Take(3).ToList();
+             return _mapper.Map<List<Model.Dogadjaji>>(finalResult);
+         }*/
 
     }
 

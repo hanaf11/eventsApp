@@ -1,19 +1,12 @@
+import 'package:eventsappusers/models/dogadjaj.dart';
+import 'package:eventsappusers/utils/category_color_util.dart';
+import 'package:eventsappusers/utils/formatting_util.dart';
 import 'package:flutter/material.dart';
 
 class DogadjajVerticalWidget extends StatefulWidget {
-  final String naslov;
-  final DateTime datumOd;
-  final DateTime datumDo;
-  final String lokacija;
-  final String kategorija;
+  Dogadjaj dogadjaj;
 
-  DogadjajVerticalWidget(
-      {super.key,
-      required this.naslov,
-      required this.datumOd,
-      required this.datumDo,
-      required this.lokacija,
-      required this.kategorija});
+  DogadjajVerticalWidget({super.key, required this.dogadjaj});
 
   @override
   State<DogadjajVerticalWidget> createState() => _DogadjajVerticalWidgetState();
@@ -21,21 +14,6 @@ class DogadjajVerticalWidget extends StatefulWidget {
 
 class _DogadjajVerticalWidgetState extends State<DogadjajVerticalWidget> {
   _DogadjajVerticalWidgetState();
-
-  List months = [
-    'jan',
-    'feb',
-    'mar',
-    'apr',
-    'may',
-    'jun',
-    'jul',
-    'aug',
-    'sep',
-    'oct',
-    'nov',
-    'dec'
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -59,22 +37,14 @@ class _DogadjajVerticalWidgetState extends State<DogadjajVerticalWidget> {
             ClipRRect(
                 borderRadius: BorderRadius.vertical(
                     top: Radius.circular(20), bottom: Radius.zero),
-                child: Image.asset(
-                  "assets/images/banner.jpg",
+                child: SizedBox(
                   height: 150,
                   width: 160,
-                  fit: BoxFit.fill,
+                  child: imageFromBase64String(widget.dogadjaj.naslovna),
                 )),
+            _buildKategorija(),
             Text(
-              widget.kategorija,
-              style: TextStyle(
-                  fontFamily: 'Montserrat',
-                  fontWeight: FontWeight.w600,
-                  fontSize: 10,
-                  color: Colors.red),
-            ),
-            Text(
-              widget.naslov,
+              widget.dogadjaj.naziv ?? '',
               overflow: TextOverflow.ellipsis,
               softWrap: false,
               maxLines: 1,
@@ -86,7 +56,9 @@ class _DogadjajVerticalWidgetState extends State<DogadjajVerticalWidget> {
                   color: Color.fromRGBO(31, 48, 83, 1)),
             ),
             Text(
-              formatDate(widget.datumOd) + " - " + formatDate(widget.datumDo),
+              dayAndMonth(widget.dogadjaj.datumOd ?? DateTime.now()) +
+                  " - " +
+                  dayAndMonth(widget.dogadjaj.datumDo ?? DateTime.now()),
               style: TextStyle(
                   fontFamily: 'Montserrat',
                   letterSpacing: 0.3,
@@ -99,20 +71,35 @@ class _DogadjajVerticalWidgetState extends State<DogadjajVerticalWidget> {
                 size: 10,
                 color: Color.fromRGBO(156, 156, 168, 1),
               ),
-              Text(
-                widget.lokacija,
+              Flexible(
+                  child: Text(
+                widget.dogadjaj.lokacija ?? '',
+                overflow: TextOverflow.ellipsis,
+                softWrap: false,
+                maxLines: 1,
                 style: TextStyle(
                     fontFamily: 'Montserrat',
                     fontSize: 12,
                     letterSpacing: 0.3,
                     color: Color.fromRGBO(156, 156, 168, 1)),
-              )
+              ))
             ])
           ],
         ));
   }
 
-  String formatDate(DateTime date) {
-    return date.day.toString() + "." + months[date.month - 1];
+  Text _buildKategorija() {
+    Color categoryColor = CategoryColorManager()
+        .getColorForCategory(widget.dogadjaj.kategorija!.kategorijaId!);
+    return Text(
+      widget.dogadjaj.kategorija?.naziv ?? '',
+      textAlign: TextAlign.start,
+      style: TextStyle(
+          color: categoryColor,
+          fontFamily: 'Montserrat',
+          letterSpacing: 1,
+          fontSize: 10,
+          fontWeight: FontWeight.w800),
+    );
   }
 }

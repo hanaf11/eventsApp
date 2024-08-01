@@ -1,10 +1,13 @@
+import 'package:eventsappusers/models/dogadjaj.dart';
 import 'package:eventsappusers/models/korisnik.dart';
 import 'package:eventsappusers/models/korisnik_global.dart';
+import 'package:eventsappusers/providers/dogadjaj_provider.dart';
 import 'package:eventsappusers/providers/kategorije_provider.dart';
 import 'package:eventsappusers/providers/korisnik_provider.dart';
 import 'package:eventsappusers/utils/category_color_util.dart';
 import 'package:eventsappusers/widgets/input_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/dogadjaj_horizontal.dart';
@@ -20,27 +23,65 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String searchController = "";
+  TextEditingController _searchController = new TextEditingController();
   bool isLoading = true;
   late KorisnikProvider _korisnikProvider;
   late KategorijeProvider _kategorijeProvider;
+  late DogadjajProvider _dogadjajProvider;
+  List<Dogadjaj>? _pratiteList;
+  List<Dogadjaj>? _recommendedList;
+  List<Dogadjaj>? _nearYouList;
+  List<Dogadjaj>? _searchList = null;
+  bool pratiteLoaded = false;
+  bool recommendedLoaded = false;
+  bool nearYouLoaded = false;
+  bool kategorijeLoaded = false;
+  bool searchLoaded = false;
 
   _HomeScreenState();
 
   @override
   void initState() {
     super.initState();
-    // _korisnikProvider = context.read<KorisnikProvider>();
-
+    _korisnikProvider = context.read<KorisnikProvider>();
+    _dogadjajProvider = context.read<DogadjajProvider>();
     _kategorijeProvider = context.read<KategorijeProvider>();
     loadKategorije();
+    loadData();
+  }
+
+  handleLoading() {
+    if (pratiteLoaded == true &&
+        nearYouLoaded == true &&
+        recommendedLoaded == true &&
+        kategorijeLoaded == true) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   loadKategorije() async {
     var data = await _kategorijeProvider.get();
     CategoryColorManager(data.result);
     setState(() {
-      isLoading = false;
+      kategorijeLoaded = true;
+    });
+    handleLoading();
+  }
+
+  loadData() async {
+    await _dogadjajProvider
+        .getFollowing(KorisnikGlobal.korisnikId)
+        .then((value) {
+      print("result je $value");
+      setState(() {
+        _pratiteList = value;
+        pratiteLoaded = true;
+        nearYouLoaded = true;
+        recommendedLoaded = true;
+      });
+      handleLoading();
     });
   }
 
@@ -52,8 +93,18 @@ class _HomeScreenState extends State<HomeScreen> {
     });*/
   }*/
 
-  search() {
-    print(searchController);
+  search() async {
+    var filterReq = {
+      'FTS': _searchController.text,
+      'Status': 'ACTIVE',
+      'KategorijaIncluded': true,
+      'OrderBy': '-created'
+    };
+    var data = await _dogadjajProvider.get(filter: filterReq);
+    setState(() {
+      _searchList = data.result;
+      searchLoaded = true;
+    });
   }
 
   @override
@@ -79,18 +130,21 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: 15,
                       ),
                       _buildSearch(),
+                      if (searchLoaded)
+                        _buildDogadjajiTiles("Pretraga", _searchList),
                       SizedBox(
                         height: 20,
                       ),
-                      _buildDogadjajiTiles("Pratite"),
+                      _buildDogadjajiTiles("Pratite", _pratiteList),
                       SizedBox(
                         height: 20,
                       ),
-                      _buildDogadjajiTiles("Moglo bi Vam se svidjeti"),
+                      _buildDogadjajiTiles(
+                          "Moglo bi Vam se svidjeti", _recommendedList),
                       SizedBox(
                         height: 20,
                       ),
-                      _buildDogadjajiTiles("Najbliže Vama"),
+                      _buildDogadjajiTiles("Najbliže Vama", _nearYouList),
                       SizedBox(
                         height: 20,
                       ),
@@ -121,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8),
                 child: TextField(
-                  controller: TextEditingController(text: searchController),
+                  controller: _searchController,
                   decoration: null,
                 ),
               )),
@@ -140,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildDogadjajiTiles(String naslov) {
+  Widget _buildDogadjajiTiles(String naslov, List<Dogadjaj>? dogadjajiList) {
     return Padding(
         padding: EdgeInsets.all(10),
         child: Column(
@@ -155,35 +209,21 @@ class _HomeScreenState extends State<HomeScreen> {
                     fontSize: 24),
                 naslov),
             SizedBox(height: 10),
-            Container(
-              height: 240,
-              child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  padding: EdgeInsets.symmetric(vertical: 5),
-                  children: [
-                    DogadjajVerticalWidget(
-                      naslov: "Test naslov dugi naslov",
-                      datumOd: DateTime.now(),
-                      datumDo: DateTime.now(),
-                      kategorija: "Konferencije",
-                      lokacija: "Spanija",
-                    ),
-                    DogadjajVerticalWidget(
-                      naslov: "Test naslov",
-                      datumOd: DateTime.now(),
-                      datumDo: DateTime.now(),
-                      kategorija: "Konferencije",
-                      lokacija: "Spanija",
-                    ),
-                    DogadjajVerticalWidget(
-                      naslov: "Test naslov",
-                      datumOd: DateTime.now(),
-                      datumDo: DateTime.now(),
-                      kategorija: "Konferencije",
-                      lokacija: "Spanija",
-                    ),
-                  ]),
-            )
+            (dogadjajiList != null && dogadjajiList.isNotEmpty)
+                ? Container(
+                    height: 240,
+                    child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.all(5),
+                        itemCount: dogadjajiList.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          Dogadjaj d = dogadjajiList[index];
+                          return DogadjajVerticalWidget(dogadjaj: d);
+                        }),
+                  )
+                : Container(
+                    child: Text("Nema rezultata"),
+                  )
           ],
         ));
   }

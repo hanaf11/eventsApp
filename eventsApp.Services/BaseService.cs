@@ -3,6 +3,7 @@ using eventsApp.Model;
 using eventsApp.Model.SearchObjects;
 using eventsApp.Services.Database;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Dynamic.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,21 +24,18 @@ namespace eventsApp.Services
             _mapper = mapper;
         }
         
-        public virtual async Task<PagedResult<T>> Get(TSearch? search=null)
+        public virtual async Task<Model.PagedResult<T>> Get(TSearch? search=null)
         {
             var query = _context.Set<TDb>().AsQueryable();
 
-            PagedResult<T> result = new PagedResult<T>();
+            Model.PagedResult<T> result = new Model.PagedResult<T>();
 
             query = AddFilter(query, search);
              query=AddInclude(query, search);
 
             result.Count = await query.CountAsync();
 
-            if (!string.IsNullOrWhiteSpace(search?.OrderBy))
-            {
-               // query = query.OrderBy(search.OrderBy);
-            }
+            query = AddOrderBy(query, search);
 
             if (search?.Page.HasValue==true && search?.PageSize.HasValue == true)
             {
@@ -69,6 +67,18 @@ namespace eventsApp.Services
 
         public virtual IQueryable<TDb> AddFilter(IQueryable<TDb> query, TSearch? search = null)
         {
+            return query;
+        }
+        public virtual IQueryable<TDb> AddOrderBy(IQueryable<TDb> query, TSearch? search = null)
+        {
+            if (!string.IsNullOrWhiteSpace(search?.OrderBy))
+            {
+                bool isDescending = search.OrderBy.StartsWith('-');
+                string orderBy = isDescending ? search.OrderBy.Substring(1) : search.OrderBy;
+                string orderByString = isDescending ? $"{orderBy} descending" : orderBy;
+
+                query = query.OrderBy(orderByString);
+            }
             return query;
         }
 

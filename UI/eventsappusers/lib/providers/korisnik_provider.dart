@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'package:eventsappusers/models/dogadjaj.dart';
 import 'package:eventsappusers/models/kategorija.dart';
 import 'package:eventsappusers/models/korisnik.dart';
+import 'package:eventsappusers/models/search_result.dart';
 import 'package:eventsappusers/providers/auth_provider.dart';
+import 'package:eventsappusers/providers/dogadjaj_provider.dart';
 import "package:http/http.dart" as http;
 import 'package:http/http.dart';
 

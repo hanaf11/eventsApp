@@ -34,10 +34,17 @@ namespace eventsApp.Controllers
             return await (_service as IDogadjajiService).AllowedActions(id);
         }
 
-       /* [HttpGet("{id}/recommend")]
-        public virtual List<Model.Dogadjaji> Recommend(int id)
+        [HttpGet("{korisnikId}/following-categories")]
+        public async Task<List<Model.DogadjajiListResponse>> GetEventsFromFollowingCategories(int korisnikId)
         {
-            return  (_service as IDogadjajiService).Recommend(id);
-        }*/
+            return await (_service as IDogadjajiService).GetEventsFromFollowingCategories(korisnikId);
+        }
+
+        /* [HttpGet("{id}/recommend")]
+         public virtual List<Model.Dogadjaji> Recommend(int id)
+         {
+             return  (_service as IDogadjajiService).Recommend(id);
+         }*/
+
     }
 }

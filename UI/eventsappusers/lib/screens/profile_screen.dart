@@ -95,7 +95,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   scrollDirection: Axis.horizontal,
                   padding: EdgeInsets.symmetric(vertical: 5),
                   children: [
-                    DogadjajVerticalWidget(
+                    /*  DogadjajVerticalWidget(
                       naslov: "Test naslov dugi naslov",
                       datumOd: DateTime.now(),
                       datumDo: DateTime.now(),
@@ -115,7 +115,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       datumDo: DateTime.now(),
                       kategorija: "Konferencije",
                       lokacija: "Spanija",
-                    ),
+                    ),*/
                   ]),
             )
           ],

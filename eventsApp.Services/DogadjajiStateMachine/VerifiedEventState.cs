@@ -24,6 +24,7 @@ namespace eventsApp.Services.DogadjajiStateMachine
             var entity = await set.FindAsync(id);
 
             entity.Status = "ACTIVE";
+            entity.Created = DateTime.Now;
 
             await _context.SaveChangesAsync();
 

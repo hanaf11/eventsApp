@@ -39,6 +39,8 @@ public partial class Dogadjaji
 
     public virtual Dobavljaci? Dobavljac { get; set; }
 
+    public DateTime Created { get; set; }
+
     public virtual ICollection<HistorijaPregledum> HistorijaPregleda { get; } = new List<HistorijaPregledum>();
 
     public virtual Kategorije Kategorija { get; set; } = null!;

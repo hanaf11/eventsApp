@@ -25,6 +25,7 @@ namespace eventsApp.Services.DogadjajiStateMachine
 
             var entity = _mapper.Map<Database.Dogadjaji>(request);
             entity.Status = "DRAFT";
+            entity.Created= DateTime.Now;
 
             set.Add(entity);
            // await BeforeInsert(entity, insert);

@@ -16,6 +16,8 @@ namespace eventsApp.Services
 
         Task<List<string>> AllowedActions(int id);
 
-      //  List<Model.Dogadjaji> Recommend(int id);
+        public Task<List<Model.DogadjajiListResponse>> GetEventsFromFollowingCategories(int korisnikId);
+
+        //  List<Model.Dogadjaji> Recommend(int id);
     }
 }
