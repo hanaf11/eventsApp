@@ -1,4 +1,8 @@
+import 'package:eventsappusers/models/dogadjaj.dart';
+import 'package:eventsappusers/models/korisnik_global.dart';
+import 'package:eventsappusers/providers/dogadjaj_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../widgets/dogadjaj_horizontal.dart';
 import '../widgets/heading_widget.dart';
@@ -12,15 +16,35 @@ class SpremljenoScreen extends StatefulWidget {
 }
 
 class _SpremljenoScreenState extends State<SpremljenoScreen> {
+  late DogadjajProvider _dogadjajProvider;
+  bool isLoading = true;
+  late List<Dogadjaj>? _savedList;
   _SpremljenoScreenState();
 
   @override
+  void initState() {
+    super.initState();
+    _dogadjajProvider = context.read<DogadjajProvider>();
+    loadData();
+  }
+
+  loadData() async {
+    setState(() {
+      isLoading = true;
+    });
+    await _dogadjajProvider.getSaved(KorisnikGlobal.korisnikId).then((value) {
+      setState(() {
+        _savedList = value;
+        isLoading = false;
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    var isLoading = false;
     return MasterScreen(
         selectedIndex: 2,
         showBackButton: true,
-        //showFollowButton: false,
         child: Expanded(
             child: isLoading
                 ? const CircularProgressIndicator()
@@ -37,60 +61,19 @@ class _SpremljenoScreenState extends State<SpremljenoScreen> {
 
   _buildDogadjajiTiles() {
     return Expanded(
-      child: ListView(
-        scrollDirection: Axis.vertical,
-        children: [
-          /*DogadjajHorizontalWidget(
-            naslov: "Test naslov",
-            datumOd: DateTime.now(),
-            datumDo: DateTime.now(),
-            kategorija: "Konferencije",
-            lokacija: "Spanija",
-            saved: true,
-          ),
-          DogadjajHorizontalWidget(
-            naslov:
-                "TBosnian pyramids show in pyramid valley in visoko pls come hey hi hello hahaahha",
-            datumOd: DateTime.now(),
-            datumDo: DateTime.now(),
-            kategorija: "Konferencije",
-            lokacija: "Visoko, BIH",
-            saved: true,
-          ),
-          DogadjajHorizontalWidget(
-            naslov: "Queen tribute",
-            datumOd: DateTime.now(),
-            datumDo: DateTime.now(),
-            kategorija: "Konferencije",
-            lokacija: "Sarajevo, BiH",
-            saved: true,
-          ),
-          DogadjajHorizontalWidget(
-            naslov: "Test naslov",
-            datumOd: DateTime.now(),
-            datumDo: DateTime.now(),
-            kategorija: "Konferencije",
-            lokacija: "Spanija",
-            saved: true,
-          ),
-          DogadjajHorizontalWidget(
-            naslov: "Test naslov",
-            datumOd: DateTime.now(),
-            datumDo: DateTime.now(),
-            kategorija: "Konferencije",
-            lokacija: "Spanija",
-            saved: true,
-          ),
-          DogadjajHorizontalWidget(
-            naslov: "Test naslov",
-            datumOd: DateTime.now(),
-            datumDo: DateTime.now(),
-            kategorija: "Konferencije",
-            lokacija: "Spanija",
-            saved: true,
-          ),*/
-        ],
-      ),
-    );
+        child: (_savedList != null && _savedList!.isNotEmpty)
+            ? ListView.builder(
+                scrollDirection: Axis.vertical,
+                padding: const EdgeInsets.all(5),
+                itemCount: _savedList!.length,
+                itemBuilder: (BuildContext context, int index) {
+                  Dogadjaj d = _savedList![index];
+                  return DogadjajHorizontalWidget(
+                      dogadjaj: d, reloadPage: loadData);
+                },
+              )
+            : Container(
+                child: Text("Nema rezultata"),
+              ));
   }
 }

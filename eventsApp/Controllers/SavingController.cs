@@ -39,5 +39,11 @@ namespace eventsApp.Controllers
         {
             return await _service.Delete(request);
         }
+
+        [HttpGet("{korisnikId}/saved")]
+        public async Task<List<Model.DogadjajiListResponse>> GetSavedEvents(int korisnikId)
+        {
+            return await _service.GetSavedEvents(korisnikId);
+        }
     }
 }

@@ -9,8 +9,10 @@ import 'package:provider/provider.dart';
 
 class DogadjajHorizontalWidget extends StatefulWidget {
   Dogadjaj dogadjaj;
+  Function? reloadPage;
 
-  DogadjajHorizontalWidget({super.key, required this.dogadjaj});
+  DogadjajHorizontalWidget(
+      {super.key, required this.dogadjaj, this.reloadPage});
 
   @override
   State<DogadjajHorizontalWidget> createState() =>
@@ -55,6 +57,9 @@ class _DogadjajHorizontalWidgetState extends State<DogadjajHorizontalWidget> {
         isLoading = false;
       });
     });
+    if (widget.reloadPage != null) {
+      widget.reloadPage!();
+    }
   }
 
   _savedClicked() async {
@@ -75,6 +80,9 @@ class _DogadjajHorizontalWidgetState extends State<DogadjajHorizontalWidget> {
     setState(() {
       saved = value ?? saved;
     });
+    if (widget.reloadPage != null) {
+      widget.reloadPage!();
+    }
   }
 
   handleException(Exception e) {

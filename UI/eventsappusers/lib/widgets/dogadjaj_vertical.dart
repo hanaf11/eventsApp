@@ -1,4 +1,5 @@
 import 'package:eventsappusers/models/dogadjaj.dart';
+import 'package:eventsappusers/screens/event_details_screen.dart';
 import 'package:eventsappusers/utils/category_color_util.dart';
 import 'package:eventsappusers/utils/formatting_util.dart';
 import 'package:flutter/material.dart';
@@ -34,27 +35,39 @@ class _DogadjajVerticalWidgetState extends State<DogadjajVerticalWidget> {
             borderRadius: BorderRadius.circular(20)),
         child: Column(
           children: [
-            ClipRRect(
-                borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(20), bottom: Radius.zero),
-                child: SizedBox(
-                  height: 150,
-                  width: 160,
-                  child: imageFromBase64String(widget.dogadjaj.naslovna),
-                )),
+            SizedBox(
+                height: 150,
+                width: 160,
+                child: InkWell(
+                    onTap: () async {
+                      navigateToEventDetails();
+                    },
+                    child: ClipRRect(
+                        borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(20), bottom: Radius.zero),
+                        child: SizedBox(
+                          height: 150,
+                          width: 160,
+                          child:
+                              imageFromBase64String(widget.dogadjaj.naslovna),
+                        )))),
             _buildKategorija(),
-            Text(
-              widget.dogadjaj.naziv ?? '',
-              overflow: TextOverflow.ellipsis,
-              softWrap: false,
-              maxLines: 1,
-              style: TextStyle(
-                  fontFamily: 'Montserrat',
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                  letterSpacing: 0.3,
-                  color: Color.fromRGBO(31, 48, 83, 1)),
-            ),
+            InkWell(
+                onTap: () async {
+                  navigateToEventDetails();
+                },
+                child: Text(
+                  widget.dogadjaj.naziv ?? '',
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: false,
+                  maxLines: 1,
+                  style: TextStyle(
+                      fontFamily: 'Montserrat',
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                      letterSpacing: 0.3,
+                      color: Color.fromRGBO(31, 48, 83, 1)),
+                )),
             Text(
               dayAndMonth(widget.dogadjaj.datumOd ?? DateTime.now()) +
                   " - " +
@@ -100,6 +113,15 @@ class _DogadjajVerticalWidgetState extends State<DogadjajVerticalWidget> {
           letterSpacing: 1,
           fontSize: 10,
           fontWeight: FontWeight.w800),
+    );
+  }
+
+  navigateToEventDetails() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) =>
+              EventDetailsScreen(dogadjajId: widget.dogadjaj.dogadjajId!)),
     );
   }
 }

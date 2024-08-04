@@ -39,6 +39,28 @@ class DogadjajProvider extends BaseProvider<Dogadjaj> {
     }
   }
 
+  Future<List<Dogadjaj>> getSaved(int? korisnikId) async {
+    var url = "${_baseUrl}Saving/$korisnikId/saved";
+    var uri = Uri.parse(url);
+    var headers = BaseProvider.createHeaders();
+
+    var response = await http.get(uri, headers: headers);
+
+    if (BaseProvider.isValidResponse(response)) {
+      var data = jsonDecode(response.body);
+      print("data $data");
+
+      List<Dogadjaj> result = [];
+      for (var item in data) {
+        result.add(fromJson(item));
+      }
+
+      return result;
+    } else {
+      throw new Exception("Unknown exception");
+    }
+  }
+
   @override
   Dogadjaj fromJson(data) {
     return Dogadjaj.fromJson(data);

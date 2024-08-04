@@ -57,6 +57,18 @@ namespace eventsApp.Services
             return false;
         }
 
+        public async Task<List<Model.DogadjajiListResponse>> GetSavedEvents(int korisnikId)
+        {
+            bool korisnikExists = await _context.Korisnicis.AnyAsync(k => k.KorisnikId == korisnikId);
+            if (!korisnikExists)
+            {
+                throw new Model.UserException("Korisnik nije pronadjen");
+            }
+            var dogadjajiList = await _context.Korisnicis.Where(k => k.KorisnikId == korisnikId).SelectMany(k => k.Savings)
+             .Include(s => s.Dogadjaj.Kategorija).OrderByDescending(s => s.Vrijeme).Select(s => s.Dogadjaj).ToListAsync();
+            return _mapper.Map<List<Model.DogadjajiListResponse>>(dogadjajiList);
+        }
+
         private async Task ValidateRequest(SavingObject insert, bool saveRequest)
         {
             bool dogadjajExists = await _context.Dogadjajis.AnyAsync(d => d.DogadjajId == insert.DogadjajId);

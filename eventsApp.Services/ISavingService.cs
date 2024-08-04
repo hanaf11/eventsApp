@@ -14,6 +14,7 @@ namespace eventsApp.Services
         Task<bool> IsSaved(SavingObject search);
         Task<bool> Save(SavingObject insert);
         Task<bool> Delete(SavingObject request);
+        Task<List<Model.DogadjajiListResponse>> GetSavedEvents(int korisnikId);
     }
 }
 
