@@ -30,24 +30,23 @@ namespace eventsApp.Services
         }
 
 
-        public async Task InsertGallery(int dogadjajId, List<SlikeInsertRequest> request)
+        public async Task InsertGallery(int dogadjajId, List<byte[]> request)
         {
             var set = _context.Set<Database.Slike>();
 
-            foreach (var slikaModel in request)
+            foreach (var slikaByte in request)
             {
                 /* slikaModel.DogadjajId = dogadjajId;
                  var slikaEntity = _mapper.Map<Database.Slike>(slikaModel);*/
 
 
-                set.Add(CreateSlika(slikaModel, dogadjajId));
+                set.Add(CreateSlika(new SlikeInsertRequest(){Slika= slikaByte, DogadjajId=dogadjajId}));
             }
             await _context.SaveChangesAsync();
         }
 
-        public Database.Slike CreateSlika(SlikeInsertRequest slikaModel, int dogadjajId)
+        public Database.Slike CreateSlika(SlikeInsertRequest slikaModel)
         {
-            slikaModel.DogadjajId = dogadjajId;
             return _mapper.Map<Database.Slike>(slikaModel);
         }
 
@@ -60,7 +59,12 @@ namespace eventsApp.Services
 
             if (galerija == null)
             {
-                await InsertGallery(dogadjajId, request);
+                List<byte[]> slikeByteList=new List<byte[]>();
+                foreach (var slika in request)
+                {
+                    slikeByteList.Add(slika.Slika);
+                }
+                await InsertGallery(dogadjajId, slikeByteList);
             }
             else
             {
@@ -68,7 +72,7 @@ namespace eventsApp.Services
                 {
                     if (slikaModel.SlikaId == null)
                     {
-                        set.Add(CreateSlika(slikaModel, dogadjajId));
+                        set.Add(CreateSlika(new SlikeInsertRequest() { Slika=slikaModel.Slika, DogadjajId=dogadjajId}));
                     }
 
                 }

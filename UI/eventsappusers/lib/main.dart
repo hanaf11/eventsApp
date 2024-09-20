@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:eventsappusers/models/korisnik.dart';
 import 'package:eventsappusers/models/korisnik_global.dart';
 import 'package:eventsappusers/providers/auth_provider.dart';
+import 'package:eventsappusers/providers/dobavljac_provider.dart';
 import 'package:eventsappusers/providers/dogadjaj_provider.dart';
 import 'package:eventsappusers/providers/galerija_provider.dart';
 import 'package:eventsappusers/providers/kategorije_provider.dart';
@@ -43,6 +44,8 @@ void main() {
         create: (_) => KomentariProvider()),
     ChangeNotifierProvider<SavingProvider>(create: (_) => SavingProvider()),
     ChangeNotifierProvider<GalerijaProvider>(create: (_) => GalerijaProvider()),
+    ChangeNotifierProvider<DobavljacProvider>(
+        create: (_) => DobavljacProvider()),
   ], child: const MyApp()));
 }
 

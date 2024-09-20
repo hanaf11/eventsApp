@@ -19,6 +19,8 @@ namespace eventsApp.Model.Requests
 
         public string? Program { get; set; }
 
+        public byte[]? ProgramSlika { get; set; }
+
         public byte[] Naslovna { get; set; } = null!;
 
         public string Opis { get; set; } = null!;
@@ -37,6 +39,12 @@ namespace eventsApp.Model.Requests
 
         public string? Organizator { get; set; }
 
-        public List<SlikeInsertRequest>? Galerija { get; set; }
+        // public List<SlikeInsertRequest>? Galerija { get; set; }
+
+        public List<byte[]>? Galerija { get; set; }
+
+      //  public bool? ProdajaKarata  { get; set; }
+
+        public List<TipKarteInsertRequest>? TipoviKarata { get; set; }
     }
 }

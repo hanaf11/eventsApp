@@ -12,11 +12,12 @@ namespace eventsApp.Services.DogadjajiStateMachine
 {
     public class InitialEventState:BaseState
     {
-
+        protected readonly ITipKarteService _tipKarteService;
         protected readonly GalerijaServiceImpl _gallery;
-        public InitialEventState(IServiceProvider serviceProvider,Database.EventsDbContext context, IMapper mapper, GalerijaServiceImpl gallery) : base(serviceProvider, context, mapper)
+        public InitialEventState(IServiceProvider serviceProvider,Database.EventsDbContext context, IMapper mapper, GalerijaServiceImpl gallery, ITipKarteService tipKarteService) : base(serviceProvider, context, mapper)
         {
             _gallery = gallery;
+            _tipKarteService = tipKarteService;
         }
 
         public override async Task<Dogadjaji> Insert(DogadjajiInsertRequest request)
@@ -33,6 +34,11 @@ namespace eventsApp.Services.DogadjajiStateMachine
             if (request.Galerija?.Count > 0)
             {
                 await _gallery.InsertGallery(entity.DogadjajId, request.Galerija);
+            }
+            //if(request.ProdajaKarata!=null && request.ProdajaKarata==true && request.TipoviKarata?.Count > 0)
+            if ( request.TipoviKarata?.Count > 0)
+                {
+                await _tipKarteService.InsertTipKarte(entity.DogadjajId, request.TipoviKarata);
             }
 
             return _mapper.Map<Dogadjaji>(entity);

@@ -11,12 +11,14 @@ class NarudzbaMasterScreen extends StatefulWidget {
   double childHeight;
   String naslov;
   int? tabActive;
+  bool? hideFooter;
 
   NarudzbaMasterScreen(
       {required this.childHeight,
       required this.child,
       required this.naslov,
       this.tabActive,
+      this.hideFooter,
       super.key});
 
   @override
@@ -50,7 +52,8 @@ class _NarudzbaMasterScreenState extends State<NarudzbaMasterScreen> {
                 children: [_buildHeader(), widget.child, Spacer()],
               )),
 
-            _buildFooter(), // Footer placed at the bottom
+            if (widget.hideFooter == null || widget.hideFooter == false)
+              _buildFooter(), // Footer placed at the bottom
           ],
         );
       },

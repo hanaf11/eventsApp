@@ -12,6 +12,7 @@ import 'package:eventsappusers/providers/saving_provider.dart';
 import 'package:eventsappusers/screens/buy_ticket_screen.dart';
 import 'package:eventsappusers/utils/category_color_util.dart';
 import 'package:eventsappusers/utils/formatting_util.dart';
+import 'package:eventsappusers/utils/util.dart';
 import 'package:eventsappusers/widgets/comment_widget.dart';
 import 'package:eventsappusers/widgets/heading_widget.dart';
 import 'package:eventsappusers/widgets/input_field.dart';
@@ -55,6 +56,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
   TextEditingController _komentarController = new TextEditingController();
   late List<Komentar>? _komentariList;
   late List<Slika>? _galerija;
+  late List<ImageObj>? imageList;
 
   _EventDetailsScreenState();
 
@@ -213,18 +215,6 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
   }
 
   void _handleSelection(int index) {}
-
-  final List<String> imageList = [
-    'assets/images/banner.jpg',
-    'assets/images/banner.jpg',
-    'assets/images/banner.jpg',
-    'assets/images/banner.jpg',
-    'assets/images/banner.jpg',
-    'assets/images/banner.jpg',
-    'assets/images/banner.jpg',
-
-    // Add more image paths
-  ];
 
   _savedClicked() async {
     bool? value;
@@ -496,7 +486,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
   }
 
   Widget _buildGalerija() {
-    List<Image>? imageList = imageListFromBase64String(_galerija);
+    List<ImageObj>? imageList = imageListFromBase64String(_galerija);
     if (imageList != null && imageList.isNotEmpty) {
       return Column(
         children: [

@@ -1,8 +1,9 @@
+import 'package:eventsappusers/utils/util.dart';
 import 'package:flutter/material.dart';
 
 class FullScreenGallery extends StatefulWidget {
   final List<String>? imagePathList;
-  final List<Image>? imageList;
+  final List<ImageObj>? imageList;
   final int initialIndex;
 
   FullScreenGallery(
@@ -39,7 +40,9 @@ class _FullScreenGalleryState extends State<FullScreenGallery> {
           itemBuilder: (context, index) {
             return Center(
                 child: widget.imageList != null && widget.imageList!.isNotEmpty
-                    ? Hero(tag: 'image$index', child: widget.imageList![index])
+                    ? Hero(
+                        tag: 'image$index',
+                        child: widget.imageList![index].image)
                     : widget.imagePathList != null &&
                             widget.imagePathList!.isNotEmpty
                         ? Hero(

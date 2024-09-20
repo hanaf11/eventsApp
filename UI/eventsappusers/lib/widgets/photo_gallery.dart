@@ -1,10 +1,11 @@
+import 'package:eventsappusers/utils/util.dart';
 import 'package:flutter/material.dart';
 
 import 'full_screen_gallery.dart';
 
 class PhotoGallery extends StatelessWidget {
   final List<String>? imagePathList;
-  final List<Image>? imageList;
+  final List<ImageObj>? imageList;
   final bool? delete;
   final Function(int)? onDelete;
 
@@ -51,7 +52,8 @@ class PhotoGallery extends StatelessWidget {
                           margin: EdgeInsets.symmetric(horizontal: 5),
                           child: imageList != null && imageList!.isNotEmpty
                               ? Hero(
-                                  tag: 'image$index', child: imageList![index])
+                                  tag: 'image$index',
+                                  child: imageList![index].image)
                               : imagePathList != null &&
                                       imagePathList!.isNotEmpty
                                   ? Hero(

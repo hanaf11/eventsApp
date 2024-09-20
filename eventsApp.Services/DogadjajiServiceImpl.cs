@@ -45,15 +45,15 @@ namespace eventsApp.Services
             }
             if (search?.DatumOd != null && search?.DatumDo==null)
             {
-                filteredQuery = filteredQuery.Where(x => x.DatumOd>=(search.DatumOd));
+                filteredQuery = filteredQuery.Where(x =>x.DatumOd >= search.DatumOd || x.DatumDo >= search.DatumOd);
             }
             if (search?.DatumOd==null && search?.DatumDo != null)
             {
-                filteredQuery = filteredQuery.Where(x => x.DatumOd<=(search.DatumDo));
+                filteredQuery = filteredQuery.Where(x => x.DatumOd <= search.DatumDo && x.DatumDo >= search.DatumDo);
             }
             if(search?.DatumOd!=null && search?.DatumDo!=null)
             {
-                filteredQuery = filteredQuery.Where(x => x.DatumOd >= (search.DatumOd)).Where(x=>x.DatumOd<=search.DatumDo);
+                filteredQuery = filteredQuery.Where(x => (x.DatumOd >= search.DatumOd && x.DatumOd <= search.DatumDo) || (x.DatumOd < search.DatumOd && x.DatumDo >= search.DatumOd));
             }
             if (search?.DobavljacId != null)
             {
@@ -65,7 +65,7 @@ namespace eventsApp.Services
             }
             if (search?.Status != null)
             {
-                filteredQuery = filteredQuery.Where(x => x.Status.Equals(search.Podkategorija));
+                filteredQuery = filteredQuery.Where(x => x.Status.Equals(search.Status));
             }
             return filteredQuery;
         }

@@ -38,6 +38,7 @@ namespace eventsApp.Services
             CreateMap<Database.Komentari, Model.Komentari>();
             CreateMap<Model.Requests.KomentarInsertObject, Database.Komentari>();
             CreateMap<Model.Requests.SavingObject, Database.Saving>();
+            CreateMap<Model.Requests.TipKarteInsertRequest, Database.TipKarte>();
         }
     }
 }

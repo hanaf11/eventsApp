@@ -20,7 +20,9 @@ class ZahtjeviListScreen extends StatefulWidget {
 
 class _ZahtjeviListScreenState extends State<ZahtjeviListScreen> {
   int? selected = 1;
-  // bool _isLoading=true;
+  bool _isLoading = true;
+  late DogadjajProvider _dogadjajProvider;
+  List<Dogadjaj>? _zahtjeviList;
   _ZahtjeviListScreenState({this.selected});
 
   @override
@@ -28,30 +30,29 @@ class _ZahtjeviListScreenState extends State<ZahtjeviListScreen> {
     return MasterScreenWidget(
         selectedIndex: selected,
         child: Expanded(
-          child: // _isLoading ?
-              //const CircularProgressIndicator() :
-              Container(
-                  alignment: Alignment.topLeft,
-                  child: Padding(
-                      padding: EdgeInsets.all(20),
-                      child: Column(children: [
-                        const Text(
-                          "Zahtjevi za kreiranje događaja",
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Color.fromARGB(255, 62, 62, 62),
+            child: // _isLoading ?
+                //const CircularProgressIndicator() :
+                Container(
+                    alignment: Alignment.topLeft,
+                    child: Padding(
+                        padding: EdgeInsets.all(20),
+                        child: Column(children: [
+                          const Text(
+                            "Zahtjevi za kreiranje događaja",
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 62, 62, 62),
+                            ),
                           ),
-                        ),
-                        Divider(
+                          /*Divider(
                           color: const Color.fromARGB(255, 81, 81, 81),
                           height: 10, // Adjust the height as needed
                           thickness: 1, // Adjust the thickness as needed
                           indent: 10, // Adjust the indent as needed
                           endIndent: 10, // Adjust the end indent as needed
-                        )
-                      ]))),
-        ));
+                        )*/
+                        ])))));
   }
 }

@@ -17,3 +17,18 @@ var paragaph = TextStyle(
   letterSpacing: 0.3,
   fontFamily: 'Montserrat',
 );
+
+var inputField = InputDecoration(
+    filled: true,
+    fillColor: Colors.white,
+    hoverColor: Colors.white,
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(20)),
+      borderSide:
+          const BorderSide(color: Color.fromRGBO(239, 239, 239, 1), width: 0.5),
+    ),
+    errorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(20),
+      borderSide: const BorderSide(color: Colors.red),
+    ),
+    contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 0));

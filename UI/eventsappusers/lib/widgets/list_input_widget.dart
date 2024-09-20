@@ -3,15 +3,17 @@ import 'package:flutter/material.dart';
 class ListInputWidget extends StatefulWidget {
   List<String> valueList;
   String? label;
+  ValueChanged<String?>? onChanged;
 
-  ListInputWidget({required this.valueList, this.label, super.key});
+  ListInputWidget(
+      {required this.valueList, this.label, this.onChanged, super.key});
 
   @override
   State<ListInputWidget> createState() => _ListInputWidgetState();
 }
 
 class _ListInputWidgetState extends State<ListInputWidget> {
-  String _currentSelectedValue = '-';
+  String? _currentSelectedValue;
   _ListInputWidgetState();
 
   @override
@@ -72,9 +74,13 @@ class _ListInputWidgetState extends State<ListInputWidget> {
                           isDense: true,
                           onChanged: (String? newValue) {
                             setState(() {
-                              _currentSelectedValue = newValue ?? '-';
+                              _currentSelectedValue =
+                                  newValue ?? _currentSelectedValue;
                               state.didChange(newValue);
                             });
+                            if (widget.onChanged != null) {
+                              widget.onChanged!(newValue); // Call the callback
+                            }
                           },
                           items: widget.valueList.map((String value) {
                             return DropdownMenuItem<String>(

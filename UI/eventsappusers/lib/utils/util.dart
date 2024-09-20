@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class Authorization {
   static String? username;
   static String? password;
@@ -13,4 +15,11 @@ String formErrorMessage(dynamic jsonResponse) {
       })
       .join('; ')
       .toString();
+}
+
+class ImageObj {
+  Image image;
+  String base64Image;
+
+  ImageObj(this.image, this.base64Image);
 }
