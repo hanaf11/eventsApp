@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using eventsApp.Model;
+using eventsApp.Model.Messages;
 using eventsApp.Model.Requests;
 using eventsApp.Model.SearchObjects;
 using eventsApp.Services.Database;
 using eventsApp.Services.DogadjajiStateMachine;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.ML;
@@ -12,6 +14,7 @@ using Microsoft.ML.Trainers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,11 +24,14 @@ namespace eventsApp.Services
     {
         public BaseState _baseState { get; set; }
 
+        public ITipKarteService _tipKarteService { get; set; }
+
         ILogger<DogadjajiServiceImpl> _logger;
-        public DogadjajiServiceImpl(BaseState baseState, EventsDbContext context, IMapper mapper, ILogger<DogadjajiServiceImpl> logger) : base(context, mapper)
+        public DogadjajiServiceImpl(BaseState baseState, EventsDbContext context, IMapper mapper, ILogger<DogadjajiServiceImpl> logger, ITipKarteService tipKarteService) : base(context, mapper)
         {
             _baseState = baseState;
             _logger = logger;
+            _tipKarteService = tipKarteService;
         }
 
         public override IQueryable<Database.Dogadjaji> AddFilter(IQueryable<Database.Dogadjaji> query, DogadjajiSearchObject? search = null)
@@ -39,19 +45,19 @@ namespace eventsApp.Services
             {
                 filteredQuery = filteredQuery.Where(x => x.Lokacija.Contains(search.Lokacija));
             }
-            if (search?.Kategorija!=null)
+            if (search?.Kategorija != null)
             {
                 filteredQuery = filteredQuery.Where(x => x.KategorijaId.Equals(search.Kategorija));
             }
-            if (search?.DatumOd != null && search?.DatumDo==null)
+            if (search?.DatumOd != null && search?.DatumDo == null)
             {
-                filteredQuery = filteredQuery.Where(x =>x.DatumOd >= search.DatumOd || x.DatumDo >= search.DatumOd);
+                filteredQuery = filteredQuery.Where(x => x.DatumOd >= search.DatumOd || x.DatumDo >= search.DatumOd);
             }
-            if (search?.DatumOd==null && search?.DatumDo != null)
+            if (search?.DatumOd == null && search?.DatumDo != null)
             {
                 filteredQuery = filteredQuery.Where(x => x.DatumOd <= search.DatumDo && x.DatumDo >= search.DatumDo);
             }
-            if(search?.DatumOd!=null && search?.DatumDo!=null)
+            if (search?.DatumOd != null && search?.DatumDo != null)
             {
                 filteredQuery = filteredQuery.Where(x => (x.DatumOd >= search.DatumOd && x.DatumOd <= search.DatumDo) || (x.DatumOd < search.DatumOd && x.DatumDo >= search.DatumOd));
             }
@@ -76,6 +82,10 @@ namespace eventsApp.Services
             {
                 query = query.Include("Kategorija");
             }
+            if (search?.DobavljacIncluded == true)
+            {
+                query = query.Include("Dobavljac");
+            }
             return base.AddInclude(query, search);
         }
 
@@ -87,7 +97,7 @@ namespace eventsApp.Services
 
         public override async Task<Database.Dogadjaji> FindEntity(int id)
         {
-            return await _context.Set<Database.Dogadjaji>().Include(d => d.Kategorija).FirstOrDefaultAsync(d => d.DogadjajId==id);
+            return await _context.Set<Database.Dogadjaji>().Include(d => d.Kategorija).FirstOrDefaultAsync(d => d.DogadjajId == id);
         }
 
         public override async Task<Model.Dogadjaji> Update(int id, DogadjajiUpdateRequest update)
@@ -109,6 +119,19 @@ namespace eventsApp.Services
             var entity = await _context.Dogadjajis.FindAsync(id);
             var state = _baseState.CreateState(entity.Status);
             return await state.Hide(id);
+        }
+        public async Task<Model.Dogadjaji> Verify(int id)
+        {
+            var entity = await _context.Dogadjajis.FindAsync(id);
+            var state = _baseState.CreateState(entity.Status);
+            return await state.Verify(id);
+        }
+
+        public async Task<Model.Dogadjaji> SendRequestForTickets(int id, List<KarteRequest> request)
+        {
+            var entity = await _context.Dogadjajis.FindAsync(id);
+            var state = _baseState.CreateState(entity.Status);
+           return await state.SendRequestForTickets(id,request);
         }
 
         public async Task<List<string>> AllowedActions(int id) {
@@ -133,10 +156,53 @@ namespace eventsApp.Services
             {
                 throw new Model.UserException("Korisnik nije pronadjen");
             }
-             var dogadjajiList=  await _context.Korisnicis.Where(k => k.KorisnikId == korisnikId).SelectMany(k => k.Pracenjes).Select(p => p.Kategorija).SelectMany(k => k.Dogadjajis).Include(d=>d.Kategorija).OrderByDescending(d=>d.Created).ToListAsync();
+            var dogadjajiList = await _context.Korisnicis.Where(k => k.KorisnikId == korisnikId).SelectMany(k => k.Pracenjes).Select(p => p.Kategorija).SelectMany(k => k.Dogadjajis).Include(d => d.Kategorija).OrderByDescending(d => d.Created).ToListAsync();
 
             return _mapper.Map<List<Model.DogadjajiListResponse>>(dogadjajiList);
         }
+
+
+        public async Task<Model.PagedResult<DogadjajiListResponse>> FindVerified(BaseSearchObject? search)
+        {
+
+            Model.PagedResult<DogadjajiListResponse> result = new Model.PagedResult<DogadjajiListResponse>();
+
+            var query = _context.Dogadjajis.Include(x => x.Dobavljac).Where(x => x.DatumOd >= DateTime.Now || x.DatumDo >= DateTime.Now).Where(x => x.Status == "VERIFIED" || x.Status == "ON_HOLD");
+
+            result.Count = await query.CountAsync();
+
+            if (search?.Page.HasValue == true && search?.PageSize.HasValue == true)
+            {
+                query = query.Skip(search.Page.Value * search.PageSize.Value).Take(search.PageSize.Value);
+            }
+            var list = await query.ToListAsync();
+
+            result.Result = _mapper.Map<List<DogadjajiListResponse>>(list);
+
+            return result;
+
+        }
+
+        public async Task<HttpResponseMessage> LoadTickets(KarteDobavljacResponseList karteList)
+        {
+            var entity = await FindEvent(karteList.Dogadjaj, karteList.Datum, karteList.Lokacija);
+            if(entity==null) return new HttpResponseMessage(HttpStatusCode.BadRequest);
+            var state = _baseState.CreateState(entity.Status);
+            return await state.LoadTickets(entity,karteList);
+            
+        }
+
+        private async Task<Database.Dogadjaji> FindEvent(string naziv, DateTime datum, string lokacija)
+        {
+            var query = _context.Set<Database.Dogadjaji>();
+            return await query.Where(x => x.Naziv == naziv).Where(x => x.DatumOd.Date == datum.Date).Where(x => x.Lokacija == lokacija).SingleOrDefaultAsync();
+        }
+
+
+
+
+
+
 
         /* static MLContext mlContext = null;
          static object isLocked = new object();

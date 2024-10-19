@@ -363,7 +363,11 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
     List<Map<String, dynamic>> tipovi = [];
 
     tipKarteList?.forEach((tip) {
-      tipovi.add({'Naziv': tip['tipKarte'], 'Cijena': tip['cijena']});
+      tipovi.add({
+        'Naziv': tip['tipKarte'],
+        'Cijena': tip['cijena'],
+        'NumerisanjeSjedista': tip['numerisanjeSjedista']
+      });
     });
 
     return tipovi;
@@ -373,9 +377,9 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
   _addNewRow() {
     setState(() {
       rows.add(RowData(
-        tipKarteController: TextEditingController(),
-        cijenaController: TextEditingController(),
-      ));
+          tipKarteController: TextEditingController(),
+          cijenaController: TextEditingController(),
+          numerisanjeSjedista: false));
     });
   }
 
@@ -399,6 +403,7 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
   void _saveRow(int index) {
     var tipKarte = rows[index].tipKarteController.text;
     var cijena = rows[index].cijenaController.text;
+    var numerisanjeSjedista = rows[index].numerisanjeSjedista;
 
     if (tipKarte.isNotEmpty && cijena.isNotEmpty) {
       setState(() {
@@ -409,7 +414,8 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
           tipKarteList[existingIndex] = {
             'tipKarte': tipKarte,
             'cijena': cijena,
-            'rowsIndex': index
+            'rowsIndex': index,
+            'numerisanjeSjedista': numerisanjeSjedista
           };
         } else {
           var tipKarteExists = tipKarteList
@@ -419,8 +425,12 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
             return;
           }
 
-          tipKarteList.add(
-              {'tipKarte': tipKarte, 'cijena': cijena, 'rowsIndex': index});
+          tipKarteList.add({
+            'tipKarte': tipKarte,
+            'cijena': cijena,
+            'rowsIndex': index,
+            'numerisanjeSjedista': numerisanjeSjedista
+          });
         }
       });
 
@@ -1311,6 +1321,70 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
     );
   }
 
+  /* _buildRows() {
+    return Column(
+      children: rows.asMap().entries.map((entry) {
+        int index = entry.key;
+        RowData rowData = entry.value;
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  // Tip karte input
+                  Flexible(
+                    flex: 2,
+                    child: InputWidget(
+                      label: 'Tip karte',
+                      controller: rowData.tipKarteController,
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  // Cijena input
+                  Flexible(
+                    flex: 1,
+                    child: InputWidget(
+                      label: 'Cijena',
+                      controller: rowData.cijenaController,
+                      type: 'number',
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  // Cijena input
+                  Flexible(
+                    flex: 1,
+                    child: Checkbox(
+                      value: rowData.numerisanjeSjedista,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          rowData.numerisanjeSjedista =
+                              value ?? rowData.numerisanjeSjedista;
+                        });
+                      },
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.save,
+                        color: Color.fromRGBO(54, 112, 232, 1)),
+                    onPressed: () => _saveRow(index), // Save the row
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.delete,
+                        color: Color.fromRGBO(54, 112, 232, 1)),
+                    onPressed: () => _removeRow(index),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }*/
+
   _buildRows() {
     return Column(
       children: rows.asMap().entries.map((entry) {
@@ -1341,10 +1415,35 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
                       type: 'number',
                     ),
                   ),
+                  SizedBox(width: 10),
+                  // Cijena input
+
                   IconButton(
                     icon: Icon(Icons.save,
                         color: Color.fromRGBO(54, 112, 232, 1)),
                     onPressed: () => _saveRow(index), // Save the row
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Text("Uključeno numerisanje sjedišta: ",
+                      style: TextStyle(
+                          color: Color.fromRGBO(60, 71, 92, 1),
+                          fontFamily: 'Montserrat',
+                          fontSize: 15,
+                          letterSpacing: 0.3)),
+                  Flexible(
+                    flex: 1,
+                    child: Checkbox(
+                      value: rowData.numerisanjeSjedista,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          rowData.numerisanjeSjedista =
+                              value ?? rowData.numerisanjeSjedista;
+                        });
+                      },
+                    ),
                   ),
                   IconButton(
                     icon: Icon(Icons.delete,
@@ -1384,6 +1483,10 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
 class RowData {
   TextEditingController tipKarteController;
   TextEditingController cijenaController;
+  bool numerisanjeSjedista = false;
 
-  RowData({required this.tipKarteController, required this.cijenaController});
+  RowData(
+      {required this.tipKarteController,
+      required this.cijenaController,
+      required this.numerisanjeSjedista});
 }

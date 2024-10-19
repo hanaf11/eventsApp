@@ -11,5 +11,8 @@ namespace eventsApp.Services
     public interface ITipKarteService : IService<Model.TipKarte, Model.TipKarte, TipKarteSearchObject>
     {
         public Task InsertTipKarte(int dogadjajId, List<TipKarteInsertRequest> request);
+        public Task<Database.TipKarte> FindTip(string naziv, int dogadjajId);
+
+        public Task UpdateStanje(Dictionary<string, int> stanje, int dogadjajId);
     }
 }

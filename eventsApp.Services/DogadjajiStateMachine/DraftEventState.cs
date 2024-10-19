@@ -50,7 +50,15 @@ namespace eventsApp.Services.DogadjajiStateMachine
 
             var entity = await set.FindAsync(id);
 
-            entity.Status = "VERIFIED";
+            if (entity?.DobavljacId == null)
+            {
+                entity.Status = "ACTIVE";
+            }
+            else
+            {
+                entity.Status = "VERIFIED";
+            }
+  
             entity.Created = DateTime.Now;
 
             await _context.SaveChangesAsync();
@@ -87,6 +95,7 @@ namespace eventsApp.Services.DogadjajiStateMachine
             var entity = await set.FindAsync(id);
 
             entity.Status = "HIDDEN";
+            entity.Created=DateTime.Now;
 
             await _context.SaveChangesAsync();
 

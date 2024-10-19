@@ -1,7 +1,13 @@
+import 'package:eventsappusers/models/dogadjaj.dart';
+import 'package:eventsappusers/models/search_result.dart';
+import 'package:eventsappusers/models/tipkarte.dart';
+import 'package:eventsappusers/providers/dogadjaj_provider.dart';
+import 'package:eventsappusers/providers/tipkarte_provider.dart';
 import 'package:eventsappusers/widgets/heading_widget.dart';
 import 'package:eventsappusers/widgets/narudzba_master_screen.dart';
 import 'package:eventsappusers/widgets/next_step_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../widgets/comment_widget.dart';
 import '../widgets/dogadjaj_small_overview.dart';
@@ -19,12 +25,31 @@ class BuyTicketScreen extends StatefulWidget {
 class _BuyTicketScreenState extends State<BuyTicketScreen> {
   double _contentHeight = 0;
   String? locationImage = "assets/images/banner.jpg";
+  bool isLoading = true;
+  late TipkarteProvider _tipKarteProvider;
+  late DogadjajProvider _dogadjajProvider;
+  SearchResult<TipKarte>? tipKarteResult;
+  Dogadjaj? dogadjaj;
+  bool tipKarteLoaded = false;
+  bool dogadjajLoaded = false;
   //String? locationImage = null;
   List? karteList = [
     {'nazivKarte': 'Zona B', 'raspolozivo': 5, 'cijena': 15},
     {'nazivKarte': 'Zona A', 'raspolozivo': 10, 'cijena': 30}
   ];
+
   _BuyTicketScreenState();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _tipKarteProvider = context.read<TipkarteProvider>();
+    _dogadjajProvider = context.read<DogadjajProvider>();
+    loadData();
+  }
+
+  loadData() {}
 
   @override
   Widget build(BuildContext context) {

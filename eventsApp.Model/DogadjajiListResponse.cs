@@ -24,6 +24,10 @@ namespace eventsApp.Model
 
         public byte[] Naslovna { get; set; }
 
+        public string Status { get; set; }
+
+        public Dobavljaci Dobavljac { get; set; }
+
 
     }
 }

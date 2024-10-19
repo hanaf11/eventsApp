@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 namespace eventsApp.Services
@@ -29,10 +30,39 @@ namespace eventsApp.Services
 
         public Database.TipKarte CreateTipKarte(TipKarteInsertRequest tipKarteReq, int dogadjajId)
         {
-           Database.TipKarte tipKarteDb= _mapper.Map<Database.TipKarte>(tipKarteReq);
+            Database.TipKarte tipKarteDb = _mapper.Map<Database.TipKarte>(tipKarteReq);
             tipKarteDb.Stanje = 0;
-            tipKarteDb.DogadjajId=dogadjajId;
+            tipKarteDb.DogadjajId = dogadjajId;
             return tipKarteDb;
+        }
+
+        public async Task<Database.TipKarte> FindTip(string naziv, int dogadjajId)
+        {
+            var query = _context.Set<Database.TipKarte>();
+            return await query.Where(x => x.Naziv == naziv && x.DogadjajId == dogadjajId).FirstOrDefaultAsync();
+        }
+
+        public async Task UpdateStanje(Dictionary<string, int> stanjeMap, int dogadjajId)
+        {
+            foreach (var entry in stanjeMap)
+            {
+                Database.TipKarte tip = await FindTip(entry.Key, dogadjajId);
+                if (tip != null)
+                {
+                    tip.Stanje += entry.Value;
+                }
+            }
+            await _context.SaveChangesAsync();
+        }
+
+        public override IQueryable<Database.TipKarte> AddFilter(IQueryable<Database.TipKarte> query, TipKarteSearchObject? search = null)
+        {
+            var filteredQuery = base.AddFilter(query, search);
+            if (search.DogadjajId != null)
+            {
+                filteredQuery = filteredQuery.Where(x => x.DogadjajId == search.DogadjajId);
+            }
+            return filteredQuery;
         }
     }
 }

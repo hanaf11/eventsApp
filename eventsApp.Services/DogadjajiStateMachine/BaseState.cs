@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using eventsApp.Model;
+using eventsApp.Model.Messages;
 using eventsApp.Model.Requests;
 using eventsApp.Services.Database;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,6 +48,17 @@ namespace eventsApp.Services.DogadjajiStateMachine
         {
             throw new UserException("Not allowed");
         }
+
+        public virtual Task<Model.Dogadjaji> SendRequestForTickets(int id, List<KarteRequest> request)
+        {
+            throw new UserException("Not allowed");
+        }
+
+        public virtual Task<HttpResponseMessage> LoadTickets(Database.Dogadjaji dogadjaj, KarteDobavljacResponseList karteList)
+        {
+            throw new UserException("Not allowed");
+        }
+
 
 
         public BaseState CreateState(string statusName)

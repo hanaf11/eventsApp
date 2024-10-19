@@ -11,8 +11,6 @@ public partial class Karte
 
     public string? Sjediste { get; set; }
 
-    public byte[]? Slika { get; set; }
-
     public int? TipKarteId { get; set; }
 
     public virtual TipKarte? TipKarte { get; set; }

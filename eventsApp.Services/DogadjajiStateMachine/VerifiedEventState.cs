@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EasyNetQ;
 using eventsApp.Model.Messages;
+using eventsApp.Model.Requests;
 using eventsApp.Services.Database;
 using RabbitMQ.Client;
 using System;
@@ -53,6 +54,24 @@ namespace eventsApp.Services.DogadjajiStateMachine
 
             return mappedEntity;
         }
+
+        public override async Task<Model.Dogadjaji> SendRequestForTickets(int id, List<KarteRequest> request)
+        {
+            var set = _context.Set<Database.Dogadjaji>();
+            var entity = await set.FindAsync(id);
+
+            using var bus = RabbitHutch.CreateBus("host=localhost");
+            KarteDobavljacRequest message = new KarteDobavljacRequest { Dogadjaj = entity.Naziv, Datum = entity.DatumOd, Lokacija = entity.Lokacija, KarteZahtjev = request };
+            bus.PubSub.Publish(message);
+
+            entity.Status = "ON_HOLD";
+            entity.Created = DateTime.Now;
+           await  _context.SaveChangesAsync();
+
+            var mappedEntity = _mapper.Map<Model.Dogadjaji>(entity);
+            return mappedEntity;
+        }
+
 
         public override List<string> AllowedActions(Database.Dogadjaji entity)
         {

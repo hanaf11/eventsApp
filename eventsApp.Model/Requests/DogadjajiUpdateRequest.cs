@@ -27,14 +27,14 @@ namespace eventsApp.Model.Requests
 
         public byte[]? LokacijaSlika { get; set; }
 
-        public int? DobavljacId { get; set; }
-
-        public int? KategorijaId { get; set; }
+        public int? KategorijaId { get; set; } = null!;
 
         public int? PodkategorijaId { get; set; }
 
-        public string? Organizator { get; set; }
+         public List<SlikeInsertRequest>? Galerija { get; set; }
 
-        public List<SlikeInsertRequest>? Galerija { get; set; }
+        //public List<byte[]>? Galerija { get; set; }
+
+        public byte[]? ProgramSlika { get; set; }
     }
 }

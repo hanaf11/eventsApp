@@ -12,6 +12,7 @@ import 'package:eventsappusers/providers/korisnik_provider.dart';
 import 'package:eventsappusers/providers/podkategorija_provider.dart';
 import 'package:eventsappusers/providers/pracenje_provider.dart';
 import 'package:eventsappusers/providers/saving_provider.dart';
+import 'package:eventsappusers/providers/tipkarte_provider.dart';
 import 'package:eventsappusers/screens/buy_ticket_screen.dart';
 import 'package:eventsappusers/screens/edit_profile_screen.dart';
 import 'package:eventsappusers/screens/event_details_screen.dart';
@@ -46,6 +47,7 @@ void main() {
     ChangeNotifierProvider<GalerijaProvider>(create: (_) => GalerijaProvider()),
     ChangeNotifierProvider<DobavljacProvider>(
         create: (_) => DobavljacProvider()),
+    ChangeNotifierProvider<TipkarteProvider>(create: (_) => TipkarteProvider()),
   ], child: const MyApp()));
 }
 

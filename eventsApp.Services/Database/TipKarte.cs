@@ -13,6 +13,8 @@ public partial class TipKarte
 
     public int Stanje { get; set; }
 
+    public bool NumerisanjeSjedista { get; set; }
+
     public int? DogadjajId { get; set; }
 
     public virtual Dogadjaji? Dogadjaj { get; set; }

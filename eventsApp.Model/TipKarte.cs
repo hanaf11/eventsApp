@@ -15,5 +15,7 @@ namespace eventsApp.Model
         public decimal Cijena { get; set; }
 
         public int Stanje { get; set; }
+
+        public bool NumerisanjeSjedista { get; set; }
     }
 }

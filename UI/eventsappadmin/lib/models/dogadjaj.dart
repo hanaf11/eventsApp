@@ -1,3 +1,4 @@
+import 'package:eventsappadmin/models/dobavljac.dart';
 import 'package:eventsappadmin/models/slika.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -19,6 +20,10 @@ class Dogadjaj {
   String? organizator;
   String? website;
   List<Slika>? galerija;
+  String? programSlika;
+  String? lokacijaSlika;
+  String? status;
+  Dobavljac? dobavljac;
 
   Dogadjaj(
       this.dogadjajId,
@@ -34,7 +39,11 @@ class Dogadjaj {
       this.dobavljacId,
       this.organizator,
       this.website,
-      this.galerija);
+      this.galerija,
+      this.programSlika,
+      this.lokacijaSlika,
+      this.status,
+      this.dobavljac);
 
   factory Dogadjaj.fromJson(Map<String, dynamic> json) =>
       _$DogadjajFromJson(json);

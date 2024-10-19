@@ -33,15 +33,10 @@ channel.BasicConsume(queue: "category_subscription",
 using (var bus = RabbitHutch.CreateBus("host=localhost"))
 {
     // bus.PubSub.Subscribe<DogadjajActivated>("seminarski", HandleTextMessage;
-    bus.PubSub.Subscribe<DogadjajActivated>("seminarski", msg =>
+    await bus.PubSub.SubscribeAsync<DogadjajActivated>("mail_sender", msg =>
     {
         Console.WriteLine($"Event activated: {msg.Dogadjaj.Naziv}");
     });
     Console.WriteLine("Listening for messages. Hit <return> to quit.");
     Console.ReadLine();
-}
-
-void HandleTextMessage(Dogadjaji obj)
-{
-    Console.WriteLine($"Received: {obj?.DogadjajId}, {obj?.Naziv}");
 }

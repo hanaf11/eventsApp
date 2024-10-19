@@ -1,4 +1,5 @@
 ﻿using eventsApp.Model;
+using eventsApp.Model.Messages;
 using eventsApp.Model.Requests;
 using eventsApp.Model.SearchObjects;
 using eventsApp.Services;
@@ -28,6 +29,19 @@ namespace eventsApp.Controllers
             return await (_service as IDogadjajiService).Hide(id);
         }
 
+
+        [HttpPut("{id}/verify")]
+        public virtual async Task<Model.Dogadjaji> Verify(int id)
+        {
+            return await (_service as IDogadjajiService).Verify(id);
+        }
+
+        [HttpPut("{id}/send-ticket-request")]
+        public virtual async Task<Model.Dogadjaji> SendRequestForTickets(int id, [FromBody] List<KarteRequest> request)
+        {
+             return await (_service as IDogadjajiService).SendRequestForTickets(id,request);
+        }
+
         [HttpGet("{id}/allowedActions")]
         public virtual async Task<List<string>> AllowedActions(int id)
         {
@@ -38,6 +52,18 @@ namespace eventsApp.Controllers
         public async Task<List<Model.DogadjajiListResponse>> GetEventsFromFollowingCategories(int korisnikId)
         {
             return await (_service as IDogadjajiService).GetEventsFromFollowingCategories(korisnikId);
+        }
+
+        [HttpGet("find-verified")]
+        public async Task<Model.PagedResult<DogadjajiListResponse>> FindVerified([FromQuery] BaseSearchObject? search = null)
+        {
+            return await (_service as IDogadjajiService).FindVerified(search);
+        }
+
+        [HttpPost("send-tickets")]
+        public async Task<HttpResponseMessage> LoadTickets([FromBody]KarteDobavljacResponseList karteList)
+        {
+            return await (_service as IDogadjajiService).LoadTickets(karteList);
         }
 
         /* [HttpGet("{id}/recommend")]

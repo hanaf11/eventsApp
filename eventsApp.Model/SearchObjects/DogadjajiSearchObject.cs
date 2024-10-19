@@ -17,5 +17,6 @@ namespace eventsApp.Model.SearchObjects
         public int? Podkategorija { get; set; }
         public bool? KategorijaIncluded { get; set; }
         public string? Status { get; set; }
+        public bool? DobavljacIncluded { get; set; }
     }
 }
