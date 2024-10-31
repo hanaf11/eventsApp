@@ -83,75 +83,77 @@ class _BuyTicketScreenState extends State<BuyTicketScreen> {
         child: Expanded(
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
-                : NarudzbaMasterScreen(
-                    naslov: 'Kupi kartu',
-                    childHeight: _contentHeight,
-                    child: LayoutBuilder(builder:
-                        (BuildContext context, BoxConstraints constraints) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        if (mounted) {
-                          setState(() {
-                            _contentHeight = context.size!.height;
-                          });
-                        }
-                      });
-                      return Column(
-                        children: [
-                          Padding(
-                              padding: EdgeInsets.all(5),
-                              child: Column(children: [
-                                DogadjajSmallOverview(
-                                  naziv: widget.dogadjaj.naziv ?? '',
-                                  datumOd:
-                                      widget.dogadjaj.datumOd ?? DateTime.now(),
-                                  lokacija: widget.dogadjaj.lokacija,
-                                  naslovna: widget.dogadjaj.naslovna,
-                                ),
-                                SizedBox(
-                                  height: 25,
-                                ),
-                                locationImage != null
-                                    ? GestureDetector(
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  FullScreenImage(
-                                                tag: 'locationImage',
-                                                image: imageFromBase64String(
-                                                    widget.dogadjaj
-                                                        .lokacijaSlika),
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                        child: ConstrainedBox(
-                                            constraints:
-                                                BoxConstraints(maxHeight: 400),
-                                            child: SizedBox(
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.8,
-                                                child: Hero(
-                                                    tag: 'locationImage',
-                                                    child: ClipRRect(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(20),
-                                                        child:
-                                                            _lokacijaSlika)))))
-                                    : Text("Slika lokacije nije dodana"),
-                                SizedBox(
-                                  height: 25,
-                                ),
-                                _buildDostupneKarte()
-                              ]))
-                        ],
-                      );
-                    }),
-                  )));
+                : LayoutBuilder(builder:
+                    (BuildContext context, BoxConstraints constraints) {
+                    // Set the initial content height if not already set
+                    if (_contentHeight == 0) {
+                      _contentHeight = constraints.maxHeight;
+                    }
+                    return NarudzbaMasterScreen(
+                        naslov: 'Kupi kartu',
+                        childHeight: _contentHeight,
+                        child: SingleChildScrollView(
+                            child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 5),
+                                child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      DogadjajSmallOverview(
+                                        naziv: widget.dogadjaj.naziv ?? '',
+                                        datumOd: widget.dogadjaj.datumOd ??
+                                            DateTime.now(),
+                                        lokacija: widget.dogadjaj.lokacija,
+                                        naslovna: widget.dogadjaj.naslovna,
+                                      ),
+                                      SizedBox(
+                                        height: 25,
+                                      ),
+                                      locationImage != null
+                                          ? GestureDetector(
+                                              onTap: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        FullScreenImage(
+                                                      tag: 'locationImage',
+                                                      image:
+                                                          imageFromBase64String(
+                                                              widget.dogadjaj
+                                                                  .lokacijaSlika),
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                              child: ConstrainedBox(
+                                                  constraints: BoxConstraints(
+                                                      maxHeight: 400),
+                                                  child: SizedBox(
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              0.8,
+                                                      child: Hero(
+                                                          tag: 'locationImage',
+                                                          child: ClipRRect(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          20),
+                                                              child:
+                                                                  _lokacijaSlika)))))
+                                          : Text("Slika lokacije nije dodana"),
+                                      SizedBox(
+                                        height: 25,
+                                      ),
+                                      _buildDostupneKarte(),
+                                      SizedBox(
+                                        height: 20,
+                                      )
+                                    ]))));
+                  })));
   }
 
   _buildDostupneKarte() {
@@ -168,18 +170,22 @@ class _BuyTicketScreenState extends State<BuyTicketScreen> {
             "Dostupne karte"),
       ),
       SizedBox(
-        height: 10,
+        height: 5,
       ),
       karteList == null || (karteList != null && karteList!.isEmpty)
-          ? Center(
-              child: Text('Nema dostupnih karata za ovaj događaj'),
-            )
+          ? Padding(
+              padding: EdgeInsets.all(4),
+              child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text('Nema dostupnih karata za ovaj događaj')))
           : Column(
               children: karteList!.map((karte) {
                 return DostupneKarteWidget(
-                    nazivKarte: karte.naziv ?? '',
-                    raspolozivo: karte.stanje ?? 0,
-                    cijena: karte.cijena ?? 0);
+                  nazivKarte: karte.naziv ?? '',
+                  raspolozivo: karte.stanje ?? 0,
+                  cijena: karte.cijena ?? 0,
+                  stanje: karte.stanje ?? 0,
+                );
               }).toList(),
             )
     ]);

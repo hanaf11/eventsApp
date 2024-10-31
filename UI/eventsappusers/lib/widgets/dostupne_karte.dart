@@ -4,13 +4,14 @@ class DostupneKarteWidget extends StatefulWidget {
   String nazivKarte;
   int raspolozivo;
   double cijena;
+  int stanje;
 
-  DostupneKarteWidget({
-    super.key,
-    required this.nazivKarte,
-    required this.raspolozivo,
-    required this.cijena,
-  });
+  DostupneKarteWidget(
+      {super.key,
+      required this.nazivKarte,
+      required this.raspolozivo,
+      required this.cijena,
+      required this.stanje});
 
   @override
   State<DostupneKarteWidget> createState() => _DostupneKarteWidgetState();
@@ -126,7 +127,13 @@ class _DostupneKarteWidgetState extends State<DostupneKarteWidget> {
                       Color.fromRGBO(44, 152, 240, 1),
                     ),
                     padding: MaterialStatePropertyAll(EdgeInsets.all(0))),
-                onPressed: () {},
+                onPressed: () {
+                  if (kolicina - 1 >= 0) {
+                    setState(() {
+                      kolicina -= 1;
+                    });
+                  }
+                },
                 child: Icon(
                   Icons.remove,
                   color: Colors.white,
@@ -163,7 +170,13 @@ class _DostupneKarteWidgetState extends State<DostupneKarteWidget> {
                         Color.fromRGBO(44, 152, 240, 1),
                       ),
                       padding: MaterialStatePropertyAll(EdgeInsets.all(0))),
-                  onPressed: () {},
+                  onPressed: () {
+                    if (kolicina + 1 <= widget.stanje) {
+                      setState(() {
+                        kolicina += 1;
+                      });
+                    }
+                  },
                   child: Icon(
                     Icons.add,
                     color: Colors.white,
