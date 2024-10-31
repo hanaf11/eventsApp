@@ -3,6 +3,7 @@ import 'package:eventsappusers/models/search_result.dart';
 import 'package:eventsappusers/models/tipkarte.dart';
 import 'package:eventsappusers/providers/dogadjaj_provider.dart';
 import 'package:eventsappusers/providers/tipkarte_provider.dart';
+import 'package:eventsappusers/utils/formatting_util.dart';
 import 'package:eventsappusers/widgets/heading_widget.dart';
 import 'package:eventsappusers/widgets/narudzba_master_screen.dart';
 import 'package:eventsappusers/widgets/next_step_widget.dart';
@@ -16,7 +17,8 @@ import '../widgets/full_screen_image.dart';
 import '../widgets/master_screen.dart';
 
 class BuyTicketScreen extends StatefulWidget {
-  BuyTicketScreen({super.key});
+  Dogadjaj dogadjaj;
+  BuyTicketScreen({super.key, required this.dogadjaj});
 
   @override
   State<BuyTicketScreen> createState() => _BuyTicketScreenState();
@@ -26,17 +28,14 @@ class _BuyTicketScreenState extends State<BuyTicketScreen> {
   double _contentHeight = 0;
   String? locationImage = "assets/images/banner.jpg";
   bool isLoading = true;
+  bool slikaLoaded = false;
+  bool karteLoaded = false;
   late TipkarteProvider _tipKarteProvider;
-  late DogadjajProvider _dogadjajProvider;
   SearchResult<TipKarte>? tipKarteResult;
-  Dogadjaj? dogadjaj;
   bool tipKarteLoaded = false;
   bool dogadjajLoaded = false;
-  //String? locationImage = null;
-  List? karteList = [
-    {'nazivKarte': 'Zona B', 'raspolozivo': 5, 'cijena': 15},
-    {'nazivKarte': 'Zona A', 'raspolozivo': 10, 'cijena': 30}
-  ];
+  Image? _lokacijaSlika;
+  late List<TipKarte>? karteList;
 
   _BuyTicketScreenState();
 
@@ -45,24 +44,47 @@ class _BuyTicketScreenState extends State<BuyTicketScreen> {
     super.initState();
 
     _tipKarteProvider = context.read<TipkarteProvider>();
-    _dogadjajProvider = context.read<DogadjajProvider>();
     loadData();
   }
 
-  loadData() {}
+  loadData() {
+    setState(() {
+      _lokacijaSlika = imageFromBase64String(widget.dogadjaj.lokacijaSlika);
+      slikaLoaded = true;
+      handleLoading();
+    });
+
+    _tipKarteProvider.get(filter: {
+      'DogadjajId': widget.dogadjaj.dogadjajId,
+      'Stanje': 0
+    }).then((value) {
+      setState(() {
+        karteList = value.result;
+        karteLoaded = true;
+        handleLoading();
+      });
+    });
+  }
+
+  handleLoading() {
+    if (slikaLoaded && karteLoaded) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    var isLoading = false;
     return MasterScreen(
         selectedIndex: 3,
         showBackButton: true,
         showAppBar: true,
         child: Expanded(
             child: isLoading
-                ? const CircularProgressIndicator()
+                ? const Center(child: CircularProgressIndicator())
                 : NarudzbaMasterScreen(
-                    naslov: "Kupi kartu",
+                    naslov: 'Kupi kartu',
                     childHeight: _contentHeight,
                     child: LayoutBuilder(builder:
                         (BuildContext context, BoxConstraints constraints) {
@@ -79,8 +101,11 @@ class _BuyTicketScreenState extends State<BuyTicketScreen> {
                               padding: EdgeInsets.all(5),
                               child: Column(children: [
                                 DogadjajSmallOverview(
-                                  naziv: "whatevs",
-                                  datumOd: DateTime.now(),
+                                  naziv: widget.dogadjaj.naziv ?? '',
+                                  datumOd:
+                                      widget.dogadjaj.datumOd ?? DateTime.now(),
+                                  lokacija: widget.dogadjaj.lokacija,
+                                  naslovna: widget.dogadjaj.naslovna,
                                 ),
                                 SizedBox(
                                   height: 25,
@@ -94,24 +119,29 @@ class _BuyTicketScreenState extends State<BuyTicketScreen> {
                                               builder: (context) =>
                                                   FullScreenImage(
                                                 tag: 'locationImage',
-                                                imagePath: locationImage!,
+                                                image: imageFromBase64String(
+                                                    widget.dogadjaj
+                                                        .lokacijaSlika),
                                               ),
                                             ),
                                           );
                                         },
-                                        child: Hero(
-                                          tag: 'locationImage',
-                                          child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              child: Image.asset(
-                                                locationImage!,
+                                        child: ConstrainedBox(
+                                            constraints:
+                                                BoxConstraints(maxHeight: 400),
+                                            child: SizedBox(
                                                 width: MediaQuery.of(context)
-                                                    .size
-                                                    .width,
-                                                fit: BoxFit.fill,
-                                              )),
-                                        ))
+                                                        .size
+                                                        .width *
+                                                    0.8,
+                                                child: Hero(
+                                                    tag: 'locationImage',
+                                                    child: ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(20),
+                                                        child:
+                                                            _lokacijaSlika)))))
                                     : Text("Slika lokacije nije dodana"),
                                 SizedBox(
                                   height: 25,
@@ -147,10 +177,9 @@ class _BuyTicketScreenState extends State<BuyTicketScreen> {
           : Column(
               children: karteList!.map((karte) {
                 return DostupneKarteWidget(
-                  nazivKarte: karte['nazivKarte'],
-                  raspolozivo: karte['raspolozivo'],
-                  cijena: (karte['cijena'] as num).toDouble(),
-                );
+                    nazivKarte: karte.naziv ?? '',
+                    raspolozivo: karte.stanje ?? 0,
+                    cijena: karte.cijena ?? 0);
               }).toList(),
             )
     ]);

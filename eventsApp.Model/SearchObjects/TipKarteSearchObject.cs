@@ -9,5 +9,7 @@ namespace eventsApp.Model.SearchObjects
     public class TipKarteSearchObject:BaseSearchObject
     {
         public int? DogadjajId { get; set; }
+
+        public int? Stanje { get; set; }
     }
 }

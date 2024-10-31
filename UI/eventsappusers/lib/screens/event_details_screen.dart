@@ -260,7 +260,8 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => BuyTicketScreen()),
+                                    builder: (context) =>
+                                        BuyTicketScreen(dogadjaj: _dogadjaj)),
                               );
                             },
                             icon: Icon(
@@ -436,7 +437,13 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                                   ),
                                 ], borderRadius: BorderRadius.circular(20)),
                                 child: ElevatedButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                          builder: (context) => BuyTicketScreen(
+                                              dogadjaj: _dogadjaj)),
+                                    );
+                                  },
                                   child: Text("Kupi kartu"),
                                   style: ElevatedButton.styleFrom(
                                       foregroundColor: Colors.white,

@@ -58,9 +58,13 @@ namespace eventsApp.Services
         public override IQueryable<Database.TipKarte> AddFilter(IQueryable<Database.TipKarte> query, TipKarteSearchObject? search = null)
         {
             var filteredQuery = base.AddFilter(query, search);
-            if (search.DogadjajId != null)
+            if (search?.DogadjajId != null)
             {
                 filteredQuery = filteredQuery.Where(x => x.DogadjajId == search.DogadjajId);
+            }
+            if (search?.Stanje != null)
+            {
+                filteredQuery = filteredQuery.Where(x => x.Stanje > search.Stanje);
             }
             return filteredQuery;
         }
