@@ -16,6 +16,7 @@ import 'package:eventsappusers/screens/home_screen.dart';
 import 'package:eventsappusers/utils/style_util.dart';
 import 'package:eventsappusers/utils/util.dart';
 import 'package:eventsappusers/widgets/field_with_validate.dart';
+import 'package:eventsappusers/widgets/heading_widget.dart';
 import 'package:eventsappusers/widgets/input_field.dart';
 import 'package:eventsappusers/widgets/input_form_field.dart';
 import 'package:eventsappusers/widgets/input_widget.dart';
@@ -85,6 +86,8 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
       []; // This list will hold saved data
   List<RowData> rows = [];
   int? selectedKategorija;
+  bool kategorijeLoaded = false;
+  bool dobavljaciLoaded = false;
 
   @override
   void initState() {
@@ -107,7 +110,8 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
             }).toList();
             /*  kategorije =
                 _kategorijeList!.map((k) => k.naziv.toString()).toList();*/
-            isLoading = false;
+            kategorijeLoaded = true;
+            handleLoading();
           })
         });
   }
@@ -130,6 +134,14 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
                     child: Text("OK"))
               ],
             ));
+  }
+
+  handleLoading() {
+    if (kategorijeLoaded && dobavljaciLoaded) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   handleException(Exception e) {
@@ -156,6 +168,8 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
               return DropdownMenuItem<int>(
                   value: d.dobavljacId, child: Text(d.naziv ?? 'not loaded'));
             }).toList();
+            dobavljaciLoaded = true;
+            handleLoading();
           })
         });
   }
@@ -446,39 +460,44 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
         selectedIndex: 3,
         showBackButton: true,
         showAppBar: true,
-        child: Expanded(
-            child: isLoading
-                ? Container(child: Center(child: CircularProgressIndicator()))
-                : NarudzbaMasterScreen(
-                    naslov: "Kreiraj događaj",
-                    childHeight: _contentHeight,
-                    hideFooter: true,
-                    child: LayoutBuilder(builder:
-                        (BuildContext context, BoxConstraints constraints) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        if (mounted) {
-                          setState(() {
-                            _contentHeight = context.size!.height;
-                          });
-                        }
+        child: isLoading
+            ? const Expanded(child: Center(child: CircularProgressIndicator()))
+            : Expanded(
+                child: SingleChildScrollView(
+                    child: Column(children: [
+                LayoutBuilder(builder:
+                    (BuildContext context, BoxConstraints constraints) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) {
+                      setState(() {
+                        _contentHeight = constraints.maxHeight;
                       });
-                      return Padding(
-                          padding: EdgeInsets.all(15),
-                          child: Container(
-                              padding: EdgeInsets.all(10),
-                              width: MediaQuery.of(context).size.width,
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(20),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Color.fromARGB(255, 191, 190, 190),
-                                      spreadRadius: 1,
-                                      blurRadius: 5,
-                                      offset: Offset(4, 5),
-                                    ),
-                                  ]),
-                              child: Column(children: [
+                    }
+                  });
+
+                  return Column(children: [
+                    _buildHeader(),
+                    Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Color.fromARGB(255, 191, 190, 190),
+                              spreadRadius: 1,
+                              blurRadius: 5,
+                              offset: Offset(4, 5),
+                            ),
+                          ],
+                        ),
+                        child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Column(
+                              children: [
+                                // _buildForm(),
                                 FormBuilder(
                                     key: _eventFormKey,
                                     child: Column(
@@ -746,9 +765,22 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
                                                   BorderRadius.circular(40),
-                                            )))),
-                              ])));
-                    }))));
+                                            ))))
+                              ],
+                            )),
+                      ),
+                    )
+                  ]);
+                })
+              ]))));
+  }
+
+  _buildHeader() {
+    return Container(
+        height: 50,
+        child: Column(children: [
+          HeadingWidget(text: "Kreiraj događaj"),
+        ]));
   }
 
   _buildKarteForm() {
