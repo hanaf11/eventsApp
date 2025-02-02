@@ -14,9 +14,11 @@ namespace eventsApp.Services.DogadjajiStateMachine
     public class DraftEventState : BaseState
     {
         protected readonly GalerijaServiceImpl _gallery;
-        public DraftEventState(IServiceProvider serviceProvider, EventsDbContext context, IMapper mapper, GalerijaServiceImpl gallery) : base(serviceProvider, context, mapper)
+        protected readonly INotificationService _notificationService;
+        public DraftEventState(IServiceProvider serviceProvider, EventsDbContext context, IMapper mapper, GalerijaServiceImpl gallery, INotificationService notificationService) : base(serviceProvider, context, mapper)
         {
             _gallery = gallery;
+            _notificationService = notificationService;
         }
 
 
@@ -48,11 +50,15 @@ namespace eventsApp.Services.DogadjajiStateMachine
         {
             var set = _context.Set<Database.Dogadjaji>();
 
-            var entity = await set.FindAsync(id);
+            var entity = await _context.Dogadjajis
+            .Include(d => d.Kategorija) 
+              .FirstOrDefaultAsync(d => d.DogadjajId == id);
 
             if (entity?.DobavljacId == null)
             {
                 entity.Status = "ACTIVE";
+                Model.Dogadjaji model = _mapper.Map<Model.Dogadjaji>(entity);
+                _notificationService.SendEventActivatedMail(model);
             }
             else
             {

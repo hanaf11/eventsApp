@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using eventsApp.Model.Messages;
 using eventsApp.Services.Database;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -16,19 +17,23 @@ namespace eventsApp.Services.DogadjajiStateMachine
         IDogadjajiService _dogadjajiService;
         ITipKarteService _tipKarteService;
         protected ILogger<OnHoldEventState> _logger;
+        protected readonly INotificationService _notificationService;
 
-        public OnHoldEventState(IServiceProvider serviceProvider, EventsDbContext context, IMapper mapper, IDogadjajiService dogadjajiService, ITipKarteService tipKarteService, ILogger<OnHoldEventState> logger) : base(serviceProvider, context, mapper)
+        public OnHoldEventState(IServiceProvider serviceProvider, EventsDbContext context, IMapper mapper, IDogadjajiService dogadjajiService, ITipKarteService tipKarteService, ILogger<OnHoldEventState> logger, INotificationService notificationService) : base(serviceProvider, context, mapper)
         {
             _dogadjajiService = dogadjajiService;
             _tipKarteService = tipKarteService;
             _logger = logger;
+            _notificationService = notificationService;
         }
 
         public override async Task<Model.Dogadjaji> Activate(int id)
         {
             var set = _context.Set<Database.Dogadjaji>();
 
-            var entity = await set.FindAsync(id);
+          //  var entity = await set.FindAsync(id);
+
+            var entity = await set.Include(d => d.Kategorija).FirstOrDefaultAsync(d => d.DogadjajId == id);
 
             entity.Status = "ACTIVE";
 
@@ -53,9 +58,9 @@ namespace eventsApp.Services.DogadjajiStateMachine
 
             var mappedEntity = _mapper.Map<Model.Dogadjaji>(entity);
 
-          /*  using var bus = RabbitHutch.CreateBus("host=localhost");
-            bus.PubSub.Publish(mappedEntity);*/
-
+            /*  using var bus = RabbitHutch.CreateBus("host=localhost");
+              bus.PubSub.Publish(mappedEntity);*/
+            _notificationService.SendEventActivatedMail(mappedEntity);
             return mappedEntity;
         }
 

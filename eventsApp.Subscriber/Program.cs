@@ -5,38 +5,63 @@ using eventsApp.Model.Messages;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
+using System.Net.Mail;
+using System.Net;
+using MailingService;
 
-Console.WriteLine("Hello, World!");
-
-/*var factory = new ConnectionFactory { HostName = "localhost" };
-using var connection = factory.CreateConnection();
-using var channel = connection.CreateModel();
-
-channel.QueueDeclare(queue: "category_subscription",
-                     durable: false,
-                     exclusive: false,
-                     autoDelete: false,
-                     arguments: null);
-
-var consumer = new EventingBasicConsumer(channel);
-consumer.Received += (model, ea) =>
+public class EmailService
 {
-    var body = ea.Body.ToArray();
-    var message = Encoding.UTF8.GetString(body);
-    Console.WriteLine($" [x] Received {message}");
-};
+    private static readonly Queue<Func<Task>> eventInFollowingCategoryQueue = new Queue<Func<Task>>();
+    private static bool eventInFollowingCategoryIsProcessing = false;
 
-channel.BasicConsume(queue: "category_subscription",
-                     autoAck: true,
-                     consumer:consumer) ;*/
 
-using (var bus = RabbitHutch.CreateBus("host=localhost"))
-{
-    // bus.PubSub.Subscribe<DogadjajActivated>("seminarski", HandleTextMessage;
-    await bus.PubSub.SubscribeAsync<DogadjajActivated>("mail_sender", msg =>
+    public static async Task Main(string[] args)
     {
-        Console.WriteLine($"Event activated: {msg.Dogadjaj.Naziv}");
-    });
-    Console.WriteLine("Listening for messages. Hit <return> to quit.");
-    Console.ReadLine();
+
+        using (var bus = RabbitHutch.CreateBus("host=localhost"))
+        {
+            // bus.PubSub.Subscribe<DogadjajActivated>("seminarski", HandleTextMessage;
+            await bus.PubSub.SubscribeAsync<DogadjajActivated>("mail_sender", msg =>
+            {
+                Console.WriteLine($"Event activated: {msg.Dogadjaj.Naziv}");
+            });
+
+
+
+            await bus.PubSub.SubscribeAsync<NotifySubscribers>("event_activated", async msg =>
+            {
+                Console.WriteLine($"Event activated: {msg.Dogadjaj.Naziv} from category: {msg.Dogadjaj.Kategorija.Naziv}");
+
+                eventInFollowingCategoryQueue.Enqueue(async () =>
+                {
+                    try
+                    {
+                        Console.WriteLine("Waiting for email to send...");
+                        await EmailServiceImpl.SendEventInFollowingCategoryEmail(msg);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error sending email: {ex.Message}");
+                    }
+                });
+
+                if (!eventInFollowingCategoryIsProcessing)
+                {
+                    eventInFollowingCategoryIsProcessing = true;
+                    while (eventInFollowingCategoryQueue.Count > 0)
+                    {
+                        var nextMessage = eventInFollowingCategoryQueue.Dequeue();
+                        await nextMessage();
+                    }
+                    eventInFollowingCategoryIsProcessing = false;
+                }
+            });
+
+
+            Console.WriteLine("Listening for messages. Hit <return> to quit.");
+            Console.ReadLine();
+        }
+    }
 }
+
+

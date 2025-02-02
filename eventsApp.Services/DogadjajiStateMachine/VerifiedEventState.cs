@@ -14,8 +14,10 @@ namespace eventsApp.Services.DogadjajiStateMachine
 {
     public class VerifiedEventState : BaseState
     {
-        public VerifiedEventState(IServiceProvider serviceProvider, EventsDbContext context, IMapper mapper) : base(serviceProvider, context, mapper)
+        protected readonly INotificationService _notificationService;
+        public VerifiedEventState(IServiceProvider serviceProvider, EventsDbContext context, IMapper mapper, INotificationService notificationService) : base(serviceProvider, context, mapper)
         {
+            _notificationService = notificationService;
         }
 
         public override async Task<Model.Dogadjaji> Activate(int id)
@@ -48,9 +50,10 @@ namespace eventsApp.Services.DogadjajiStateMachine
 
             var mappedEntity=_mapper.Map<Model.Dogadjaji>(entity);
 
-            using var bus = RabbitHutch.CreateBus("host=localhost");
-            DogadjajActivated message = new DogadjajActivated { Dogadjaj = mappedEntity };
-            bus.PubSub.Publish(message);
+            /* using var bus = RabbitHutch.CreateBus("host=localhost");
+             DogadjajActivated message = new DogadjajActivated { Dogadjaj = mappedEntity };
+             bus.PubSub.Publish(message);*/
+            _notificationService.SendEventActivatedMail(mappedEntity);
 
             return mappedEntity;
         }

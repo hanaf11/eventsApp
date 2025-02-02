@@ -78,7 +78,7 @@ public class Program
 
         private static async Task SendResponseToEventsAppApi(KarteDobavljacResponseList response)
         {
-            client.Timeout =TimeSpan.FromSeconds(20);
+            client.Timeout =TimeSpan.FromSeconds(120);
         try
             {
                 string apiUrl = "http://localhost:7294/Dogadjaji/send-tickets";
