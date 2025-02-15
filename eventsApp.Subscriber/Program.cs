@@ -21,9 +21,10 @@ public class EmailService
         using (var bus = RabbitHutch.CreateBus("host=localhost"))
         {
             // bus.PubSub.Subscribe<DogadjajActivated>("seminarski", HandleTextMessage;
-            await bus.PubSub.SubscribeAsync<DogadjajActivated>("mail_sender", msg =>
+            await bus.PubSub.SubscribeAsync<UserRegisteredModel>("user_registered", async msg =>
             {
-                Console.WriteLine($"Event activated: {msg.Dogadjaj.Naziv}");
+                Console.WriteLine($"New user registered");
+                await EmailServiceImpl.SendUserRegisteredEmail(msg);
             });
 
 

@@ -39,5 +39,13 @@ namespace eventsApp.Services
             
 
         }
+
+        public void SendRegisteredMail(string email, string ime)
+        {
+            using var bus = RabbitHutch.CreateBus("host=localhost");
+
+            UserRegisteredModel message = new UserRegisteredModel(email,ime);
+            bus.PubSub.Publish(message);
+        }
     }
 }

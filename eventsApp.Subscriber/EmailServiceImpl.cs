@@ -27,9 +27,7 @@ namespace MailingService
         }
 
         public static async Task SendEventInFollowingCategoryEmail(NotifySubscribers notification)
-        // private static async Task SendEmail()
         {
-            //1 smtp client
             try
             {
                 string emailBody = $@"
@@ -63,21 +61,51 @@ Tim EventsApp
                 await client.SendMailAsync(message);
                 Console.WriteLine("Email sent successfully.");
             }
-
-            //svaki put novi smtp client
-            /*     try
+            catch (SmtpException smtpEx)
             {
+                Console.WriteLine($"SMTP Error: {smtpEx.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error sending email: {ex.Message}");
+            }
+        }
+
+
+        public static async Task SendUserRegisteredEmail(UserRegisteredModel notification)
+        {
+            try
+            {
+                string emailBody = $@"
+Pozdrav {notification.Ime},
+
+Uspješno ste se registrovali na EventsApp! 🎉
+Oduševljeni smo što ste dio naše zajednice i jedva čekamo da Vam pružimo najbolje iskustvo u praćenju događaja.  
+
+Uz EventsApp možete:  
+- Otkriti uzbudljive događaje u vašoj blizini  
+- Pratiti kategorije koje vas zanimaju
+- Kupiti karte za događaje koji vas zanimaju
+- Nikad ne propustiti događaj koji volite  
+
+Ako imate bilo kakvih pitanja ili trebate pomoć, naš tim je uvijek tu za vas.
+
+Dobrodošli i uživajte u korištenju EventsApp-a!  
+Vaš Tim EventsApp
+";
+
+
                 var message = new MailMessage(
                     from: _mail,
-                    to: "hannabern1@gmail.com",
-                    subject: $"Novi događaj u kategoriji {notification.Dogadjaj.Kategorija.Naziv}",
-                    body: $"Aktiviran je dogadjaj {notification.Dogadjaj.Naziv}"
-                //  body: "Aktiviran je dogadjaj Kulin ban"
+                    to: notification.Email,
+                    subject: $"Uspješna registracija na EventsApp",
+                    body: emailBody
+
                 );
-                Console.WriteLine($"From: {_mail}, To:hanna");
+                Console.WriteLine($"From: {_mail}, To:{notification.Email}");
                 await client.SendMailAsync(message);
                 Console.WriteLine("Email sent successfully.");
-            }*/
+            }
             catch (SmtpException smtpEx)
             {
                 Console.WriteLine($"SMTP Error: {smtpEx.Message}");

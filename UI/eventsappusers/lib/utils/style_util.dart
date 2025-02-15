@@ -32,3 +32,29 @@ var inputField = InputDecoration(
       borderSide: const BorderSide(color: Colors.red),
     ),
     contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 0));
+
+var newInput = InputDecoration(
+    filled: true,
+    fillColor: Color.fromRGBO(245, 245, 245, 1),
+    hoverColor: Color.fromRGBO(245, 245, 245, 1),
+    isDense: true,
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(20)),
+      borderSide:
+          const BorderSide(color: Color.fromRGBO(54, 112, 232, 1), width: 1),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(20)),
+      borderSide:
+          const BorderSide(color: Color.fromRGBO(54, 112, 232, 1), width: 1),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(20)),
+      borderSide:
+          const BorderSide(color: Color.fromRGBO(54, 112, 232, 1), width: 1),
+    ),
+    errorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(20),
+      borderSide: const BorderSide(color: Colors.red),
+    ),
+    contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8));

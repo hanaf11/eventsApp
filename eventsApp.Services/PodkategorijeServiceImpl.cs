@@ -33,7 +33,7 @@ namespace eventsApp.Services
             return filteredQuery;
         }
 
-        public override  void ValidateInsert(PodkategorijeCreateRequest insert)
+        public override async Task ValidateInsert(PodkategorijeCreateRequest insert)
         {
             bool kategorijaExists = _context.Kategorijes.Where(k => k.KategorijaId == insert.KategorijaId).Count() == 1;
 
@@ -41,6 +41,7 @@ namespace eventsApp.Services
             {
                 throw new UserException("Kategorija za koju pokusavate dodati podkategoriju ne postoji");
             }
+
         }
 
 

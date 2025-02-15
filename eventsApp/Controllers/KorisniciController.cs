@@ -20,5 +20,13 @@ namespace eventsApp.Controllers
             return (_service as IKorisniciService).Login(username, password);
         }
 
+
+        [HttpPost]
+        [AllowAnonymous]
+        public override async Task<Model.Korisnici> Insert([FromBody] Model.Requests.KorisniciInsertRequest insert)
+        {
+            return await _service.Insert(insert);
+        }
+
     }
 }

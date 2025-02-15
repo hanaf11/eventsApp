@@ -25,6 +25,7 @@ import 'package:eventsappusers/screens/narudzba_preview_screen.dart';
 import 'package:eventsappusers/screens/payment_information_screen.dart';
 import 'package:eventsappusers/screens/personal_information_screen.dart';
 import 'package:eventsappusers/screens/profile_screen.dart';
+import 'package:eventsappusers/screens/register_screen.dart';
 import 'package:eventsappusers/screens/spremljeno_screen.dart';
 import 'package:eventsappusers/utils/category_color_util.dart';
 import 'package:eventsappusers/utils/util.dart';
@@ -199,7 +200,7 @@ class LoginPage extends StatelessWidget {
         const SizedBox(height: 20),
         _buildLoginButton(context),
         const SizedBox(height: 20),
-        _buildRegisterButton(),
+        _buildRegisterButton(context),
         const SizedBox(height: 10),
       ],
     );
@@ -252,9 +253,13 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  Widget _buildRegisterButton() {
+  Widget _buildRegisterButton(BuildContext context) {
     return ElevatedButton(
-      onPressed: () => {print("oressed")},
+      onPressed: () => {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => RegisterScreen()),
+        )
+      },
       style: ElevatedButton.styleFrom(
         shape: const StadiumBorder(),
         elevation: 20,

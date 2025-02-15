@@ -20,6 +20,8 @@ Korisnik _$KorisnikFromJson(Map<String, dynamic> json) => Korisnik(
       json['adresa'] as String?,
       json['drzava'] as String?,
       json['slika'] as String?,
+      json['password'] as String?,
+      json['passwordPotvrda'] as String?,
     );
 
 Map<String, dynamic> _$KorisnikToJson(Korisnik instance) => <String, dynamic>{
@@ -34,4 +36,6 @@ Map<String, dynamic> _$KorisnikToJson(Korisnik instance) => <String, dynamic>{
       'adresa': instance.adresa,
       'drzava': instance.drzava,
       'slika': instance.slika,
+      'password': instance.password,
+      'passwordPotvrda': instance.passwordPotvrda,
     };

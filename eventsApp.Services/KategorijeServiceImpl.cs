@@ -43,7 +43,7 @@ namespace eventsApp.Services
             return await  _context.Set<Database.Kategorije>().Include(k=>k.Podkategorijes).FirstOrDefaultAsync(k=>k.KategorijaId==id);
         }
 
-        public override  void ValidateDelete(Database.Kategorije entity)
+        public override  async Task ValidateDelete(Database.Kategorije entity)
         {
             bool notEmpty = _context.Dogadjajis.Where(e=>e.KategorijaId==entity.KategorijaId).Count() > 0;
 

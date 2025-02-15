@@ -63,10 +63,10 @@ abstract class BaseProvider<T> with ChangeNotifier {
     }
   }
 
-  Future<T> insert(dynamic request) async {
+  Future<T> insert(dynamic request, {bool? isRegistration}) async {
     var url = "$_baseUrl$_endpoint";
     var uri = Uri.parse(url);
-    var headers = createHeaders();
+    var headers = createHeaders(isRegistration: isRegistration);
 
     var jsonRequest = jsonEncode(request);
     var response = await http.post(uri, headers: headers, body: jsonRequest);
@@ -118,10 +118,10 @@ abstract class BaseProvider<T> with ChangeNotifier {
     if (response.statusCode < 299) {
       return true;
     } else if (response.statusCode == 401) {
-      throw new Exception("Unauthorized");
+      throw Exception("Unauthorized");
     } else if (response.statusCode == 500) {
       print(response.body);
-      throw new Exception("Server side error");
+      throw Exception("Server side error");
     } else if (response.statusCode == 400) {
       print(response.body);
       print(response.statusCode);
@@ -135,7 +135,12 @@ abstract class BaseProvider<T> with ChangeNotifier {
     throw new Exception("Something bad happened. Please try again");
   }
 
-  static Map<String, String> createHeaders() {
+  static Map<String, String> createHeaders({bool? isRegistration}) {
+    if (isRegistration != null && isRegistration) {
+      return {
+        "Content-Type": "application/json",
+      };
+    }
     String username = AuthProvider.username ?? "";
     String password = AuthProvider.password ?? "";
 
@@ -181,4 +186,6 @@ abstract class BaseProvider<T> with ChangeNotifier {
     });
     return query;
   }
+
+  //String parseError(String error) {}
 }

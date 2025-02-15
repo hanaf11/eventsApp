@@ -25,12 +25,17 @@ namespace eventsApp.Services
 
         }
 
-        public virtual void ValidateInsert(TInsert insert)
+        public virtual async Task ValidateInsert(TInsert insert)
         {
 
         }
 
-        public virtual  void ValidateDelete(TDb entity)
+        public virtual async Task ValidateDelete(TDb entity)
+        {
+
+        }
+
+        public virtual async Task AfterInsert(TInsert insert)
         {
 
         }
@@ -39,7 +44,7 @@ namespace eventsApp.Services
         {
             var set = _context.Set<TDb>();
 
-            ValidateInsert(insert);
+            await ValidateInsert(insert);
 
             TDb entity = _mapper.Map<TDb>(insert);
 
@@ -48,6 +53,8 @@ namespace eventsApp.Services
             await BeforeInsert(entity, insert);
 
             await _context.SaveChangesAsync();
+
+            await AfterInsert(insert);
 
             return _mapper.Map<TDetails>(entity);
         }

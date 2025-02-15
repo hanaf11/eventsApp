@@ -9,5 +9,7 @@ namespace eventsApp.Services
     public interface INotificationService
     {
         public void SendEventActivatedMail(Model.Dogadjaji dogadjaj);
+
+        public void SendRegisteredMail(string mail, string ime);
     }
 }

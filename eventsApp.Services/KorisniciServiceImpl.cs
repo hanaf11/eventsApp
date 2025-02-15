@@ -16,9 +16,11 @@ namespace eventsApp.Services
     public class KorisniciServiceImpl : BaseCRUDService<Model.KorisniciListResponse, Model.Korisnici, Database.Korisnici, KorisniciSearchObject, KorisniciInsertRequest, KorisniciUpdateRequest>, IKorisniciService
     {
         ILogger<KorisniciServiceImpl> _logger;
-        public KorisniciServiceImpl(EventsDbContext context, IMapper mapper, ILogger<KorisniciServiceImpl> logger) : base(context, mapper)
+        protected readonly INotificationService _notificationService;
+        public KorisniciServiceImpl(EventsDbContext context, IMapper mapper, ILogger<KorisniciServiceImpl> logger, INotificationService notificationService) : base(context, mapper)
         {
            _logger = logger;
+            _notificationService = notificationService;
         }
 
         public override async Task BeforeInsert(Korisnici entity, KorisniciInsertRequest insert)
@@ -31,6 +33,21 @@ namespace eventsApp.Services
  
         }
 
+        public override async Task ValidateInsert(KorisniciInsertRequest insert)
+        {
+            await base.ValidateInsert(insert);
+            Korisnici existingUsername = await _context.Korisnicis.FirstOrDefaultAsync(x => x.KorisnickoIme == insert.KorisnickoIme);
+            if (existingUsername != null)
+            {
+                throw new Model.UserException("Korisničko ime je zauzeto");
+            }
+            Korisnici existingEmail = await _context.Korisnicis.FirstOrDefaultAsync(x => x.Email == insert.Email);
+            if (existingEmail != null)
+            {
+                throw new Model.UserException("Već postoji račun sa tom email adresom");
+            }
+        }
+
         public override async Task BeforeUpdate(Korisnici entity, KorisniciUpdateRequest update)
         {
             base.BeforeUpdate(entity, update);
@@ -41,6 +58,11 @@ namespace eventsApp.Services
             entity.LozinkaSalt = GenerateSalt();
             entity.LozinkaHash = GenerateHash(entity.LozinkaSalt, update.Lozinka);
 
+        }
+
+        public override async Task AfterInsert(KorisniciInsertRequest insert)
+        {
+            _notificationService.SendRegisteredMail(insert.Email,insert.Ime);
         }
 
         public static string GenerateSalt()

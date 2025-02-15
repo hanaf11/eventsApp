@@ -1,5 +1,6 @@
 ﻿using eventsApp.Services;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using System.Net.Http.Headers;
 using System.Security.Claims;
@@ -18,6 +19,12 @@ namespace eventsApp
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
+            var endpoint = Context.GetEndpoint();
+            if (endpoint?.Metadata?.GetMetadata<IAllowAnonymous>() != null)
+            {
+                return AuthenticateResult.NoResult();
+            }
+
             if (!Request.Headers.ContainsKey("Authorization")){
                 return AuthenticateResult.Fail("Missing header");
             }

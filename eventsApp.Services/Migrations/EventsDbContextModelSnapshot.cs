@@ -184,7 +184,7 @@ namespace eventsApp.Services.Migrations
 
                     b.HasIndex("KorisnikId");
 
-                    b.ToTable("HistorijaPregleda");
+                    b.ToTable("HistorijaPregleda", (string)null);
                 });
 
             modelBuilder.Entity("eventsApp.Services.Database.Karte", b =>
