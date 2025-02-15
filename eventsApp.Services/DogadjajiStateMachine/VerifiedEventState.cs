@@ -20,7 +20,7 @@ namespace eventsApp.Services.DogadjajiStateMachine
             _notificationService = notificationService;
         }
 
-        public override async Task<Model.Dogadjaji> Activate(int id)
+      /*  public override async Task<Model.Dogadjaji> Activate(int id)
         {
             var set =  _context.Set<Database.Dogadjaji>();
 
@@ -46,17 +46,17 @@ namespace eventsApp.Services.DogadjajiStateMachine
             channel.BasicPublish(exchange: string.Empty,
                                  routingKey: "category_subscription",
                                  basicProperties: null,
-                                 body: body);*/
+                                 body: body);
 
             var mappedEntity=_mapper.Map<Model.Dogadjaji>(entity);
 
             /* using var bus = RabbitHutch.CreateBus("host=localhost");
              DogadjajActivated message = new DogadjajActivated { Dogadjaj = mappedEntity };
-             bus.PubSub.Publish(message);*/
+             bus.PubSub.Publish(message);
             _notificationService.SendEventActivatedMail(mappedEntity);
 
             return mappedEntity;
-        }
+        }*/
 
         public override async Task<Model.Dogadjaji> SendRequestForTickets(int id, List<KarteRequest> request)
         {
@@ -79,7 +79,7 @@ namespace eventsApp.Services.DogadjajiStateMachine
         public override List<string> AllowedActions(Database.Dogadjaji entity)
         {
             // list.Add("GetTickets");
-            return new List<string>() { nameof(Activate) };
+            return new List<string>() { nameof(SendRequestForTickets) };
         }
     }
 }

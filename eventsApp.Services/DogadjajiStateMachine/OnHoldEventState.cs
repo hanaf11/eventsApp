@@ -82,7 +82,7 @@ namespace eventsApp.Services.DogadjajiStateMachine
 
         public virtual async Task<List<string>> AllowedActions(Database.Dogadjaji entity)
         {
-            return new List<string>() { nameof(Activate), nameof(Hide), nameof(LoadTickets)};
+            return new List<string>() { nameof(LoadTickets)};
         }
 
         public override async Task<HttpResponseMessage> LoadTickets(Database.Dogadjaji dogadjaj, KarteDobavljacResponseList karteList)
