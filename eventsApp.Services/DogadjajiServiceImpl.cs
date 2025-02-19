@@ -202,8 +202,6 @@ namespace eventsApp.Services
 
 
 
-
-
         /* static MLContext mlContext = null;
          static object isLocked = new object();
          static ITransformer model = null;

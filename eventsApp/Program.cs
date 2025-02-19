@@ -35,6 +35,8 @@ builder.Services.AddTransient<VerifiedEventState>();
 builder.Services.AddTransient<HiddenEventState>();
 builder.Services.AddTransient<DraftEventState>();
 
+builder.Services.AddSingleton<DeactivateEventsService>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAnyOrigin", builder =>
@@ -99,4 +101,9 @@ app.MapControllers();
     //dataContext.Database.EnsureCreated();
     dataContext.Database.Migrate();
 }*/
+
+using (var scope = app.Services.CreateScope())
+{
+    var deactivateEventsService = scope.ServiceProvider.GetRequiredService<DeactivateEventsService>();
+}
 app.Run();
