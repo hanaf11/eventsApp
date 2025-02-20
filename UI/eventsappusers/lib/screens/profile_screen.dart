@@ -1,3 +1,5 @@
+import 'package:eventsappusers/main.dart';
+import 'package:eventsappusers/models/korisnik_global.dart';
 import 'package:eventsappusers/widgets/heading_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +16,12 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   String username = "hana123";
   _ProfileScreenState();
+
+  logout() {
+    KorisnikGlobal.clear();
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => LoginPage()));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,6 +76,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             color: Color.fromRGBO(60, 71, 92, 1),
                             onPressed: () {
                               Navigator.of(context).pop();
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.logout),
+                            color: Color.fromRGBO(60, 71, 92, 1),
+                            onPressed: () {
+                              logout();
                             },
                           ),
                         ]))

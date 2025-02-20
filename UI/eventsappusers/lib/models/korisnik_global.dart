@@ -14,4 +14,12 @@ class KorisnikGlobal {
     prezime = k.prezime;
     lokacija = k.adresa;
   }
+
+  static void clear() {
+    korisnikId = null;
+    username = null;
+    ime = null;
+    prezime = null;
+    lokacija = null;
+  }
 }
