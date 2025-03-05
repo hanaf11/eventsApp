@@ -29,7 +29,6 @@ builder.Services.AddTransient<IKarteService, KarteServiceImpl>();
 
 builder.Services.AddTransient<BaseState>();
 builder.Services.AddTransient<ActiveEventState>();
-builder.Services.AddTransient<CancelledEventState>();
 builder.Services.AddTransient<InitialEventState>();
 builder.Services.AddTransient<OnHoldEventState>();
 builder.Services.AddTransient<VerifiedEventState>();

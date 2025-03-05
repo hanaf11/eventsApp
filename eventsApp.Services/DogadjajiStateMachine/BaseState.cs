@@ -27,36 +27,36 @@ namespace eventsApp.Services.DogadjajiStateMachine
         }
         public virtual Task<Model.Dogadjaji> Insert(DogadjajiInsertRequest request)
         {
-            throw new UserException("Not allowed");
+            throw new UserException("Događaj nije u dozvoljenom statusu");
         }
         public virtual Task<Model.Dogadjaji> Update(int id, DogadjajiUpdateRequest request)
         {
-            throw new UserException("Not allowed");
+            throw new UserException("Događaj nije u dozvoljenom statusu");
         }
 
         public virtual Task<Model.Dogadjaji> Verify(int id)
         {
-            throw new UserException("Not allowed");
+            throw new UserException("Događaj nije u dozvoljenom statusu");
         }
 
         public virtual Task<Model.Dogadjaji> Activate(int id)
         {
-            throw new UserException("Not allowed");
+            throw new UserException("Događaj nije u dozvoljenom statusu");
         }
 
         public virtual Task<Model.Dogadjaji> Hide(int id)
         {
-            throw new UserException("Not allowed");
+            throw new UserException("Događaj nije u dozvoljenom statusu");
         }
 
         public virtual Task<Model.Dogadjaji> SendRequestForTickets(int id, List<KarteRequest> request)
         {
-            throw new UserException("Not allowed");
+            throw new UserException("Događaj nije u dozvoljenom statusu");
         }
 
         public virtual Task<HttpResponseMessage> LoadTickets(Database.Dogadjaji dogadjaj, KarteDobavljacResponseList karteList)
         {
-            throw new UserException("Not allowed");
+            throw new UserException("Događaj nije u dozvoljenom statusu");
         }
 
 
@@ -69,10 +69,9 @@ namespace eventsApp.Services.DogadjajiStateMachine
                 case "DRAFT": return _serviceProvider.GetService<DraftEventState>();
                 case "VERIFIED": return _serviceProvider.GetService<VerifiedEventState>();
                 case "ON_HOLD": return _serviceProvider.GetService<OnHoldEventState>();
-                case "CANCELLED": return _serviceProvider.GetService<CancelledEventState>();
                 case "ACTIVE": return _serviceProvider.GetService<ActiveEventState>();
                 case "HIDDEN": return _serviceProvider.GetService<HiddenEventState>();
-                default: throw new UserException("Not allowed");
+                default: throw new UserException("Događaj nije u dozvoljenom statusu");
             }
         }
 
