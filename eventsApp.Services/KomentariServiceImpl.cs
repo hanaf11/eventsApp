@@ -74,6 +74,17 @@ namespace eventsApp.Services
             }
         }
 
+        public async Task<bool> DeleteByDogadjaj(int dogadjajId)
+        {
+            var commentsToDelete = _context.Komentaris.Where(k=> k.DogadjajId == dogadjajId);
+
+            _context.Komentaris.RemoveRange(commentsToDelete);
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
 
     }
 

@@ -7,5 +7,6 @@ namespace eventsApp.Services
     public interface IGalerijaService : IService<Model.Slike, Model.Slike, GalerijaSearchObject>
     {
         Task<Model.Slike> Delete(int id);
+        Task<bool> DeleteByDogadjaj(int dogadjajId);
     }
 }

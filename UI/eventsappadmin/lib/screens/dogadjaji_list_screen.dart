@@ -37,6 +37,8 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
   bool initial = true;
   DateTime? _datumOd;
   DateTime? _datumDo;
+  bool _kategorijeLoaded = false;
+  bool _dogadjajiLoaded = false;
 
   @override
   void initState() {
@@ -55,8 +57,22 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
     //dropdownValue = kategorijeResult?.result[0].kategorijaId;
   }
 
+  setLoading() {
+    if (_dogadjajiLoaded && _kategorijeLoaded) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   Future initForm() async {
     kategorijeResult = await _kategorijaProvider.get();
+    if (kategorijeResult != null) {
+      setState(() {
+        _kategorijeLoaded = true;
+        setLoading();
+      });
+    }
   }
 
   /*Future<void> _selectDate(BuildContext context) async {
@@ -77,8 +93,8 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
     showDatePicker(
             context: context,
             initialDate: DateTime.now(),
-            firstDate: DateTime(2020),
-            lastDate: DateTime(2025))
+            firstDate: DateTime(2025),
+            lastDate: DateTime(2030))
         .then((value) {
       setState(() {
         if (caller == "_datumOd") {
@@ -90,11 +106,33 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
     });
   }
 
+  void _handleDeleteSuccess(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Delete Successful"),
+          content: Text("Događaj je uspješno obrisan"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                getDogadjaji();
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   getDogadjaji() async {
     var data = await _dogadjajProvider.get();
     setState(() {
       result = data;
-      isLoading = false;
+      _dogadjajiLoaded = true;
+      setLoading();
     });
   }
 
@@ -110,6 +148,23 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
     setState(() {
       result = data;
     });
+  }
+
+  handleException(Exception e) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              title: Text("Error"),
+              content: Text(e.toString()),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text("OK"))
+              ],
+            ));
+    // _formKey.currentState?.reset(); //myb for update
   }
 
   @override
@@ -278,10 +333,9 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
   Expanded _buildDataListView() {
     return Expanded(
         child: SingleChildScrollView(
-            /*child: Padding(
-                    padding: const EdgeInsets.all(20),*/
-            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      DataTable(
+            child: SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: DataTable(
           columns: [
             DataColumn(
               label: Expanded(
@@ -311,6 +365,14 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
               label: Expanded(
                 child: Text(
                   'Organizator',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            DataColumn(
+              label: Expanded(
+                child: Text(
+                  'Status',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
@@ -364,6 +426,7 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
                                 : "")),
                             DataCell(Text(e.lokacija?.toString() ?? "")),
                             DataCell(Text(e.organizator?.toString() ?? "")),
+                            DataCell(Text(e.status?.toString() ?? "")),
                             DataCell(IconButton(
                                 icon: const Icon(Icons.edit),
                                 color: Color.fromRGBO(44, 152, 240, 1),
@@ -374,7 +437,9 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
                                     MaterialPageRoute(
                                       builder: (context) =>
                                           DogadjajiDetailsScreen(
-                                              dogadjajId: e.dogadjajId),
+                                        dogadjajId: e.dogadjajId,
+                                        refresh: getDogadjaji,
+                                      ),
                                     ),
                                   );
                                 })),
@@ -393,8 +458,9 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
                                         'Da li stvarno želite obrisati događaj ${e.naziv}?'),
                                     actions: <Widget>[
                                       TextButton(
-                                        onPressed: () =>
-                                            Navigator.pop(context, 'Odustani'),
+                                        onPressed: () {
+                                          Navigator.pop(context, 'Odustani');
+                                        },
                                         child: const Text('Odustani'),
                                       ),
                                       TextButton(
@@ -402,7 +468,13 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
                                           Navigator.pop(context, 'Potvrdi');
                                           _dogadjajProvider
                                               .delete(e.dogadjajId!)
-                                              .then((value) => search());
+                                              .then((value) =>
+                                                  _handleDeleteSuccess(context))
+                                              .onError(
+                                                (error, stackTrace) =>
+                                                    handleException(
+                                                        error as Exception),
+                                              );
                                         },
                                         child: const Text('Potvrdi'),
                                       ),
@@ -421,6 +493,6 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
                           ]))
                   .toList() ??
               []),
-    ])));
+    )));
   }
 }

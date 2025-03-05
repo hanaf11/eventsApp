@@ -13,6 +13,7 @@ import 'package:eventsappadmin/providers/tipkarte_provider.dart';
 import 'package:eventsappadmin/screens/dogadjaji_list_screen.dart';
 import 'package:eventsappadmin/screens/zahtjevi_list_screen.dart';
 import 'package:eventsappadmin/utils/util.dart';
+import 'package:eventsappadmin/widgets/button_widget.dart';
 import 'package:eventsappadmin/widgets/master_screen.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +30,9 @@ import '../providers/galerija_provider.dart';
 class DogadjajiDetailsScreen extends StatefulWidget {
   int? dogadjajId;
   bool? zahtjev;
-  DogadjajiDetailsScreen({this.dogadjajId, this.zahtjev, super.key});
+  Function() refresh;
+  DogadjajiDetailsScreen(
+      {this.dogadjajId, this.zahtjev, required this.refresh, super.key});
 
   @override
   State<DogadjajiDetailsScreen> createState() => _DogadjajiDetailsScreenState();
@@ -55,18 +58,20 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
   bool _deleted = false;
   int? kategorija;
   Dogadjaj? dogadjaj;
-  /*Image _naslovna = Image.asset('assets/images/empty.jpg', fit: BoxFit.cover);
-  Image _programSlika =
-      Image.asset('assets/images/empty.jpg', fit: BoxFit.cover);
-  Image _lokacijaSlika =
-      Image.asset('assets/images/empty.jpg', fit: BoxFit.cover);*/
   ImageObj? _naslovna;
   ImageObj? _programSlika;
   ImageObj? _lokacijaSlika;
   List<Slika> galleryItems = [];
   bool podkategorijeLoaded = false;
   int? selectedPodkategorija;
-
+  final GlobalKey<ButtonWidgetState> saveButtonKey =
+      GlobalKey<ButtonWidgetState>();
+  final GlobalKey<ButtonWidgetState> deleteButtonKey =
+      GlobalKey<ButtonWidgetState>();
+  final GlobalKey<ButtonWidgetState> rejectButtonKey =
+      GlobalKey<ButtonWidgetState>();
+  final GlobalKey<ButtonWidgetState> acceptButtonKey =
+      GlobalKey<ButtonWidgetState>();
   @override
   void initState() {
     super.initState();
@@ -90,6 +95,10 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
     _tipKarteProvider = context.read<TipkarteProvider>();
     _dobavljacProvider = context.read<DobavljacProvider>();
     initForm(widget.dogadjajId);
+    deleteButtonKey.currentState?.setDeleted(false);
+    saveButtonKey.currentState?.setDeleted(false);
+    acceptButtonKey.currentState?.setDeleted(false);
+    rejectButtonKey.currentState?.setDeleted(false);
   }
 
   @override
@@ -118,7 +127,6 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
         //   _formKey.currentState!.fields['PodkategorijaId']. =dogadjaj?.podkategorijaId;
       });
 
-      // Fetch the new podkategorija options
       await _podkategorijaProvider
           .get(filter: {'kategorijaId': kategorija}).then((value) {
         setState(() {
@@ -139,10 +147,13 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
           actions: [
             TextButton(
               onPressed: () {
-                setState(() {
+                /*setState(() {
                   _deleted = true;
-                });
+                });*/
+                deleteButtonKey.currentState?.setDeleted(true);
+                saveButtonKey.currentState?.setDeleted(true);
                 Navigator.of(context).pop();
+                widget.refresh();
               },
               child: Text("OK"),
             ),
@@ -199,24 +210,29 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
               content: Text("Uspješno ste uredili događaj!"),
               actions: [
                 TextButton(
-                    onPressed: () => Navigator.pop(context), child: Text("OK"))
+                    onPressed: () {
+                      Navigator.pop(context);
+                      widget.refresh();
+                    },
+                    child: Text("OK"))
               ],
             ));
   }
 
-  handleDogadjajException(Exception e) {
+  handleDogadjajException(Object? e) {
     showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
               title: Text("Error"),
-              content: Text(e.toString()),
+              content: Text(e?.toString() ?? 'An uknown error occured'),
               actions: [
                 TextButton(
                     onPressed: () {
                       Navigator.pop(context);
-                      setState(() {
-                        _fetching = false;
-                      });
+                      /*  setState(() {
+                        // _fetching = false;
+                        _isFetching.value = false;
+                      });*/
                     },
                     child: Text("OK"))
               ],
@@ -225,7 +241,6 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
   }
 
   void deleteImage(int index, int? id) {
-    print(galleryItems.length);
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -386,182 +401,152 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
   }
 
   _buildButtonAccept() {
-    return Padding(
-        padding: EdgeInsets.all(10),
-        child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromARGB(255, 16, 104, 198)),
-            onPressed: () async {
-              setState(() {
-                isLoading = true;
-              });
-              try {
-                _dogadjajProvider.accept(dogadjaj!.dogadjajId!).then((value) {
-                  _handleRejectAcceptSuccess(
-                      context, "Događaj je prihvaćen", "Accept successful");
-                });
-              } on Exception catch (e) {
-                handleDogadjajException(e);
-              } finally {
-                /* setState(() {
-                  _fetching = false;
-                });*/
-              }
-            },
-            child: Text(
-              "Prihvati",
-              style: TextStyle(color: Colors.white),
-            )));
+    return ButtonWidget(
+      key: acceptButtonKey,
+      deleted: _deleted,
+      text: "Prihvati",
+      onClick: () async {
+        try {
+          acceptButtonKey.currentState?.fetchingTrue();
+          _dogadjajProvider.accept(dogadjaj!.dogadjajId!).then((value) {
+            _handleRejectAcceptSuccess(
+                context, "Događaj je prihvaćen", "Accept successful");
+          });
+        } on Exception catch (e) {
+          handleDogadjajException(e);
+        } finally {
+          acceptButtonKey.currentState?.fetchingFalse();
+        }
+      },
+    );
   }
 
   _buildButtonSave() {
-    return Padding(
-        padding: EdgeInsets.all(10),
-        child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-                backgroundColor: _deleted
-                    ? Color.fromARGB(255, 90, 79, 81)
-                    : Color.fromARGB(255, 16, 104, 198)),
-            onPressed: _deleted
-                ? null
-                : () async {
-                    final isFormValid = _formKey.currentState
-                            ?.saveAndValidate(focusOnInvalid: false) ??
-                        false;
-                    if (isFormValid) {
-                      var request = Map.from(_formKey.currentState!.value);
+    return ButtonWidget(
+        key: saveButtonKey,
+        deleted: _deleted,
+        text: "Sačuvaj",
+        onClick: () async {
+          final isFormValid =
+              _formKey.currentState?.saveAndValidate(focusOnInvalid: false) ??
+                  false;
+          if (isFormValid) {
+            var request = Map.from(_formKey.currentState!.value);
 
-                      // request['naslovna'] = _base64Image ?? getDefaultImage();
-                      //request['naslovna'] = "";
-                      request['DatumOd'] =
-                          request['DatumOd']?.toIso8601String();
-                      request['DatumDo'] =
-                          request['DatumDo']?.toIso8601String();
-                      request['Galerija'] = galleryItems;
-                      request['ProgramSlika'] = _programSlika?.base64Image;
-                      request['LokacijaSlika'] = _lokacijaSlika?.base64Image;
-                      print("request je $request");
+            request['DatumOd'] = request['DatumOd']?.toIso8601String();
+            request['DatumDo'] = request['DatumDo']?.toIso8601String();
+            request['Galerija'] = galleryItems;
+            request['ProgramSlika'] = _programSlika?.base64Image;
+            request['LokacijaSlika'] = _lokacijaSlika?.base64Image;
+            print("request je $request");
 
-                      setState(() {
-                        _fetching = true;
-                        //_initialValue = _formKey.currentState!.value;
-                      });
+            try {
+              saveButtonKey.currentState?.fetchingTrue();
 
-                      try {
-                        if (widget.dogadjajId == null) {
-                          await _dogadjajProvider.insert(request).then((value) {
-                            handleDogadjajCreated(value.dogadjajId);
-                          });
-                        } else {
-                          await _dogadjajProvider
-                              .update(widget.dogadjajId!, request: request)
-                              .then((value) {
-                            handleDogadjajUpdated(value.dogadjajId);
-                          });
-                        }
-                      } on Exception catch (e) {
-                        handleDogadjajException(e);
-                      } finally {
-                        setState(() {
-                          _fetching = false;
-                        });
-                      }
-                    }
-                  },
-            child: _fetching
-                ? const CircularProgressIndicator()
-                : Text(
-                    "Sačuvaj",
-                    style: TextStyle(color: Colors.white),
-                  )));
+              if (widget.dogadjajId == null) {
+                await _dogadjajProvider.insert(request).then((value) {
+                  handleDogadjajCreated(value.dogadjajId);
+                });
+              } else {
+                await _dogadjajProvider
+                    .update(widget.dogadjajId!, request: request)
+                    .then((value) {
+                  handleDogadjajUpdated(value.dogadjajId);
+                });
+              }
+            } on Exception catch (e) {
+              handleDogadjajException(e);
+            } finally {
+              saveButtonKey.currentState?.fetchingFalse();
+            }
+          }
+        });
   }
 
   _buildButtonDelete() {
-    return Padding(
-      padding: EdgeInsets.all(10),
-      child: ElevatedButton(
-          onPressed: _deleted
-              ? null
-              : () {
-                  showDialog<String>(
-                    context: context,
-                    builder: (BuildContext context) => AlertDialog(
-                      title: const Text('Potvrdite akciju'),
-                      content: Text(
-                          'Da li stvarno želite obrisati događaj ${dogadjaj?.naziv}?'),
-                      actions: <Widget>[
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, 'Odustani'),
-                          child: const Text('Odustani'),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context, 'Potvrdi');
-                            _dogadjajProvider
-                                .delete(dogadjaj!.dogadjajId!)
-                                .then((value) {
-                              _handleDeleteSuccess(context);
-                            });
-                          },
-                          child: const Text('Potvrdi'),
-                        ),
-                      ],
-                    ),
-                  );
+    return ButtonWidget(
+      key: deleteButtonKey,
+      deleted: _deleted,
+      onClick: () async {
+        final parentContext = context;
+        showDialog<String>(
+          context: parentContext,
+          builder: (BuildContext context) => AlertDialog(
+            title: const Text('Potvrdite akciju'),
+            content: Text(
+                'Da li stvarno želite obrisati događaj ${dogadjaj?.naziv}?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'Odustani'),
+                child: const Text('Odustani'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  Navigator.pop(context, 'Potvrdi');
+                  try {
+                    deleteButtonKey.currentState?.fetchingTrue();
+                    await _dogadjajProvider
+                        .delete(dogadjaj!.dogadjajId!)
+                        .then((value) {
+                      _handleDeleteSuccess(parentContext);
+                    });
+                  } on Exception catch (e) {
+                    handleDogadjajException(e);
+                    print(e);
+                  } finally {
+                    deleteButtonKey.currentState?.fetchingFalse();
+                  }
                 },
-          style: ElevatedButton.styleFrom(
-              backgroundColor: _deleted
-                  ? Color.fromARGB(255, 90, 79, 81)
-                  : Color.fromARGB(255, 198, 28, 53)),
-          child: Text(
-            "Obriši",
-            style: TextStyle(color: Colors.white),
-          )),
+                child: const Text('Potvrdi'),
+              ),
+            ],
+          ),
+        );
+      },
+      text: "Obriši",
     );
   }
 
   _buildButtonReject() {
-    return Padding(
-      padding: EdgeInsets.all(10),
-      child: ElevatedButton(
-          onPressed: _deleted
-              ? null
-              : () {
-                  showDialog<String>(
-                    context: context,
-                    builder: (BuildContext context) => AlertDialog(
-                      title: const Text('Potvrdite akciju'),
-                      content: Text(
-                          'Da li stvarno želite odbiti objavljivanje događaja ${dogadjaj?.naziv}?'),
-                      actions: <Widget>[
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, 'Odustani'),
-                          child: const Text('Odustani'),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context, 'Potvrdi');
-                            _dogadjajProvider
-                                .hide(dogadjaj!.dogadjajId!)
-                                .then((value) {
-                              _handleRejectAcceptSuccess(context,
-                                  "Događaj je odbijen", "Reject Successful");
-                            });
-                          },
-                          child: const Text('Potvrdi'),
-                        ),
-                      ],
-                    ),
-                  );
+    return ButtonWidget(
+      key: rejectButtonKey,
+      deleted: _deleted,
+      text: "Odbij",
+      onClick: () async {
+        final parentContext = context;
+        showDialog<String>(
+          context: parentContext,
+          builder: (BuildContext context) => AlertDialog(
+            title: const Text('Potvrdite akciju'),
+            content: Text(
+                'Da li stvarno želite odbiti objavljivanje događaja ${dogadjaj?.naziv}?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'Odustani'),
+                child: const Text('Odustani'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  Navigator.pop(context, 'Potvrdi');
+                  try {
+                    rejectButtonKey.currentState?.fetchingTrue();
+
+                    _dogadjajProvider.hide(dogadjaj!.dogadjajId!).then((value) {
+                      _handleRejectAcceptSuccess(
+                          context, "Događaj je odbijen", "Reject Successful");
+                    });
+                  } on Exception catch (e) {
+                    handleDogadjajException(e);
+                  } finally {
+                    rejectButtonKey.currentState?.fetchingFalse();
+                  }
                 },
-          style: ElevatedButton.styleFrom(
-              backgroundColor: _deleted
-                  ? Color.fromARGB(255, 90, 79, 81)
-                  : Color.fromARGB(255, 198, 28, 53)),
-          child: Text(
-            "Odbij",
-            style: TextStyle(color: Colors.white),
-          )),
+                child: const Text('Potvrdi'),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -638,15 +623,6 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
                                 initialValue: selectedPodkategorija,
                                 name: 'PodkategorijaId',
                                 isExpanded: true,
-                                /* decoration: InputDecoration(
-                              suffix: IconButton(
-                                icon: const Icon(Icons.close),
-                                onPressed: () {
-                                  _formKey.currentState!.fields['kategorijaId']
-                                      ?.reset();
-                                },
-                              ),
-                            ),*/
                                 items: podkategorijeResult?.result
                                         .map((item) => DropdownMenuItem(
                                               alignment:
@@ -666,6 +642,31 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
                                   });
                                 }),
                               ))
+                        /*_buildInputField(
+                              "Podkategorija:",
+                              FormBuilderDropdown<int?>(
+                                initialValue: selectedPodkategorija,
+                                name: 'PodkategorijaId',
+                                isExpanded: true,
+                                items: podkategorijeResult?.result
+                                        .map((item) => DropdownMenuItem(
+                                              alignment:
+                                                  AlignmentDirectional.center,
+                                              value: item.podkategorijaId,
+                                              child: Align(
+                                                  alignment:
+                                                      Alignment.centerLeft,
+                                                  child:
+                                                      Text(item.naziv ?? "")),
+                                            ))
+                                        .toList() ??
+                                    [],
+                                onChanged: ((val) {
+                                  setState(() {
+                                    selectedPodkategorija = val;
+                                  });
+                                }),
+                              ))*/
                       ],
                     ),
                     Row(

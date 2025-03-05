@@ -99,5 +99,16 @@ namespace eventsApp.Services
 
             return _mapper.Map<Model.Slike>(entity);
         }
+
+        public async Task<bool> DeleteByDogadjaj(int dogadjajId)
+        {
+            var picturesToDelete = _context.Slikes.Where(s => s.DogadjajId == dogadjajId);
+
+            _context.Slikes.RemoveRange(picturesToDelete);
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
     }
 }

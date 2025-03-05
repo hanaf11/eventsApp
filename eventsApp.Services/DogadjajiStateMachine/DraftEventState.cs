@@ -31,10 +31,10 @@ namespace eventsApp.Services.DogadjajiStateMachine
 
             _mapper.Map(request, entity);
 
-            if (entity.Opis == "aa")
+            /*if (entity.Opis == "aa")
             {
                 throw new UserException("Opis nije dozvoljen");
-            }
+            }*/
             
             if (request.Galerija.Count > 0)
             {

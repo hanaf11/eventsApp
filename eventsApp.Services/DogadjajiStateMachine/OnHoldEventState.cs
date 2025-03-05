@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using eventsApp.Model;
 using eventsApp.Model.Messages;
 using eventsApp.Services.Database;
 using Microsoft.EntityFrameworkCore;
@@ -35,33 +36,37 @@ namespace eventsApp.Services.DogadjajiStateMachine
 
             var entity = await set.Include(d => d.Kategorija).FirstOrDefaultAsync(d => d.DogadjajId == id);
 
-            entity.Status = "ACTIVE";
+            if (entity != null)
+            {
+                entity.Status = "ACTIVE";
 
-            await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
 
-            /*var factory = new ConnectionFactory { HostName = "localhost" };
-            using var connection = factory.CreateConnection();
-            using var channel= connection.CreateModel();
+                /*var factory = new ConnectionFactory { HostName = "localhost" };
+                using var connection = factory.CreateConnection();
+                using var channel= connection.CreateModel();
 
-            channel.QueueDeclare(queue:"category_subscription",
-                                 durable:false,
-                                 exclusive:false,
-                                 autoDelete:false,
-                                 arguments:null);
-            const string message = "aa";
-            var body = Encoding.UTF8.GetBytes(message);
+                channel.QueueDeclare(queue:"category_subscription",
+                                     durable:false,
+                                     exclusive:false,
+                                     autoDelete:false,
+                                     arguments:null);
+                const string message = "aa";
+                var body = Encoding.UTF8.GetBytes(message);
 
-            channel.BasicPublish(exchange: string.Empty,
-                                 routingKey: "category_subscription",
-                                 basicProperties: null,
-                                 body: body);*/
+                channel.BasicPublish(exchange: string.Empty,
+                                     routingKey: "category_subscription",
+                                     basicProperties: null,
+                                     body: body);*/
 
-            var mappedEntity = _mapper.Map<Model.Dogadjaji>(entity);
+                var mappedEntity = _mapper.Map<Model.Dogadjaji>(entity);
 
-            /*  using var bus = RabbitHutch.CreateBus("host=localhost");
-              bus.PubSub.Publish(mappedEntity);*/
-            _notificationService.SendEventActivatedMail(mappedEntity);
-            return mappedEntity;
+                /*  using var bus = RabbitHutch.CreateBus("host=localhost");
+                  bus.PubSub.Publish(mappedEntity);*/
+                _notificationService.SendEventActivatedMail(mappedEntity);
+                return mappedEntity;
+            }
+            throw new UserException($"Event with ID {id} not found.");
         }
 
 
@@ -93,7 +98,7 @@ namespace eventsApp.Services.DogadjajiStateMachine
             }
             else
             {
-                var set = _context.Set<Karte>();
+               var set = _context.Set<Karte>();
                 Dictionary<string, int> tipKarteMap = new Dictionary<string, int>();
                 foreach (var karta in karteList.KarteList)
                 {
@@ -108,7 +113,7 @@ namespace eventsApp.Services.DogadjajiStateMachine
                     }
                     else
                     {
-                        Database.TipKarte tip = _tipKarteService.FindTip(karta.TipKarte, dogadjaj.DogadjajId).Result;
+                        Database.TipKarte tip = await _tipKarteService.FindTip(karta.TipKarte, dogadjaj.DogadjajId);
                         if (tip != null)
                         {
                             k.TipKarteId = tip.TipKarteId;
@@ -116,7 +121,9 @@ namespace eventsApp.Services.DogadjajiStateMachine
                             set.Add(k);
 
                         }
+
                     }
+                    
                 }
 
                 await _tipKarteService.UpdateStanje(karteList.Stanje, dogadjaj.DogadjajId);

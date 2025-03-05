@@ -40,6 +40,7 @@ namespace eventsApp.Services
             CreateMap<Model.Requests.SavingObject, Database.Saving>();
             CreateMap<Model.Requests.TipKarteInsertRequest, Database.TipKarte>();
             CreateMap<Database.TipKarte, Model.TipKarte>();
+            CreateMap<Database.Karte, Model.Karta>();
         }
     }
 }

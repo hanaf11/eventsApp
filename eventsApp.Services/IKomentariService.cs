@@ -12,5 +12,7 @@ namespace eventsApp.Services
     public interface IKomentariService : IService<Model.Komentari, Model.Komentari, KomentarSearchObject>
     {
         Task<PagedResult<Model.Komentari>> Post(KomentarInsertObject insert);
+
+        Task<bool> DeleteByDogadjaj(int dogadjajId);
     }
 }

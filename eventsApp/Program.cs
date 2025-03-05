@@ -25,6 +25,7 @@ builder.Services.AddTransient<ISavingService, SavingServiceImpl>();
 builder.Services.AddTransient<GalerijaServiceImpl>();
 builder.Services.AddTransient<ITipKarteService, TipKarteServiceImpl>();
 builder.Services.AddTransient<INotificationService, NotificationServiceImpl>();
+builder.Services.AddTransient<IKarteService, KarteServiceImpl>();
 
 builder.Services.AddTransient<BaseState>();
 builder.Services.AddTransient<ActiveEventState>();

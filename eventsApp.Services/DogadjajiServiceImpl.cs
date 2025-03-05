@@ -27,11 +27,20 @@ namespace eventsApp.Services
         public ITipKarteService _tipKarteService { get; set; }
 
         ILogger<DogadjajiServiceImpl> _logger;
-        public DogadjajiServiceImpl(BaseState baseState, EventsDbContext context, IMapper mapper, ILogger<DogadjajiServiceImpl> logger, ITipKarteService tipKarteService) : base(context, mapper)
+
+        private ISavingService _savingService;
+
+        private IKomentariService _komentariService;
+
+        private IGalerijaService _galerijaService;
+        public DogadjajiServiceImpl(BaseState baseState, EventsDbContext context, IMapper mapper, ILogger<DogadjajiServiceImpl> logger, ITipKarteService tipKarteService, ISavingService savingService, IKomentariService komentariService, IGalerijaService galerijaService) : base(context, mapper)
         {
             _baseState = baseState;
             _logger = logger;
             _tipKarteService = tipKarteService;
+            _savingService = savingService;
+            _komentariService = komentariService;
+            _galerijaService = galerijaService;
         }
 
         public override IQueryable<Database.Dogadjaji> AddFilter(IQueryable<Database.Dogadjaji> query, DogadjajiSearchObject? search = null)
@@ -125,6 +134,27 @@ namespace eventsApp.Services
             var entity = await _context.Dogadjajis.FindAsync(id);
             var state = _baseState.CreateState(entity.Status);
             return await state.Verify(id);
+        }
+
+        public override async Task BeforeDelete(Database.Dogadjaji dogadjaj)
+        {
+            int dogadjajId = dogadjaj.DogadjajId;
+
+            bool eventHasPictures = await _context.Slikes.Where(s => s.DogadjajId == dogadjajId).AnyAsync();
+            if (eventHasPictures) { await _galerijaService.DeleteByDogadjaj(dogadjaj.DogadjajId); }
+
+            bool eventInSaving = await _context.Savings.Where(s => s.DogadjajId == dogadjajId).AnyAsync();
+            if (eventInSaving) { await _savingService.DeleteByDogadjaj(dogadjaj.DogadjajId); }
+
+            bool eventHasComments =await  _context.Komentaris.Where(c => c.DogadjajId == dogadjajId).AnyAsync();
+            if (eventHasComments) { await _komentariService.DeleteByDogadjaj(dogadjaj.DogadjajId); }
+
+            bool eventInTicketTypes = await _context.TipKartes.Where(s => s.DogadjajId == dogadjajId).AnyAsync();
+            if (eventInTicketTypes) { await _tipKarteService.DeleteByDogadjaj(dogadjaj.DogadjajId); }
+
+            /*bool eventInHistory = await _context.HistorijaPregleda.Where(h => h.DogadjajId == dogadjajId).AnyAsync();
+            if (eventInHistory) { await _historijaPregledaService.DeleteByDogadjaj(dogadjaj.DogadjajId); }*/
+
         }
 
         public async Task<Model.Dogadjaji> SendRequestForTickets(int id, List<KarteRequest> request)

@@ -17,5 +17,7 @@ namespace eventsApp.Model
         public int Stanje { get; set; }
 
         public bool NumerisanjeSjedista { get; set; }
+
+        public Dogadjaji Dogadjaj { get; set; }
     }
 }

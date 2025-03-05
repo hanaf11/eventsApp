@@ -39,6 +39,9 @@ namespace eventsApp.Services
         {
 
         }
+        public virtual async Task BeforeDelete(TDb entity)
+        {
+        }
 
         public virtual async Task<TDetails> Insert(TInsert insert)
         {
@@ -85,7 +88,9 @@ namespace eventsApp.Services
                 throw new Exception($"Entity with ID {id} not found.");
             }
 
-                ValidateDelete(entity);
+                await ValidateDelete(entity);
+
+                await BeforeDelete(entity);
 
                 set.Remove(entity);
 

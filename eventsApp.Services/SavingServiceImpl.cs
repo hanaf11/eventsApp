@@ -93,5 +93,16 @@ namespace eventsApp.Services
                 throw new UserException("Dogadjaj nije sacuvan");
             }
         }
+
+        public async Task<bool> DeleteByDogadjaj(int dogadjajId)
+        {
+            var savingsToDelete = _context.Savings.Where(s => s.DogadjajId == dogadjajId);
+
+            _context.Savings.RemoveRange(savingsToDelete);
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
     }
 }

@@ -81,8 +81,8 @@ class _ZahtjeviListScreenState extends State<ZahtjeviListScreen> {
 
   openZahtjev(int dogadjajId) {
     Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) =>
-          DogadjajiDetailsScreen(dogadjajId: dogadjajId, zahtjev: true),
+      builder: (context) => DogadjajiDetailsScreen(
+          dogadjajId: dogadjajId, zahtjev: true, refresh: getZahtjevi),
     ));
   }
 
