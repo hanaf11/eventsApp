@@ -201,7 +201,7 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
   Widget build(BuildContext context) {
     return isLoading
         ? MasterScreen(
-            selectedIndex: 0,
+            selectedIndex: -1,
             showBackButton: true,
             showFollowButton: false,
             child: Expanded(

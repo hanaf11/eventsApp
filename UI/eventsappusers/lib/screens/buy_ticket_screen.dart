@@ -77,7 +77,7 @@ class _BuyTicketScreenState extends State<BuyTicketScreen> {
   @override
   Widget build(BuildContext context) {
     return MasterScreen(
-        selectedIndex: 3,
+        selectedIndex: -1,
         showBackButton: true,
         showAppBar: true,
         child: Expanded(

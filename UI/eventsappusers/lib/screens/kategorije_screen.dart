@@ -43,7 +43,7 @@ class _KategorijeScreenState extends State<KategorijeScreen> {
   @override
   Widget build(BuildContext context) {
     return MasterScreen(
-        selectedIndex: 0,
+        selectedIndex: -1,
         showBackButton: true,
         child: Expanded(
             child: isLoading

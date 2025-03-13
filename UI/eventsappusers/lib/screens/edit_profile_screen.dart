@@ -65,7 +65,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     var isLoading = false;
     return MasterScreen(
-        selectedIndex: 3,
+        selectedIndex: -1,
         showBackButton: true,
         showAppBar: true,
         child: Expanded(

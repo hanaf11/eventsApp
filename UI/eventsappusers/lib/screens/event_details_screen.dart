@@ -239,7 +239,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return MasterScreen(
-        selectedIndex: 0,
+        selectedIndex: -1,
         showBackButton: true,
         showAppBar: false,
         child: Expanded(
