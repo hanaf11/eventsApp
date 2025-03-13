@@ -214,37 +214,41 @@ class _KategorijeScreenState extends State<KategorijeScreen>
   Widget build(BuildContext context) {
     return MasterScreenWidget(
         selectedIndex: widget.selected,
-        child: Expanded(
-            child: isLoading
-                ? const CircularProgressIndicator()
-                : Column(
-                    children: [
-                      _buildSearch(),
-                      _buildDataListViewKategorije(),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      _selectedKategorija != null
-                          ? Column(
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 20, vertical: 5),
-                                  child: Align(
-                                      alignment: Alignment.topLeft,
-                                      child: Text("Podkategorije",
-                                          style: h2,
-                                          textAlign: TextAlign.left)),
-                                ),
-                                _buildPodkategorije(_selectedKategorija!)
-                              ],
-                            )
-                          : Container(),
-                      SizedBox(
-                        height: 30,
-                      ),
-                    ],
-                  )));
+        child: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : Expanded(
+                child: Container(
+                    alignment: Alignment.topLeft,
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                    child: SingleChildScrollView(
+                        child: Column(
+                      children: [
+                        _buildSearch(),
+                        _buildDataListViewKategorije(),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        _selectedKategorija != null
+                            ? Column(
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 20, vertical: 5),
+                                    child: Align(
+                                        alignment: Alignment.topLeft,
+                                        child: Text("Podkategorije",
+                                            style: h2,
+                                            textAlign: TextAlign.left)),
+                                  ),
+                                  _buildPodkategorije(_selectedKategorija!)
+                                ],
+                              )
+                            : Container(),
+                        SizedBox(
+                          height: 30,
+                        ),
+                      ],
+                    )))));
   }
 
   Widget _buildSearch() {
@@ -289,95 +293,103 @@ class _KategorijeScreenState extends State<KategorijeScreen>
     );
   }
 
-  Expanded _buildDataListViewKategorije() {
-    return Expanded(
-        child: SingleChildScrollView(
-            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      DataTable(
-          showCheckboxColumn: false,
-          columns: [
-            DataColumn(
-              label: Expanded(
-                child: Text(
-                  'Naziv',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
+  Widget _buildDataListViewKategorije() {
+    return LayoutBuilder(builder: (context, constraints) {
+      return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minWidth: constraints.maxWidth,
             ),
-            DataColumn(
-              label: Expanded(
-                child: Text(
-                  'Opis',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-            DataColumn(
-              label: Expanded(
-                child: Text(
-                  'Slika',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-            DataColumn(
-              label: Expanded(
-                child: Text(
-                  'Uredi',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-            DataColumn(
-              label: Expanded(
-                child: Text(
-                  'Obriši',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-          ],
-          rows: result?.result
-                  .map((Kategorija e) => DataRow(
-                          onSelectChanged: (selected) {
-                            if (selected == true) {
-                              setState(() {
-                                _selectedKategorija = e;
-                              });
-                              getPodkategorije(e.kategorijaId!);
-                            }
-                          },
-                          cells: [
-                            DataCell(Text(
-                              e.naziv ?? '',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            )),
-                            DataCell(Text(
-                              e.opis ?? '',
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            )),
-                            DataCell(_buildSlika(e.slika ?? '')),
-                            DataCell(IconButton(
-                                icon: const Icon(Icons.edit),
-                                color: Color.fromRGBO(44, 152, 240, 1),
-                                splashRadius: 20,
-                                hoverColor: Color.fromRGBO(224, 224, 224, 1),
-                                onPressed: () {
-                                  editKategorija(e.kategorijaId!);
-                                })),
-                            DataCell(IconButton(
-                                icon: const Icon(Icons.delete),
-                                color: Color.fromRGBO(44, 152, 240, 1),
-                                splashRadius: 20,
-                                hoverColor: Color.fromRGBO(224, 224, 224, 1),
-                                onPressed: () async {
-                                  await deleteKategorija(e);
-                                })),
-                          ]))
-                  .toList() ??
-              []),
-    ])));
+            child: DataTable(
+                showCheckboxColumn: false,
+                columns: [
+                  DataColumn(
+                    label: Expanded(
+                      child: Text(
+                        'Naziv',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Expanded(
+                      child: Text(
+                        'Opis',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Expanded(
+                      child: Text(
+                        'Slika',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Expanded(
+                      child: Text(
+                        'Uredi',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Expanded(
+                      child: Text(
+                        'Obriši',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ],
+                rows: result?.result
+                        .map((Kategorija e) => DataRow(
+                                onSelectChanged: (selected) {
+                                  if (selected == true) {
+                                    setState(() {
+                                      _selectedKategorija = e;
+                                    });
+                                    getPodkategorije(e.kategorijaId!);
+                                  }
+                                },
+                                cells: [
+                                  DataCell(Text(
+                                    e.naziv ?? '',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  )),
+                                  DataCell(Text(
+                                    e.opis ?? '',
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                  )),
+                                  DataCell(_buildSlika(e.slika ?? '')),
+                                  DataCell(IconButton(
+                                      icon: const Icon(Icons.edit),
+                                      color: Color.fromRGBO(44, 152, 240, 1),
+                                      splashRadius: 20,
+                                      hoverColor:
+                                          Color.fromRGBO(224, 224, 224, 1),
+                                      onPressed: () {
+                                        editKategorija(e.kategorijaId!);
+                                      })),
+                                  DataCell(IconButton(
+                                      icon: const Icon(Icons.delete),
+                                      color: Color.fromRGBO(44, 152, 240, 1),
+                                      splashRadius: 20,
+                                      hoverColor:
+                                          Color.fromRGBO(224, 224, 224, 1),
+                                      onPressed: () async {
+                                        await deleteKategorija(e);
+                                      })),
+                                ]))
+                        .toList() ??
+                    []),
+          ));
+    });
   }
 
   Widget _buildPodkategorije(Kategorija? kategorija) {

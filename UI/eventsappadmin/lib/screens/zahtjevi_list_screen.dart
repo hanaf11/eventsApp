@@ -146,275 +146,302 @@ class _ZahtjeviListScreenState extends State<ZahtjeviListScreen> {
     return MasterScreenWidget(
         selectedIndex: selected,
         child: _isLoading
-            ? Expanded(child: Center(child: const CircularProgressIndicator()))
+            ? Center(child: const CircularProgressIndicator())
             : Expanded(
-                child: SingleChildScrollView(
-                    child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text("Zahtjevi za kreiranje događaja",
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 91, 91, 91),
-                        )),
-                    _buildDataListViewZahtjevi(),
-                    SizedBox(
-                      height: 40,
-                    ),
-                    const Text(
-                      "Pošalji zahtjev za karte dobavljaču",
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 91, 91, 91),
+                child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                    alignment: Alignment.topLeft,
+                    child: SingleChildScrollView(
+                        child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text("Zahtjevi za kreiranje događaja",
+                              textAlign: TextAlign.start,
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(255, 91, 91, 91),
+                              )),
+                          _buildDataListViewZahtjevi(),
+                          SizedBox(
+                            height: 40,
+                          ),
+                          const Text(
+                            "Pošalji zahtjev za karte dobavljaču",
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 91, 91, 91),
+                            ),
+                          ),
+                          _buildDataListViewKarte()
+                        ],
+                      ),
+                    )))));
+  }
+
+  Widget _buildDataListViewZahtjevi() {
+    return LayoutBuilder(builder: (context, constraints) {
+      return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minWidth: constraints.maxWidth,
+              ),
+              child: DataTable(
+                  showCheckboxColumn: false,
+                  columns: [
+                    DataColumn(
+                      label: Expanded(
+                        child: Text(
+                          'Naziv',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
-                    _buildDataListViewKarte()
+                    DataColumn(
+                      label: Expanded(
+                        child: Text(
+                          'Datum od',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    DataColumn(
+                      label: Expanded(
+                        child: Text(
+                          'Datum do',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    DataColumn(
+                      label: Expanded(
+                        child: Text(
+                          'Lokacija',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    DataColumn(
+                      label: Expanded(
+                        child: Text(
+                          'Organizator',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    DataColumn(
+                      label: Expanded(
+                        child: Text(
+                          'Pregledaj',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    )
                   ],
-                ),
-              ))));
-  }
-
-  DataTable _buildDataListViewZahtjevi() {
-    return DataTable(
-        showCheckboxColumn: false,
-        columns: [
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'Naziv',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'Datum od',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'Datum do',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'Lokacija',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'Organizator',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'Pregledaj',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          )
-        ],
-        rows: _zahtjeviList
-                ?.map((Dogadjaj e) => DataRow(
-                        onSelectChanged: (selected) {
-                          if (selected == true) {
-                            setState(() {
-                              _selectedZahtjev = e;
-                            });
-                          }
-                        },
-                        cells: [
-                          DataCell(Text(
-                            e.naziv ?? '',
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          )),
-                          DataCell(Text(printDate(e.datumOd))),
-                          DataCell(Text(printDate(e.datumDo))),
-                          DataCell(Text(
-                            e.lokacija ?? '',
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          )),
-                          DataCell(Text(
-                            e.organizator ?? '',
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          )),
-                          DataCell(IconButton(
-                              icon: const Icon(Icons.open_in_full),
-                              color: Color.fromRGBO(44, 152, 240, 1),
-                              splashRadius: 20,
-                              hoverColor: Color.fromRGBO(224, 224, 224, 1),
-                              onPressed: () {
-                                openZahtjev(e.dogadjajId!);
-                              })),
-                        ]))
-                .toList() ??
-            []);
-  }
-
-  DataTable _buildDataListViewKarte() {
-    return DataTable(
-        showCheckboxColumn: false,
-        columns: [
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'Naziv',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'Datum',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'Lokacija',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'Organizator',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'Dobavljač',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'Status',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'Pošalji',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          )
-        ],
-        rows: _verifiedList
-                ?.map((Dogadjaj e) => DataRow(
-                        onSelectChanged: (selected) {
-                          if (selected == true) {
-                            setState(() {
-                              _selectedVerified = e;
-                            });
-                          }
-                        },
-                        cells: [
-                          DataCell(Text(
-                            e.naziv ?? '',
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          )),
-                          DataCell(Text(printDate(e.datumOd))),
-                          DataCell(Text(
-                            e.lokacija ?? '',
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          )),
-                          DataCell(Text(
-                            e.organizator ?? '',
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          )),
-                          DataCell(Text(
-                            e.dobavljac?.naziv ?? '',
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          )),
-                          DataCell(Text(
-                            e.status ?? '',
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          )),
-                          DataCell(IconButton(
-                            icon: const Icon(Icons.send),
-                            color: Color.fromRGBO(44, 152, 240, 1),
-                            disabledColor: Colors.grey,
-                            splashRadius: 20,
-                            hoverColor: Color.fromRGBO(224, 224, 224, 1),
-                            onPressed: calculateWhetherDisabled(e.status)
-                                ? null
-                                : () async {
-                                    setState(() {
-                                      _selectedVerified = e;
-                                    });
-                                    await _tipkarteProvider.get(filter: {
-                                      'DogadjajId':
-                                          _selectedVerified?.dogadjajId
-                                    }).then((val) {
+                  rows: _zahtjeviList
+                          ?.map((Dogadjaj e) => DataRow(
+                                  onSelectChanged: (selected) {
+                                    if (selected == true) {
                                       setState(() {
-                                        tipovi = val.result;
-                                        print(tipovi);
-                                        tipKarteLoaded = true;
-                                        rows = tipovi?.map((tip) {
-                                          return RowData(
-                                              tipKarteController:
-                                                  TextEditingController(
-                                                      text: tip.naziv),
-                                              cijenaController:
-                                                  TextEditingController(
-                                                      text: tip.cijena
-                                                          .toString()),
-                                              kolicinaController:
-                                                  TextEditingController(),
-                                              numerisanjeSjedista:
-                                                  tip.numerisanjeSjedista ??
-                                                      false);
-                                        }).toList();
+                                        _selectedZahtjev = e;
                                       });
-                                    });
-                                    _openPopup(e);
+                                    }
                                   },
-                          )),
-                        ]))
-                .toList() ??
-            []);
+                                  cells: [
+                                    DataCell(Text(
+                                      e.naziv ?? '',
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    )),
+                                    DataCell(Text(printDate(e.datumOd))),
+                                    DataCell(Text(printDate(e.datumDo))),
+                                    DataCell(Text(
+                                      e.lokacija ?? '',
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    )),
+                                    DataCell(Text(
+                                      e.organizator ?? '',
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    )),
+                                    DataCell(IconButton(
+                                        icon: const Icon(Icons.open_in_full),
+                                        color: Color.fromRGBO(44, 152, 240, 1),
+                                        splashRadius: 20,
+                                        hoverColor:
+                                            Color.fromRGBO(224, 224, 224, 1),
+                                        onPressed: () {
+                                          openZahtjev(e.dogadjajId!);
+                                        })),
+                                  ]))
+                          .toList() ??
+                      [])));
+    });
+  }
+
+  Widget _buildDataListViewKarte() {
+    return LayoutBuilder(builder: (context, constraints) {
+      return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minWidth: constraints.maxWidth,
+              ),
+              child: DataTable(
+                  showCheckboxColumn: false,
+                  columns: [
+                    DataColumn(
+                      label: Expanded(
+                        child: Text(
+                          'Naziv',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    DataColumn(
+                      label: Expanded(
+                        child: Text(
+                          'Datum',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    DataColumn(
+                      label: Expanded(
+                        child: Text(
+                          'Lokacija',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    DataColumn(
+                      label: Expanded(
+                        child: Text(
+                          'Organizator',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    DataColumn(
+                      label: Expanded(
+                        child: Text(
+                          'Dobavljač',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    DataColumn(
+                      label: Expanded(
+                        child: Text(
+                          'Status',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    DataColumn(
+                      label: Expanded(
+                        child: Text(
+                          'Pošalji',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    )
+                  ],
+                  rows: _verifiedList
+                          ?.map((Dogadjaj e) => DataRow(
+                                  onSelectChanged: (selected) {
+                                    if (selected == true) {
+                                      setState(() {
+                                        _selectedVerified = e;
+                                      });
+                                    }
+                                  },
+                                  cells: [
+                                    DataCell(Text(
+                                      e.naziv ?? '',
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    )),
+                                    DataCell(Text(printDate(e.datumOd))),
+                                    DataCell(Text(
+                                      e.lokacija ?? '',
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    )),
+                                    DataCell(Text(
+                                      e.organizator ?? '',
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    )),
+                                    DataCell(Text(
+                                      e.dobavljac?.naziv ?? '',
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    )),
+                                    DataCell(Text(
+                                      e.status ?? '',
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    )),
+                                    DataCell(IconButton(
+                                      icon: const Icon(Icons.send),
+                                      color: Color.fromRGBO(44, 152, 240, 1),
+                                      disabledColor: Colors.grey,
+                                      splashRadius: 20,
+                                      hoverColor:
+                                          Color.fromRGBO(224, 224, 224, 1),
+                                      onPressed: calculateWhetherDisabled(
+                                              e.status)
+                                          ? null
+                                          : () async {
+                                              setState(() {
+                                                _selectedVerified = e;
+                                              });
+                                              await _tipkarteProvider
+                                                  .get(filter: {
+                                                'DogadjajId': _selectedVerified
+                                                    ?.dogadjajId
+                                              }).then((val) {
+                                                setState(() {
+                                                  tipovi = val.result;
+                                                  print(tipovi);
+                                                  tipKarteLoaded = true;
+                                                  rows = tipovi?.map((tip) {
+                                                    return RowData(
+                                                        tipKarteController:
+                                                            TextEditingController(
+                                                                text: tip
+                                                                    .naziv),
+                                                        cijenaController:
+                                                            TextEditingController(
+                                                                text: tip.cijena
+                                                                    .toString()),
+                                                        kolicinaController:
+                                                            TextEditingController(),
+                                                        numerisanjeSjedista:
+                                                            tip.numerisanjeSjedista ??
+                                                                false);
+                                                  }).toList();
+                                                });
+                                              });
+                                              _openPopup(e);
+                                            },
+                                    )),
+                                  ]))
+                          .toList() ??
+                      [])));
+    });
   }
 
   calculateWhetherDisabled(status) {

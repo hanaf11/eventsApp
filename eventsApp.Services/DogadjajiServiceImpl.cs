@@ -82,6 +82,10 @@ namespace eventsApp.Services
             {
                 filteredQuery = filteredQuery.Where(x => x.Status.Equals(search.Status));
             }
+            if (search?.Username != null)
+            {
+                filteredQuery = filteredQuery.Where(x => x.Organizator.Equals(search.Username));
+            }
             return filteredQuery;
         }
 

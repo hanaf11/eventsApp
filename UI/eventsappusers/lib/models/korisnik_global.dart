@@ -6,6 +6,7 @@ class KorisnikGlobal {
   static String? ime;
   static String? prezime;
   static String? lokacija;
+  static String? slika;
 
   KorisnikGlobal(Korisnik k) {
     korisnikId = k.korisnikId;
@@ -13,6 +14,7 @@ class KorisnikGlobal {
     ime = k.ime;
     prezime = k.prezime;
     lokacija = k.adresa;
+    slika = k.slika;
   }
 
   static void clear() {
@@ -21,5 +23,6 @@ class KorisnikGlobal {
     ime = null;
     prezime = null;
     lokacija = null;
+    slika = null;
   }
 }

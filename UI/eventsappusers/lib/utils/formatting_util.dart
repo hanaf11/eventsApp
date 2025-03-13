@@ -73,7 +73,7 @@ ImageProvider imageProviderFromBase64String(String? base64Image) {
 }
 
 Image imageFromBase64String(String? base64Image) {
-  if (base64Image != null) {
+  if (base64Image != null && base64Image.isNotEmpty) {
     try {
       return Image.memory(
         base64Decode(base64Image),

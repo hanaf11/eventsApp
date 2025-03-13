@@ -23,6 +23,7 @@ class _NarudzbeListScreenState extends State<NarudzbeListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    //po uzoru na korisnici ili zahtjevi
     return MasterScreenWidget(
       selectedIndex: selected,
       child: Container(

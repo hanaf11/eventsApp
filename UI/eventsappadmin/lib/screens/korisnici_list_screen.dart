@@ -69,15 +69,19 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
   Widget build(BuildContext context) {
     return MasterScreenWidget(
         selectedIndex: selected,
-        child: Expanded(
-            child: isLoading
-                ? const CircularProgressIndicator()
-                : Column(
-                    children: [
-                      _buildSearch(),
-                      _buildDataListView(),
-                    ],
-                  )));
+        child: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : Expanded(
+                child: Container(
+                    alignment: Alignment.topLeft,
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                    child: SingleChildScrollView(
+                        child: Column(
+                      children: [
+                        _buildSearch(),
+                        _buildDataListView(),
+                      ],
+                    )))));
   }
 
   Widget _buildSearch() {
@@ -109,123 +113,127 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
     );
   }
 
-  Expanded _buildDataListView() {
-    return Expanded(
-        child: SingleChildScrollView(
-            /*child: Padding(
-                    padding: const EdgeInsets.all(20),*/
-            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      DataTable(
-          columns: [
-            DataColumn(
-              label: Expanded(
-                child: Text(
-                  'Korisničko ime',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
+  Widget _buildDataListView() {
+    return LayoutBuilder(builder: (context, constraints) {
+      return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minWidth: constraints.maxWidth,
             ),
-            DataColumn(
-              label: Expanded(
-                child: Text(
-                  'Član od',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-            DataColumn(
-              label: Expanded(
-                child: Text(
-                  'Detalji',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-            DataColumn(
-              label: Expanded(
-                child: Text(
-                  'Obriši',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-          ],
-          rows: result?.result
-                  .map((Korisnik e) => DataRow(cells: [
-                        DataCell(Text(
-                          e.korisnickoIme.toString(),
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        )),
-                        DataCell(Text(
-                            "${e.created.day}.${e.created.month}.${e.created.year}.")),
-                        DataCell(ElevatedButton(
-                            child: Padding(
-                                padding: EdgeInsets.all(5),
-                                child: Text("Detalji")),
-                            style: ButtonStyle(
-                                shape: MaterialStateProperty.all<
-                                        RoundedRectangleBorder>(
-                                    RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ))),
-                            onPressed: () {
-                              setState(() {
-                                isLoading = true;
-                              });
+            child: DataTable(
+                columns: [
+                  DataColumn(
+                    label: Expanded(
+                      child: Text(
+                        'Korisničko ime',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Expanded(
+                      child: Text(
+                        'Član od',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Expanded(
+                      child: Text(
+                        'Detalji',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Expanded(
+                      child: Text(
+                        'Obriši',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ],
+                rows: result?.result
+                        .map((Korisnik e) => DataRow(cells: [
+                              DataCell(Text(
+                                e.korisnickoIme.toString(),
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              )),
+                              DataCell(Text(
+                                  "${e.created.day}.${e.created.month}.${e.created.year}.")),
+                              DataCell(ElevatedButton(
+                                  child: Padding(
+                                      padding: EdgeInsets.all(5),
+                                      child: Text("Detalji")),
+                                  style: ButtonStyle(
+                                      shape: MaterialStateProperty.all<
+                                              RoundedRectangleBorder>(
+                                          RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ))),
+                                  onPressed: () {
+                                    setState(() {
+                                      isLoading = true;
+                                    });
 
-                              _korisnikProvider
-                                  .getById(e.korisnikId)
-                                  .then((value) {
-                                setState(() {
-                                  isLoading = false;
-                                  korisnik = value;
-                                });
-                                _buildKorisnikDetails(korisnik);
-                              });
-                            })),
-                        DataCell(IconButton(
-                          icon: const Icon(Icons.delete),
-                          color: Color.fromRGBO(44, 152, 240, 1),
-                          splashRadius: 20,
-                          hoverColor: Color.fromRGBO(224, 224, 224, 1),
-                          onPressed: () {
-                            showDialog<String>(
-                              context: context,
-                              builder: (BuildContext context) => AlertDialog(
-                                title: const Text('Potvrdite akciju'),
-                                content: Text(
-                                    'Da li stvarno želite obrisati korisnika ${e.korisnickoIme}?'),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed: () =>
-                                        Navigator.pop(context, 'Odustani'),
-                                    child: const Text('Odustani'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context, 'Potvrdi');
-                                      _korisnikProvider
-                                          .delete(e.korisnikId)
-                                          .then((value) => search());
-                                    },
-                                    child: const Text('Potvrdi'),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        )),
+                                    _korisnikProvider
+                                        .getById(e.korisnikId)
+                                        .then((value) {
+                                      setState(() {
+                                        isLoading = false;
+                                        korisnik = value;
+                                      });
+                                      _buildKorisnikDetails(korisnik);
+                                    });
+                                  })),
+                              DataCell(IconButton(
+                                icon: const Icon(Icons.delete),
+                                color: Color.fromRGBO(44, 152, 240, 1),
+                                splashRadius: 20,
+                                hoverColor: Color.fromRGBO(224, 224, 224, 1),
+                                onPressed: () {
+                                  showDialog<String>(
+                                    context: context,
+                                    builder: (BuildContext context) =>
+                                        AlertDialog(
+                                      title: const Text('Potvrdite akciju'),
+                                      content: Text(
+                                          'Da li stvarno želite obrisati korisnika ${e.korisnickoIme}?'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(
+                                              context, 'Odustani'),
+                                          child: const Text('Odustani'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context, 'Potvrdi');
+                                            _korisnikProvider
+                                                .delete(e.korisnikId)
+                                                .then((value) => search());
+                                          },
+                                          child: const Text('Potvrdi'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              )),
 
-                        // DataCell(Text(formatNumber(e.cijena) ?? "")),
-                        /* DataCell(e.naslovna!=""?Container(
+                              // DataCell(Text(formatNumber(e.cijena) ?? "")),
+                              /* DataCell(e.naslovna!=""?Container(
                           width: 100,
                           height: 100,
                           child: imageFromBase64String(e.naslovna!):Text(""),
                         ))*/
-                      ]))
-                  .toList() ??
-              []),
-    ])));
+                            ]))
+                        .toList() ??
+                    []),
+          ));
+    });
   }
 
   _buildKorisnikDetails(Korisnik? k) {

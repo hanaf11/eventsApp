@@ -1,5 +1,6 @@
 import 'package:eventsappadmin/providers/dogadjaj_provider.dart';
 import 'package:eventsappadmin/screens/dogadjaj_details_screen.dart';
+import 'package:eventsappadmin/utils/style_util.dart';
 import 'package:eventsappadmin/utils/util.dart';
 import 'package:eventsappadmin/widgets/master_screen.dart';
 import 'package:eventsappadmin/widgets/searchField.dart';
@@ -91,11 +92,11 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
 
   void _showDatePicker(caller) {
     showDatePicker(
-            context: context,
-            initialDate: DateTime.now(),
-            firstDate: DateTime(2025),
-            lastDate: DateTime(2030))
-        .then((value) {
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2025),
+      lastDate: DateTime(2030),
+    ).then((value) {
       setState(() {
         if (caller == "_datumOd") {
           _datumOd = value;
@@ -198,19 +199,16 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
   Widget build(BuildContext context) {
     return MasterScreenWidget(
         selectedIndex: selected,
-        child: Expanded(
-            child: isLoading
-                ? const CircularProgressIndicator()
-                : Column(
-                    children: [
-                      _buildSearch(),
-                      /* Container(
-                        height: 200,
-                        color: Colors.yellow,
-                      ),*/
-                      _buildDataListView()
-                    ],
-                  )));
+        child: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : Expanded(
+                child: Container(
+                    alignment: Alignment.topLeft,
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                    child: SingleChildScrollView(
+                        child: Column(
+                      children: [_buildSearch(), _buildDataListView()],
+                    )))));
   }
 
   Widget _buildSearch() {
@@ -306,11 +304,18 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
                   ),
                   InputField(
                     name: "",
-                    field: ElevatedButton(
+                    /* field: ElevatedButton(
                         child: Text("Pretraga"),
                         onPressed: () async {
                           search();
-                        }),
+                        }),*/
+                    field: ElevatedButton(
+                      child: Text("Pretraga"),
+                      style: buttonPrimary,
+                      onPressed: () async {
+                        search();
+                      },
+                    ),
                   ),
                   /* _buildSearchField(
                     "",
@@ -330,12 +335,192 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
         ));
   }
 
-  Expanded _buildDataListView() {
-    return Expanded(
-        child: SingleChildScrollView(
-            child: SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: DataTable(
+  Widget _buildDataListView() {
+    return LayoutBuilder(builder: (context, constraints) {
+      return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minWidth: constraints.maxWidth,
+              ),
+              child: DataTable(
+                  columns: [
+                    DataColumn(
+                      label: Expanded(
+                        child: Text(
+                          'Naziv',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    DataColumn(
+                      label: Expanded(
+                        child: Text(
+                          'Datum',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    DataColumn(
+                      label: Expanded(
+                        child: Text(
+                          'Lokacija',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    DataColumn(
+                      label: Expanded(
+                        child: Text(
+                          'Organizator',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    DataColumn(
+                      label: Expanded(
+                        child: Text(
+                          'Status',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    DataColumn(
+                      label: Expanded(
+                        child: Text(
+                          'Uredi',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    DataColumn(
+                      label: Expanded(
+                        child: Text(
+                          'Obriši',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    /* DataColumn(
+              label: Expanded(
+                child: Text(
+                  'Slika',
+                  style: TextStyle(fontStyle: FontStyle.italic),
+                ),
+              ),
+            ),*/
+                  ],
+                  rows: result?.result
+                          .map((Dogadjaj e) => DataRow(
+                                  /*  onSelectChanged: (selected) => {
+                                    if (selected == true)
+                                      {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                DogadjajiDetailsScreen(
+                                                    dogadjaj: e),
+                                          ),
+                                        )
+                                      }
+                                  },*/
+                                  cells: [
+                                    DataCell(Text(
+                                      e.naziv?.toString() ?? "",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    )),
+                                    DataCell(Text(e.datumOd != null
+                                        ? "${e.datumOd?.day}.${e.datumOd?.month}.${e.datumOd?.year}."
+                                        : "")),
+                                    DataCell(
+                                        Text(e.lokacija?.toString() ?? "")),
+                                    DataCell(
+                                        Text(e.organizator?.toString() ?? "")),
+                                    DataCell(Text(e.status?.toString() ?? "")),
+                                    DataCell(IconButton(
+                                        icon: const Icon(Icons.edit),
+                                        color: Color.fromRGBO(44, 152, 240, 1),
+                                        splashRadius: 20,
+                                        hoverColor:
+                                            Color.fromRGBO(224, 224, 224, 1),
+                                        onPressed: () {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  DogadjajiDetailsScreen(
+                                                dogadjajId: e.dogadjajId,
+                                                refresh: getDogadjaji,
+                                              ),
+                                            ),
+                                          );
+                                        })),
+                                    DataCell(IconButton(
+                                      icon: const Icon(Icons.delete),
+                                      color: Color.fromRGBO(44, 152, 240, 1),
+                                      splashRadius: 20,
+                                      hoverColor:
+                                          Color.fromRGBO(224, 224, 224, 1),
+                                      onPressed: () {
+                                        showDialog<String>(
+                                          context: context,
+                                          builder: (BuildContext context) =>
+                                              AlertDialog(
+                                            title:
+                                                const Text('Potvrdite akciju'),
+                                            content: Text(
+                                                'Da li stvarno želite obrisati događaj ${e.naziv}?'),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(
+                                                      context, 'Odustani');
+                                                },
+                                                child: const Text('Odustani'),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(
+                                                      context, 'Potvrdi');
+                                                  _dogadjajProvider
+                                                      .delete(e.dogadjajId!)
+                                                      .then((value) =>
+                                                          _handleDeleteSuccess(
+                                                              context))
+                                                      .onError(
+                                                        (error, stackTrace) =>
+                                                            handleException(error
+                                                                as Exception),
+                                                      );
+                                                },
+                                                child: const Text('Potvrdi'),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    )),
+
+                                    // DataCell(Text(formatNumber(e.cijena) ?? "")),
+                                    /* DataCell(e.naslovna!=""?Container(
+                          width: 100,
+                          height: 100,
+                          child: imageFromBase64String(e.naslovna!):Text(""),
+                        ))*/
+                                  ]))
+                          .toList() ??
+                      [])));
+    });
+  }
+
+  /*Widget _buildDataListView() {
+    return LayoutBuilder(builder: (context, constraints) {
+      return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minWidth: constraints.maxWidth,
+            ),DataTable(
           columns: [
             DataColumn(
               label: Expanded(
@@ -492,7 +677,7 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
                         ))*/
                           ]))
                   .toList() ??
-              []),
-    )));
-  }
+              [])
+    ))});
+  }*/
 }

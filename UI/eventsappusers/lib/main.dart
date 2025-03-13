@@ -195,9 +195,7 @@ class LoginPage extends StatelessWidget {
         const SizedBox(height: 40),
         _buildGreyText("Lozinka"),
         _buildInputField(passwordController, isPassword: true),
-        const SizedBox(height: 5),
-        _buildRememberForgot(),
-        const SizedBox(height: 20),
+        const SizedBox(height: 50),
         _buildLoginButton(context),
         const SizedBox(height: 20),
         _buildRegisterButton(context),
@@ -222,19 +220,6 @@ class LoginPage extends StatelessWidget {
             isPassword ? const Icon(Icons.password) : const Icon(Icons.person),
       ),
       obscureText: isPassword,
-    );
-  }
-
-  Widget _buildRememberForgot() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        TextButton(
-            onPressed: () {},
-            child: _buildGreyText(
-              "Zaboravio/la sam lozinku",
-            ))
-      ],
     );
   }
 

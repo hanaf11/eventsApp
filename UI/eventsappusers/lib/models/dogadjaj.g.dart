@@ -27,6 +27,7 @@ Dogadjaj _$DogadjajFromJson(Map<String, dynamic> json) => Dogadjaj(
       json['website'] as String?,
       json['lokacijaSlika'] as String?,
       (json['podkategorijaId'] as num?)?.toInt(),
+      json['status'] as String?,
     );
 
 Map<String, dynamic> _$DogadjajToJson(Dogadjaj instance) => <String, dynamic>{
@@ -44,4 +45,5 @@ Map<String, dynamic> _$DogadjajToJson(Dogadjaj instance) => <String, dynamic>{
       'website': instance.website,
       'lokacijaSlika': instance.lokacijaSlika,
       'podkategorijaId': instance.podkategorijaId,
+      'status': instance.status,
     };
