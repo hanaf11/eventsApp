@@ -240,7 +240,9 @@ class _DobavljaciScreenState extends State<DobavljaciScreen>
     return MasterScreenWidget(
         selectedIndex: widget.selected,
         child: isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? Expanded(
+                child: Container(
+                    child: Center(child: const CircularProgressIndicator())))
             : Expanded(
                 child: Container(
                     alignment: Alignment.topLeft,

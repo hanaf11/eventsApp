@@ -200,7 +200,9 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
     return MasterScreenWidget(
         selectedIndex: selected,
         child: isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? Expanded(
+                child: Container(
+                    child: Center(child: const CircularProgressIndicator())))
             : Expanded(
                 child: Container(
                     alignment: Alignment.topLeft,

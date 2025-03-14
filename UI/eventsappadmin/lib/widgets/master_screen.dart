@@ -51,7 +51,7 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> {
           automaticallyImplyLeading: showBackButton ?? false,
           title: Row(
             children: [
-              Text("Events "),
+              Text("EventsApp "),
               SizedBox(width: 5),
               Text("Admin panel",
                   style: TextStyle(

@@ -23,13 +23,17 @@ class _NarudzbeListScreenState extends State<NarudzbeListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    //po uzoru na korisnici ili zahtjevi
+    bool isLoading = false;
     return MasterScreenWidget(
       selectedIndex: selected,
-      child: Container(
-          child: Column(
-        children: [Text("Narudzbe screen"), Text("Selected $selected")],
-      )),
+      child: isLoading
+          ? Expanded(
+              child: Container(
+                  child: Center(child: const CircularProgressIndicator())))
+          : Container(
+              child: Column(
+              children: [Text("Narudzbe screen"), Text("Selected $selected")],
+            )),
     );
   }
 }

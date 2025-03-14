@@ -215,7 +215,9 @@ class _KategorijeScreenState extends State<KategorijeScreen>
     return MasterScreenWidget(
         selectedIndex: widget.selected,
         child: isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? Expanded(
+                child: Container(
+                    child: Center(child: const CircularProgressIndicator())))
             : Expanded(
                 child: Container(
                     alignment: Alignment.topLeft,

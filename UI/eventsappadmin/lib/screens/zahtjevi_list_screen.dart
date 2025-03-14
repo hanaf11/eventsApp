@@ -146,7 +146,9 @@ class _ZahtjeviListScreenState extends State<ZahtjeviListScreen> {
     return MasterScreenWidget(
         selectedIndex: selected,
         child: _isLoading
-            ? Center(child: const CircularProgressIndicator())
+            ? Expanded(
+                child: Container(
+                    child: Center(child: const CircularProgressIndicator())))
             : Expanded(
                 child: Container(
                     padding: EdgeInsets.symmetric(vertical: 15),
