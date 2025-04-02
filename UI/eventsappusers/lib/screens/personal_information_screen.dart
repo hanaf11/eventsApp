@@ -1,12 +1,26 @@
+import 'dart:ffi';
+
+import 'package:eventsappusers/models/dogadjaj.dart';
+import 'package:eventsappusers/models/korisnik_global.dart';
+import 'package:eventsappusers/models/narudzba.dart';
+import 'package:eventsappusers/screens/payment_information_screen.dart';
+import 'package:eventsappusers/utils/style_util.dart';
+import 'package:eventsappusers/widgets/field_with_validate.dart';
+import 'package:eventsappusers/widgets/input_form_field.dart';
 import 'package:eventsappusers/widgets/input_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 
 import '../widgets/master_screen.dart';
 import '../widgets/narudzba_master_screen.dart';
 import 'package:country_picker/country_picker.dart';
 
 class PersonalInfoScreen extends StatefulWidget {
-  PersonalInfoScreen({super.key});
+  Narudzba narudzba;
+  Dogadjaj dogadjaj;
+  PersonalInfoScreen(
+      {super.key, required this.narudzba, required this.dogadjaj});
 
   @override
   State<PersonalInfoScreen> createState() => _PersonalInfoScreenState();
@@ -15,117 +29,189 @@ class PersonalInfoScreen extends StatefulWidget {
 class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   double _contentHeight = 0;
   String? locationImage = "assets/images/banner.jpg";
-  //String? locationImage = null;
-  List? karteList = [
-    {'nazivKarte': 'Zona B', 'raspolozivo': 5, 'cijena': 15},
-    {'nazivKarte': 'Zona A', 'raspolozivo': 10, 'cijena': 30}
-  ];
-
-  TextEditingController imeController = TextEditingController();
-  TextEditingController prezimeController = TextEditingController();
-  TextEditingController adresa1Controller = TextEditingController();
-  TextEditingController adresa2Controller = TextEditingController();
-  TextEditingController gradController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController postanskiBrojController = TextEditingController();
-  TextEditingController telefonController = TextEditingController();
-  TextEditingController drzavaController = TextEditingController();
-
-  String _currentSelectedValue = 'Poštom';
-  String _countrySelectedValue = '-';
+  final _infoFormKey = new GlobalKey<FormBuilderState>();
   var _preuzimanjeList = ["Poštom", "E-karta"];
-  var _drzaveList = ["-"];
   _PersonalInfoScreenState();
+
+  clickNextStep() {
+    bool formValid = _infoFormKey.currentState?.saveAndValidate() ?? false;
+    if (formValid) {
+      Narudzba n = widget.narudzba;
+      n.ime = _infoFormKey.currentState?.value["Ime"];
+      n.prezime = _infoFormKey.currentState?.value["Prezime"];
+      n.adresa = _infoFormKey.currentState?.value["Adresa"];
+      n.postanskiBroj =
+          int.parse(_infoFormKey.currentState?.value["PostanskiBroj"]);
+      n.grad = _infoFormKey.currentState?.value["Grad"];
+      n.drzava = _infoFormKey.currentState?.value["Drzava"];
+      n.email = _infoFormKey.currentState?.value["Email"];
+      n.telefon = _infoFormKey.currentState?.value["Telefon"];
+      n.tip = _infoFormKey.currentState?.value["PreuzimanjeKarata"];
+      n.korisnikId = KorisnikGlobal.korisnikId;
+
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) =>
+              PaymentInfoScreen(narudzba: n, dogadjaj: widget.dogadjaj)));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    var isLoading = false;
     return MasterScreen(
         selectedIndex: -1,
         showBackButton: true,
         showAppBar: true,
         child: Expanded(
-            child: isLoading
-                ? const CircularProgressIndicator()
-                : NarudzbaMasterScreen(
-                    naslov: "Narudžba",
-                    childHeight: _contentHeight,
-                    tabActive: 1,
-                    child: LayoutBuilder(builder:
-                        (BuildContext context, BoxConstraints constraints) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        if (mounted) {
-                          setState(() {
-                            _contentHeight = context.size!.height;
-                          });
-                        }
+            child: NarudzbaMasterScreen(
+                naslov: "Narudžba",
+                childHeight: _contentHeight,
+                tabActive: 1,
+                onClickNext: clickNextStep,
+                child: LayoutBuilder(builder:
+                    (BuildContext context, BoxConstraints constraints) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) {
+                      setState(() {
+                        _contentHeight = context.size!.height;
                       });
-                      return Padding(
-                          padding: EdgeInsets.all(15),
-                          child: Container(
-                            padding: EdgeInsets.all(10),
-                            width: MediaQuery.of(context).size.width,
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Color.fromARGB(255, 191, 190, 190),
-                                    spreadRadius: 1,
-                                    blurRadius: 5,
-                                    offset: Offset(4, 5),
-                                  ),
-                                ]),
+                    }
+                  });
+                  return Padding(
+                      padding: EdgeInsets.all(15),
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        width: MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Color.fromARGB(255, 191, 190, 190),
+                                spreadRadius: 1,
+                                blurRadius: 5,
+                                offset: Offset(4, 5),
+                              ),
+                            ]),
+                        child: FormBuilder(
+                            key: _infoFormKey,
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
+                                //radi overflowa na validaciji
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   _buildHeading("Lični podaci"),
                                   SizedBox(
-                                    height: 15,
+                                    height: 5,
                                   ),
-                                  InputWidget(
-                                      controller: imeController,
-                                      placeholder: "Ime"),
-                                  InputWidget(
-                                      controller: prezimeController,
-                                      placeholder: "Prezime"),
-                                  InputWidget(
-                                      controller: adresa1Controller,
-                                      placeholder: "Adresa"),
-                                  InputWidget(
-                                      controller: adresa2Controller,
-                                      placeholder: "Adresa 2"),
-                                  InputWidget(
-                                    controller: postanskiBrojController,
-                                    placeholder: "Poštanski broj",
-                                    type: 'number',
-                                  ),
-                                  InputWidget(
-                                      controller: gradController,
-                                      placeholder: "Grad"),
+                                  FieldWithValidate(
+                                      label: 'Ime:',
+                                      field: FormBuilderTextField(
+                                        style: TextStyle(fontSize: 14),
+                                        name: "Ime",
+                                        decoration: inputField,
+                                        validator:
+                                            FormBuilderValidators.compose([
+                                          FormBuilderValidators.required(
+                                              errorText: "Polje je obavezno"),
+                                        ]),
+                                      )),
+                                  SizedBox(height: 5),
+                                  FieldWithValidate(
+                                      label: 'Prezime:',
+                                      field: FormBuilderTextField(
+                                        style: TextStyle(fontSize: 14),
+                                        name: "Prezime",
+                                        decoration: inputField,
+                                        validator:
+                                            FormBuilderValidators.compose([
+                                          FormBuilderValidators.required(
+                                              errorText: "Polje je obavezno"),
+                                        ]),
+                                      )),
+                                  SizedBox(height: 5),
+                                  FieldWithValidate(
+                                      label: 'Adresa:',
+                                      field: FormBuilderTextField(
+                                        style: TextStyle(fontSize: 14),
+                                        name: "Adresa",
+                                        decoration: inputField,
+                                        validator:
+                                            FormBuilderValidators.compose([
+                                          FormBuilderValidators.required(
+                                              errorText: "Polje je obavezno"),
+                                        ]),
+                                      )),
+                                  SizedBox(height: 5),
+                                  FieldWithValidate(
+                                      label: 'Poštanski broj:',
+                                      field: FormBuilderTextField(
+                                        style: TextStyle(fontSize: 14),
+                                        name: "PostanskiBroj",
+                                        decoration: inputField,
+                                        keyboardType: TextInputType.number,
+                                        validator:
+                                            FormBuilderValidators.compose([
+                                          FormBuilderValidators.required(
+                                              errorText: "Polje je obavezno"),
+                                          FormBuilderValidators.numeric(
+                                              errorText:
+                                                  "Dozvoljeni su samo brojevi")
+                                        ]),
+                                      )),
+                                  SizedBox(height: 5),
+                                  FieldWithValidate(
+                                      label: 'Grad:',
+                                      field: FormBuilderTextField(
+                                        style: TextStyle(fontSize: 14),
+                                        name: "Grad",
+                                        decoration: inputField,
+                                        validator:
+                                            FormBuilderValidators.compose([
+                                          FormBuilderValidators.required(
+                                              errorText: "Polje je obavezno"),
+                                        ]),
+                                      )),
+                                  SizedBox(height: 5),
                                   _buildCountryInput(),
-                                  InputWidget(
-                                      controller: emailController,
-                                      placeholder: "Email"),
-                                  InputWidget(
-                                      controller: telefonController,
-                                      placeholder: "Broj telefona",
-                                      type: 'number'),
+                                  SizedBox(height: 5),
+                                  FieldWithValidate(
+                                      label: 'Email:',
+                                      field: FormBuilderTextField(
+                                        style: TextStyle(fontSize: 14),
+                                        name: "Email",
+                                        decoration: inputField,
+                                        validator:
+                                            FormBuilderValidators.compose([
+                                          FormBuilderValidators.required(
+                                              errorText: "Polje je obavezno"),
+                                          FormBuilderValidators.email(
+                                              errorText: "Neispravan email")
+                                        ]),
+                                      )),
+                                  SizedBox(height: 5),
+                                  FieldWithValidate(
+                                      label: 'Broj telefona:',
+                                      field: FormBuilderTextField(
+                                        style: TextStyle(fontSize: 14),
+                                        name: "Telefon",
+                                        decoration: inputField,
+                                        validator:
+                                            FormBuilderValidators.compose([
+                                          FormBuilderValidators.required(
+                                              errorText: "Polje je obavezno"),
+                                          FormBuilderValidators.phoneNumber(
+                                              errorText:
+                                                  "Očekivani format: +38761000000",
+                                              regex: RegExp(r'^\+\d{11,12}$'))
+                                        ]),
+                                      )),
                                   SizedBox(
                                     height: 15,
                                   ),
-                                  Text(
-                                    "Odaberite način preuzimanja karata: ",
-                                    style: TextStyle(
-                                        color: Color.fromRGBO(60, 71, 92, 1),
-                                        letterSpacing: 0.3,
-                                        fontFamily: 'Montserrat',
-                                        fontSize: 15),
-                                  ),
                                   _buildDropdownList(),
-                                ]),
-                          ));
-                    }))));
+                                ])),
+                      ));
+                }))));
   }
 
   _buildHeading(String naslov) {
@@ -140,206 +226,59 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   }
 
   _buildDropdownList() {
-    return FormField<String>(
-      builder: (FormFieldState<String> state) {
-        return Padding(
-            padding: EdgeInsets.symmetric(vertical: 2),
-            child: Container(
-                height: 35,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                  border: Border.all(color: Color.fromRGBO(200, 200, 200, 1)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.4),
-                      spreadRadius: 1,
-                      blurRadius: 3,
-                      offset: Offset(2, 3),
-                    ),
-                  ],
+    return FieldWithValidate(
+        label: 'Odaberite način preuzimanja karata:',
+        field: FormBuilderDropdown(
+            name: 'PreuzimanjeKarata',
+            decoration: inputField,
+            items: _preuzimanjeList.map((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(
+                  value,
+                  style:
+                      TextStyle(color: const Color.fromARGB(255, 88, 87, 87)),
                 ),
-                child: InputDecorator(
-                    decoration: InputDecoration(
-                        constraints: BoxConstraints(maxHeight: 35),
-                        contentPadding:
-                            EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-                        labelStyle: TextStyle(
-                            color: Color.fromARGB(255, 164, 163, 163),
-                            fontSize: 11.0),
-                        errorStyle:
-                            TextStyle(color: Colors.redAccent, fontSize: 11.0),
-                        hintText: 'Način preuzimanja karata',
-                        border: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                            borderRadius: BorderRadius.circular(20.0))),
-                    isEmpty: _currentSelectedValue == '',
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                        value: _currentSelectedValue,
-                        isDense: true,
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            _currentSelectedValue = newValue ?? 'Poštom';
-                            state.didChange(newValue);
-                          });
-                        },
-                        items: _preuzimanjeList.map((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(
-                              value,
-                              style: TextStyle(
-                                  color: const Color.fromARGB(255, 88, 87, 87)),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ))));
-      },
-    );
+              );
+            }).toList(),
+            validator: FormBuilderValidators.compose([
+              FormBuilderValidators.required(errorText: 'Polje je obavezno')
+            ]),
+            onChanged: (String? newValue) {
+              setState(() {
+                FormBuilder.of(context)
+                    ?.fields['PreuzimanjeKarata']
+                    ?.didChange(newValue);
+              });
+            }));
   }
 
   _buildCountryInput() {
     return InkWell(
         child: IgnorePointer(
-            child: InputWidget(
-          controller: drzavaController,
-          placeholder: "Država",
-        )),
+            child: FieldWithValidate(
+                label: 'Država:',
+                field: FormBuilderTextField(
+                  style: TextStyle(fontSize: 14),
+                  name: "Drzava",
+                  decoration: inputField,
+                  validator: FormBuilderValidators.compose([
+                    FormBuilderValidators.required(
+                        errorText: "Polje je obavezno"),
+                  ]),
+                ))),
         onTap: () {
           showCountryPicker(
               context: context,
               onSelect: (Country country) {
+                print(FormBuilder.of(context)?.fields["Drzava"]?.value);
                 setState(() {
-                  drzavaController.text = country.name;
+                  _infoFormKey.currentState
+                      ?.patchValue({"Drzava": country.name});
+                  _infoFormKey.currentState?.save();
+                  print(_infoFormKey.currentState?.value["Drzava"]);
                 });
               });
         });
   }
-
-  /* _buildCountryDropdownList() {
-    return FormField<String>(
-      builder: (FormFieldState<String> state) {
-        return Padding(
-            padding: EdgeInsets.symmetric(vertical: 2),
-            child: Container(
-                height: 35,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                  border: Border.all(color: Color.fromRGBO(200, 200, 200, 1)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.4),
-                      spreadRadius: 1,
-                      blurRadius: 3,
-                      offset: Offset(2, 3),
-                    ),
-                  ],
-                ),
-                child: InputDecorator(
-                    decoration: InputDecoration(
-                        constraints: BoxConstraints(maxHeight: 35),
-                        contentPadding:
-                            EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-                        labelStyle: TextStyle(
-                            color: Color.fromARGB(255, 164, 163, 163),
-                            fontSize: 11.0),
-                        errorStyle:
-                            TextStyle(color: Colors.redAccent, fontSize: 11.0),
-                        hintText: 'Država',
-                        border: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                            borderRadius: BorderRadius.circular(20.0))),
-                    isEmpty: _countrySelectedValue == '-',
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                        value: _countrySelectedValue,
-                        isDense: true,
-                        onTap: () {
-                          showCountryPicker(
-                            context: context,
-                            onSelect: (Country country) {
-                              print('Select country: ${country.name}');
-                              setState(() {
-                                _drzaveList.add(country.name);
-                                _countrySelectedValue = country.name ?? '-';
-                              });
-                            },
-                          );
-                        },
-                        onChanged: (String? newValue) {
-                          /*  setState(() {
-                            _countrySelectedValue = _selectedCountry ?? '-';
-                            state.didChange(_selectedCountry);
-                          });*/
-                          print("on change called");
-                        },
-                        items: _drzaveList.map((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(
-                              value,
-                              style: TextStyle(
-                                  color: const Color.fromARGB(255, 88, 87, 87)),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ))));
-      },
-    );
-  }*/
-
-  /* _buildInput(
-      TextEditingController controller, String placeholder, String? type) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 0, vertical: 4),
-      child: Container(
-          height: 35,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-            border: Border.all(color: Color.fromRGBO(200, 200, 200, 1)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.4),
-                spreadRadius: 1,
-                blurRadius: 3,
-                offset: Offset(2, 3),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                  child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                child: TextField(
-                    controller: controller,
-                    keyboardType:
-                        type == "number" ? TextInputType.number : null,
-                    decoration: new InputDecoration.collapsed(
-                      hintText: placeholder,
-                    )),
-              )),
-              /* Container(
-                  child: IconButton(
-                onPressed: () {
-                  //   search();
-                },
-                icon: const Icon(Icons.search),
-                iconSize: 25,
-                color: Colors.black,
-                splashRadius: 10,
-              ))*/
-            ],
-          )),
-    );
-  }*/
 }

@@ -12,6 +12,7 @@ class NarudzbaMasterScreen extends StatefulWidget {
   String naslov;
   int? tabActive;
   bool? hideFooter;
+  VoidCallback? onClickNext;
 
   NarudzbaMasterScreen(
       {required this.childHeight,
@@ -19,6 +20,7 @@ class NarudzbaMasterScreen extends StatefulWidget {
       required this.naslov,
       this.tabActive,
       this.hideFooter,
+      this.onClickNext,
       super.key});
 
   @override
@@ -162,7 +164,7 @@ class _NarudzbaMasterScreenState extends State<NarudzbaMasterScreen> {
                               ],
                             ),
                             child: IconButton(
-                                onPressed: () {},
+                                onPressed: widget.onClickNext,
                                 icon: Icon(
                                   Icons.arrow_forward,
                                   color: Colors.white,

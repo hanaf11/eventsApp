@@ -17,15 +17,23 @@ public partial class Narudzbe
 
     public string Tip { get; set; } = null!;
 
-    public decimal IznosBezPdv { get; set; }
+    public decimal Cijena { get; set; }
 
-    public decimal IznosSaPdv { get; set; }
+    public string Ime { get; set; } = null!;
+
+    public string Prezime { get; set; } = null!;
+
+    public string Email { get; set; } = null!;
+
+    public string Telefon { get; set; } = null!;
 
     public string? Adresa { get; set; }
 
-    public string? Drzava { get; set; }
+    public int PostanskiBroj { get; set; }
 
-    public string Status { get; set; } = null!;
+    public string Grad { get; set; } = null!;
+
+    public string? Drzava { get; set; }
 
     public virtual Korisnici Korisnik { get; set; } = null!;
 

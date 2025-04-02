@@ -6,14 +6,15 @@ using System.Threading.Tasks;
 
 namespace eventsApp.Model
 {
-    public class Narudzbe
+    public class ValidTipKarte
     {
-        public string BrojNarudzbe { get; set; } = null!;
+        public int TipKarteId { get; set; }
 
-        public int KorisnikId { get; set; }
-
-        public DateTime Datum { get; set; }
+        public string Naziv { get; set; } = null!;
 
         public decimal Cijena { get; set; }
+
+        public int Kolicina { get; set; }
+
     }
 }

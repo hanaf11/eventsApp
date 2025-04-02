@@ -20,6 +20,7 @@ class Dogadjaj {
   String? lokacijaSlika;
   int? podkategorijaId;
   String? status;
+  int? dobavljacId;
 
   Dogadjaj(
       this.dogadjajId,
@@ -36,7 +37,8 @@ class Dogadjaj {
       this.website,
       this.lokacijaSlika,
       this.podkategorijaId,
-      this.status);
+      this.status,
+      this.dobavljacId);
 
   factory Dogadjaj.fromJson(Map<String, dynamic> json) =>
       _$DogadjajFromJson(json);

@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:eventsappusers/models/validtipkarte.dart';
 import 'package:eventsappusers/utils/formatting_util.dart';
 import 'package:flutter/material.dart';
 
 class DogadjajSmallOverview extends StatefulWidget {
   final String naziv;
   final DateTime datumOd;
-  final List? tickets;
+  final List<ValidTipKarte>? tickets;
   final double? ukupno;
   final String? lokacija;
   final String? naslovna;
@@ -185,7 +186,7 @@ class _DogadjajSmallOverviewState extends State<DogadjajSmallOverview> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          ticketGroup['naziv'],
+          ticketGroup.naziv,
           style: TextStyle(
               color: Color.fromRGBO(60, 71, 92, 1),
               fontSize: 13,
@@ -193,7 +194,7 @@ class _DogadjajSmallOverviewState extends State<DogadjajSmallOverview> {
               fontWeight: FontWeight.w800),
         ),
         Text(
-          "x${ticketGroup['kolicina']}",
+          "x${ticketGroup.kolicina}",
           style: TextStyle(
               color: Color.fromRGBO(60, 71, 92, 1),
               fontSize: 13,

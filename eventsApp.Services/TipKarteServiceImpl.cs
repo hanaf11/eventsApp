@@ -87,5 +87,22 @@ namespace eventsApp.Services
 
             return true;
         }
+
+        public async Task<Database.TipKarte> TicketsAvailable(int tipKarteId, int kolicina)
+        {
+            var tipkarte = await _context.TipKartes
+                             .Where(x => x.TipKarteId == tipKarteId)
+                             .FirstOrDefaultAsync();
+
+            if (tipkarte == null)
+            {
+                throw new Model.UserException("Odabrani tip karte ne postoji");
+            }
+            if (kolicina > tipkarte.Stanje)
+            {
+                throw new Model.UserException("Odabrani broj karata nije dostupan");
+            }
+            return tipkarte;
+        }
     }
 }

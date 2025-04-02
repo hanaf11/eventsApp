@@ -1,12 +1,19 @@
+import 'package:eventsappusers/models/dogadjaj.dart';
+import 'package:eventsappusers/models/narudzba.dart';
+import 'package:eventsappusers/screens/narudzba_preview_screen.dart';
 import 'package:eventsappusers/widgets/input_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 import '../widgets/master_screen.dart';
 import '../widgets/narudzba_master_screen.dart';
 import 'package:country_picker/country_picker.dart';
 
 class PaymentInfoScreen extends StatefulWidget {
-  PaymentInfoScreen({super.key});
+  Narudzba narudzba;
+  Dogadjaj dogadjaj;
+  PaymentInfoScreen(
+      {super.key, required this.narudzba, required this.dogadjaj});
 
   @override
   State<PaymentInfoScreen> createState() => _PaymentInfoScreenState();
@@ -19,10 +26,26 @@ class _PaymentInfoScreenState extends State<PaymentInfoScreen> {
   TextEditingController vlasnikController = TextEditingController();
   TextEditingController datumController = TextEditingController();
   TextEditingController cvvController = TextEditingController();
-
+  final _paymentFormKey = new GlobalKey<FormBuilderState>();
   int _selectedPayment = 0;
 
   _PaymentInfoScreenState();
+
+  clickNextStep() {
+    /*bool formValid = _paymentFormKey.currentState?.saveAndValidate() ?? false;
+    if (formValid) {*/
+    Narudzba n = widget.narudzba;
+    /* n.brojKartice = _paymentFormKey.currentState?.value["BrojKartice"];
+      n.datumKartice = _paymentFormKey.currentState?.value["DatumKartice"];
+      n.imePrezimeKartica =
+          _paymentFormKey.currentState?.value["ImePrezimeKartica"];
+      n.cvv = _paymentFormKey.currentState?.value["Cvv"];*/
+
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) =>
+            NarudzbaPreviewScreen(narudzba: n, dogadjaj: widget.dogadjaj)));
+    //}
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +61,7 @@ class _PaymentInfoScreenState extends State<PaymentInfoScreen> {
                     naslov: "Narudžba",
                     childHeight: _contentHeight,
                     tabActive: 2,
+                    onClickNext: clickNextStep,
                     child: LayoutBuilder(builder:
                         (BuildContext context, BoxConstraints constraints) {
                       WidgetsBinding.instance.addPostFrameCallback((_) {

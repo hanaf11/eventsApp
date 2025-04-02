@@ -1,14 +1,22 @@
+import 'package:eventsappusers/models/dogadjaj.dart';
+import 'package:eventsappusers/models/narudzba.dart';
+import 'package:eventsappusers/providers/narudzba_provider.dart';
+import 'package:eventsappusers/screens/home_screen.dart';
 import 'package:eventsappusers/utils/formatting_util.dart';
 import 'package:eventsappusers/widgets/dogadjaj_small_overview.dart';
 import 'package:eventsappusers/widgets/input_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../widgets/master_screen.dart';
 import '../widgets/narudzba_master_screen.dart';
 import 'package:country_picker/country_picker.dart';
 
 class NarudzbaPreviewScreen extends StatefulWidget {
-  NarudzbaPreviewScreen({super.key});
+  Narudzba narudzba;
+  Dogadjaj dogadjaj;
+  NarudzbaPreviewScreen(
+      {super.key, required this.narudzba, required this.dogadjaj});
 
   @override
   State<NarudzbaPreviewScreen> createState() => _NarudzbaPreviewScreenState();
@@ -16,89 +24,142 @@ class NarudzbaPreviewScreen extends StatefulWidget {
 
 class _NarudzbaPreviewScreenState extends State<NarudzbaPreviewScreen> {
   double _contentHeight = 0;
-
-  DateTime datumOd = DateTime.now();
-  var tickets = [
-    {'naziv': 'Zona B', 'kolicina': 1, 'cijena': 15},
-    {'naziv': 'Zona A', 'kolicina': 5, 'cijena': 30}
-  ];
-
-  late final double _ukupno = 0;
-
-  double _calcUkupno() {
-    double ukupno = 0;
-    tickets.forEach((e) {
-      ukupno += (e['kolicina'] as int) * (e['cijena'] as double);
-    });
-    return ukupno;
-  }
+  late NarudzbaProvider _narudzbaProvider;
+  late double _ukupno = 0;
 
   _NarudzbaPreviewScreenState();
 
   @override
+  void initState() {
+    super.initState();
+    _ukupno = _calcUkupno();
+    _narudzbaProvider = context.read<NarudzbaProvider>();
+  }
+
+  double _calcUkupno() {
+    double ukupno = 0;
+    widget.narudzba.listaKarata?.forEach((e) {
+      ukupno += (e.kolicina as int) * (e.cijena as double);
+    });
+    return ukupno;
+  }
+
+  clickNextStep() async {
+    Narudzba n = widget.narudzba;
+    n.brojKartice = null;
+    n.datumKartice = null;
+    n.cvv = null;
+    n.imePrezimeKartica = null;
+    n.cijena = _ukupno;
+
+    try {
+      await _narudzbaProvider.createNarudzba(n).then((value) {
+        handleNarudzbaSuccess();
+      });
+    } on Exception catch (ex) {
+      handleException(ex);
+    }
+  }
+
+  handleNarudzbaSuccess() {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Success'),
+        content: const Text(
+            "Uspješno ste kreirali narudžbu. Potvrda će vam doći na email."),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(context)
+                .push(MaterialPageRoute(builder: (context) => HomeScreen())),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  handleException(Exception e) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Exception'),
+        content: Text(e.toString()),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'OK'),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    var isLoading = false;
     return MasterScreen(
         selectedIndex: -1,
         showBackButton: true,
         showAppBar: true,
         child: Expanded(
-            child: isLoading
-                ? const CircularProgressIndicator()
-                : NarudzbaMasterScreen(
-                    naslov: "Narudžba",
-                    childHeight: _contentHeight,
-                    tabActive: 3,
-                    child: LayoutBuilder(builder:
-                        (BuildContext context, BoxConstraints constraints) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        if (mounted) {
-                          setState(() {
-                            _contentHeight = context.size!.height;
-                          });
-                        }
+            child: NarudzbaMasterScreen(
+                naslov: "Narudžba",
+                childHeight: _contentHeight,
+                tabActive: 3,
+                onClickNext: clickNextStep,
+                child: LayoutBuilder(builder:
+                    (BuildContext context, BoxConstraints constraints) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) {
+                      setState(() {
+                        _contentHeight = context.size!.height;
                       });
-                      return Padding(
-                          padding: EdgeInsets.all(15),
-                          child: Container(
-                            padding: EdgeInsets.all(10),
-                            width: MediaQuery.of(context).size.width,
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Color.fromARGB(255, 191, 190, 190),
-                                    spreadRadius: 1,
-                                    blurRadius: 5,
-                                    offset: Offset(4, 5),
-                                  ),
-                                ]),
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  DogadjajSmallOverview(
-                                      naziv: 'Test događaj',
-                                      datumOd: datumOd,
-                                      tickets: tickets,
-                                      ukupno: _ukupno),
-                                  SizedBox(
-                                    height: 30,
-                                  ),
-                                  _buildLicniPodaci(),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  _buildPlacanjePodaci(),
-                                  SizedBox(
-                                    height: 50,
-                                  ),
-                                  Center(
-                                      child: _buildHeading(
-                                          "Ukupno za platiti: ${formatNumber(_ukupno)}KM"))
-                                ]),
-                          ));
-                    }))));
+                    }
+                  });
+                  return Padding(
+                      padding: EdgeInsets.all(15),
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        width: MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Color.fromARGB(255, 191, 190, 190),
+                                spreadRadius: 1,
+                                blurRadius: 5,
+                                offset: Offset(4, 5),
+                              ),
+                            ]),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              DogadjajSmallOverview(
+                                naziv: widget.dogadjaj.naziv ?? '',
+                                datumOd:
+                                    widget.dogadjaj.datumOd ?? DateTime.now(),
+                                tickets: widget.narudzba.listaKarata,
+                                ukupno: _ukupno,
+                                naslovna: widget.dogadjaj.naslovna,
+                              ),
+                              SizedBox(
+                                height: 30,
+                              ),
+                              _buildLicniPodaci(),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              _buildPlacanjePodaci(),
+                              SizedBox(
+                                height: 50,
+                              ),
+                              Center(
+                                  child: _buildHeading(
+                                      "Ukupno za platiti: ${formatNumber(_ukupno)}"))
+                            ]),
+                      ));
+                }))));
   }
 
   _buildLicniPodaci() {
@@ -107,7 +168,7 @@ class _NarudzbaPreviewScreenState extends State<NarudzbaPreviewScreen> {
       children: [
         _buildHeading("Lični podaci"),
         Text(
-          "Ime prezime",
+          "${widget.narudzba.ime} ${widget.narudzba.prezime}",
           textAlign: TextAlign.left,
           style: TextStyle(
               color: Color.fromRGBO(60, 71, 92, 1),
@@ -117,23 +178,23 @@ class _NarudzbaPreviewScreenState extends State<NarudzbaPreviewScreen> {
               letterSpacing: 0.3),
         ),
         Text(
-          "Adresa 1",
+          widget.narudzba.adresa ?? '',
           style: _myTextStyle,
         ),
         Text(
-          "Adresa 2",
+          "${widget.narudzba.postanskiBroj} ${widget.narudzba.grad}",
           style: _myTextStyle,
         ),
         Text(
-          "Država",
+          "${widget.narudzba.drzava}",
           style: _myTextStyle,
         ),
         Text(
-          "Telefon",
+          "${widget.narudzba.telefon}",
           style: _myTextStyle,
         ),
         Text(
-          "Mail",
+          "${widget.narudzba.email}",
           style: _myTextStyle,
         ),
         Row(
@@ -143,7 +204,7 @@ class _NarudzbaPreviewScreenState extends State<NarudzbaPreviewScreen> {
               style: _myTextStyle,
             ),
             Text(
-              "Poštom",
+              "${widget.narudzba.tip}",
               style: _myTextStyle,
             ),
           ],

@@ -1,25 +1,23 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'tipkarte.dart';
+part of 'validtipkarte.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-TipKarte _$TipKarteFromJson(Map<String, dynamic> json) => TipKarte(
+ValidTipKarte _$ValidTipKarteFromJson(Map<String, dynamic> json) =>
+    ValidTipKarte(
       (json['tipKarteId'] as num?)?.toInt(),
-      (json['dogadjajId'] as num?)?.toInt(),
       json['naziv'] as String?,
       (json['cijena'] as num?)?.toDouble(),
-      (json['stanje'] as num?)?.toInt(),
-      json['numerisanjeSjedista'] as bool?,
+      (json['kolicina'] as num?)?.toInt(),
     );
 
-Map<String, dynamic> _$TipKarteToJson(TipKarte instance) => <String, dynamic>{
+Map<String, dynamic> _$ValidTipKarteToJson(ValidTipKarte instance) =>
+    <String, dynamic>{
       'tipKarteId': instance.tipKarteId,
-      'dogadjajId': instance.dogadjajId,
       'naziv': instance.naziv,
       'cijena': instance.cijena,
-      'stanje': instance.stanje,
-      'numerisanjeSjedista': instance.numerisanjeSjedista,
+      'kolicina': instance.kolicina,
     };

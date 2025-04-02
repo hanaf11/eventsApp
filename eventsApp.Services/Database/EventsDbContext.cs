@@ -260,14 +260,16 @@ public partial class EventsDbContext : DbContext
             entity.Property(e => e.BrojNarudzbe).HasMaxLength(20);
             entity.Property(e => e.Datum).HasColumnType("datetime");
             entity.Property(e => e.Drzava).HasMaxLength(50);
-            entity.Property(e => e.IznosBezPdv)
-                .HasColumnType("decimal(18, 2)")
-                .HasColumnName("IznosBezPDV");
-            entity.Property(e => e.IznosSaPdv)
-                .HasColumnType("decimal(18, 2)")
-                .HasColumnName("IznosSaPDV");
+
+            entity.Property(e => e.Cijena).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.Ime).HasMaxLength(50);
+            entity.Property(e => e.Prezime).HasMaxLength(50);
+            entity.Property(e => e.Email).HasMaxLength(100);
+            entity.Property(e => e.Telefon).HasMaxLength(20);
+            entity.Property(e => e.Grad).HasMaxLength(50);
+            entity.Property(e => e.PostanskiBroj);
+
             entity.Property(e => e.KorisnikId).HasColumnName("KorisnikID");
-            entity.Property(e => e.Status).HasMaxLength(100);
             entity.Property(e => e.Tip).HasMaxLength(20);
 
             entity.HasOne(d => d.Korisnik).WithMany(p => p.Narudzbes)

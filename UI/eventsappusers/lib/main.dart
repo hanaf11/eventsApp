@@ -9,6 +9,7 @@ import 'package:eventsappusers/providers/galerija_provider.dart';
 import 'package:eventsappusers/providers/kategorije_provider.dart';
 import 'package:eventsappusers/providers/komentari_provider.dart';
 import 'package:eventsappusers/providers/korisnik_provider.dart';
+import 'package:eventsappusers/providers/narudzba_provider.dart';
 import 'package:eventsappusers/providers/podkategorija_provider.dart';
 import 'package:eventsappusers/providers/pracenje_provider.dart';
 import 'package:eventsappusers/providers/saving_provider.dart';
@@ -49,6 +50,7 @@ void main() {
     ChangeNotifierProvider<DobavljacProvider>(
         create: (_) => DobavljacProvider()),
     ChangeNotifierProvider<TipkarteProvider>(create: (_) => TipkarteProvider()),
+    ChangeNotifierProvider<NarudzbaProvider>(create: (_) => NarudzbaProvider()),
   ], child: const MyApp()));
 }
 

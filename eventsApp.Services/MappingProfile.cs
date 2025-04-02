@@ -41,6 +41,9 @@ namespace eventsApp.Services
             CreateMap<Model.Requests.TipKarteInsertRequest, Database.TipKarte>();
             CreateMap<Database.TipKarte, Model.TipKarte>();
             CreateMap<Database.Karte, Model.Karta>();
+            CreateMap<Model.Requests.NarudzbaInsertRequest, Database.Narudzbe>();
+            CreateMap<Database.Narudzbe, Model.Narudzbe>();
+            CreateMap<Model.ValidTipKarte, Database.NarudzbaStavke>();
         }
     }
 }

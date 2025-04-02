@@ -5,13 +5,15 @@ class DostupneKarteWidget extends StatefulWidget {
   int raspolozivo;
   double cijena;
   int stanje;
+  Function(int) onKolicinaChange;
 
   DostupneKarteWidget(
       {super.key,
       required this.nazivKarte,
       required this.raspolozivo,
       required this.cijena,
-      required this.stanje});
+      required this.stanje,
+      required this.onKolicinaChange});
 
   @override
   State<DostupneKarteWidget> createState() => _DostupneKarteWidgetState();
@@ -131,6 +133,7 @@ class _DostupneKarteWidgetState extends State<DostupneKarteWidget> {
                   if (kolicina - 1 >= 0) {
                     setState(() {
                       kolicina -= 1;
+                      widget.onKolicinaChange(kolicina);
                     });
                   }
                 },
@@ -174,6 +177,7 @@ class _DostupneKarteWidgetState extends State<DostupneKarteWidget> {
                     if (kolicina + 1 <= widget.stanje) {
                       setState(() {
                         kolicina += 1;
+                        widget.onKolicinaChange(kolicina);
                       });
                     }
                   },

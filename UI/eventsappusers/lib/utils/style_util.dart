@@ -25,13 +25,30 @@ var inputField = InputDecoration(
     border: OutlineInputBorder(
       borderRadius: BorderRadius.all(Radius.circular(20)),
       borderSide:
-          const BorderSide(color: Color.fromRGBO(239, 239, 239, 1), width: 0.5),
+          const BorderSide(color: Color.fromRGBO(195, 196, 198, 1), width: 0.5),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(20)),
+      borderSide:
+          BorderSide(color: Color.fromRGBO(195, 196, 198, 1), width: 0.5),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(20)),
+      borderSide:
+          BorderSide(color: Color.fromRGBO(195, 196, 198, 1), width: 0.5),
+    ),
+    disabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(20)),
+      borderSide:
+          BorderSide(color: Color.fromRGBO(195, 196, 198, 1), width: 0.5),
     ),
     errorBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(20),
       borderSide: const BorderSide(color: Colors.red),
     ),
-    contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 0));
+    constraints: BoxConstraints(minHeight: 30),
+    contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+    errorMaxLines: 1);
 
 var newInput = InputDecoration(
     filled: true,

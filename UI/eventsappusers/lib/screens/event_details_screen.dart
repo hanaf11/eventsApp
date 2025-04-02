@@ -257,12 +257,17 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                         IconButton(
                             iconSize: 22,
                             onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        BuyTicketScreen(dogadjaj: _dogadjaj)),
-                              );
+                              if (_dogadjaj.dobavljacId == null) {
+                                handleException(Exception(
+                                    "Za ovaj događaj se ne prodaju karte"));
+                              } else {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          BuyTicketScreen(dogadjaj: _dogadjaj)),
+                                );
+                              }
                             },
                             icon: Icon(
                               Icons.shopping_bag_outlined,
@@ -438,11 +443,17 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                                 ], borderRadius: BorderRadius.circular(20)),
                                 child: ElevatedButton(
                                   onPressed: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                          builder: (context) => BuyTicketScreen(
-                                              dogadjaj: _dogadjaj)),
-                                    );
+                                    if (_dogadjaj.dobavljacId == null) {
+                                      handleException(Exception(
+                                          "Za ovaj događaj se ne prodaju karte"));
+                                    } else {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                BuyTicketScreen(
+                                                    dogadjaj: _dogadjaj)),
+                                      );
+                                    }
                                   },
                                   child: Text("Kupi kartu"),
                                   style: ElevatedButton.styleFrom(

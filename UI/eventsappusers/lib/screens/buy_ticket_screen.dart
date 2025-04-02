@@ -1,8 +1,12 @@
 import 'package:eventsappusers/models/dogadjaj.dart';
+import 'package:eventsappusers/models/narudzba.dart';
 import 'package:eventsappusers/models/search_result.dart';
 import 'package:eventsappusers/models/tipkarte.dart';
 import 'package:eventsappusers/providers/dogadjaj_provider.dart';
+import 'package:eventsappusers/providers/korisnik_provider.dart';
+import 'package:eventsappusers/providers/narudzba_provider.dart';
 import 'package:eventsappusers/providers/tipkarte_provider.dart';
+import 'package:eventsappusers/screens/personal_information_screen.dart';
 import 'package:eventsappusers/utils/formatting_util.dart';
 import 'package:eventsappusers/widgets/heading_widget.dart';
 import 'package:eventsappusers/widgets/narudzba_master_screen.dart';
@@ -31,11 +35,13 @@ class _BuyTicketScreenState extends State<BuyTicketScreen> {
   bool slikaLoaded = false;
   bool karteLoaded = false;
   late TipkarteProvider _tipKarteProvider;
+  late NarudzbaProvider _narudzbaProvider;
   SearchResult<TipKarte>? tipKarteResult;
   bool tipKarteLoaded = false;
   bool dogadjajLoaded = false;
   Image? _lokacijaSlika;
   late List<TipKarte>? karteList;
+  Map<int, int> selectedQuantities = {};
 
   _BuyTicketScreenState();
 
@@ -44,6 +50,7 @@ class _BuyTicketScreenState extends State<BuyTicketScreen> {
     super.initState();
 
     _tipKarteProvider = context.read<TipkarteProvider>();
+    _narudzbaProvider = context.read<NarudzbaProvider>();
     loadData();
   }
 
@@ -66,11 +73,53 @@ class _BuyTicketScreenState extends State<BuyTicketScreen> {
     });
   }
 
+  handleException(Exception e) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Exception'),
+        content: Text(e.toString()),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'OK'),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   handleLoading() {
     if (slikaLoaded && karteLoaded) {
       setState(() {
         isLoading = false;
       });
+    }
+  }
+
+  validateRequest() async {
+    print("selected quantities ${selectedQuantities}");
+    int numOfTickets = 0;
+    for (var entry in selectedQuantities.entries) {
+      numOfTickets += entry.value;
+    }
+    if (numOfTickets == 0) {
+      handleException(new Exception(
+          "Morate izabrati bar jednu kartu da biste nastavili kupovinu"));
+      return;
+    }
+
+    try {
+      await _narudzbaProvider.validateRequest(selectedQuantities).then((value) {
+        Narudzba narudzba = new Narudzba(value);
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => PersonalInfoScreen(
+                  narudzba: narudzba,
+                  dogadjaj: widget.dogadjaj,
+                )));
+      });
+    } on Exception catch (ex) {
+      handleException(ex);
     }
   }
 
@@ -92,6 +141,7 @@ class _BuyTicketScreenState extends State<BuyTicketScreen> {
                     return NarudzbaMasterScreen(
                         naslov: 'Kupi kartu',
                         childHeight: _contentHeight,
+                        onClickNext: validateRequest,
                         child: SingleChildScrollView(
                             child: Padding(
                                 padding:
@@ -181,11 +231,15 @@ class _BuyTicketScreenState extends State<BuyTicketScreen> {
           : Column(
               children: karteList!.map((karte) {
                 return DostupneKarteWidget(
-                  nazivKarte: karte.naziv ?? '',
-                  raspolozivo: karte.stanje ?? 0,
-                  cijena: karte.cijena ?? 0,
-                  stanje: karte.stanje ?? 0,
-                );
+                    nazivKarte: karte.naziv ?? '',
+                    raspolozivo: karte.stanje ?? 0,
+                    cijena: karte.cijena ?? 0,
+                    stanje: karte.stanje ?? 0,
+                    onKolicinaChange: (kolicina) {
+                      setState(() {
+                        selectedQuantities[karte.tipKarteId!] = kolicina;
+                      });
+                    });
               }).toList(),
             )
     ]);

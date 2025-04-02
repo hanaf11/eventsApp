@@ -22,9 +22,9 @@ List months = [
 ];
 
 String formatNumber(dynamic) {
-  var f = NumberFormat("###,00");
+  var f = NumberFormat("###.00");
   if (dynamic == null) return "";
-  return f.format(dynamic);
+  return "${f.format(dynamic)}KM";
 }
 
 String printDate(DateTime date) {
