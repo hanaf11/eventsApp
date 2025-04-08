@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using eventsApp.Model;
 using eventsApp.Model.Messages;
 using eventsApp.Model.SearchObjects;
 using eventsApp.Services.Database;
@@ -55,33 +56,54 @@ namespace eventsApp.Services
             return true;
         }
 
-       /* public async Task CreateKarte(Dogadjaji dogadjaj, KarteDobavljacResponseList karteList)
+        public async Task<List<Model.Karta>> NaruciKarte(List<ValidTipKarte> listaKarata)
         {
-            var set = _context.Set<Karte>();
-            Dictionary<string, int> tipKarteMap = new Dictionary<string, int>();
-            foreach (var karta in karteList.KarteList)
+            List<Database.Karte> lista = new List<Database.Karte>();
+
+            foreach(ValidTipKarte tipKarte in listaKarata)
             {
-                Karte k = new Karte();
-                k.Sifra = karta.Sifra;
-                k.Sjediste = karta.Sjediste;
+                var karteByTipKarte = await _context.Set<Database.Karte>()
+                 .Where(x => x.TipKarte.TipKarteId == tipKarte.TipKarteId && x.Valid == true)
+                 .OrderBy(x => x.Created).Take(tipKarte.Kolicina).ToListAsync();
 
-                if (tipKarteMap.Count != 0 && tipKarteMap.TryGetValue(karta.TipKarte, out var tipKarteId))
-                {
-                    k.TipKarteId = tipKarteId;
-                    set.Add(k);
-                }
-                else
-                {
-                    Database.TipKarte tip = await _tipKarteService.FindTip(karta.TipKarte, dogadjaj.DogadjajId);
-                    if (tip != null)
-                    {
-                        k.TipKarteId = tip.TipKarteId;
-                        tipKarteMap.Add(karta.TipKarte, tip.TipKarteId);
-                        set.Add(k);
+                karteByTipKarte.ForEach(k => k.Valid = false);
 
-                    }
-                }
+                lista.AddRange(karteByTipKarte);
+
             }
-        }*/
+            await _context.SaveChangesAsync();
+
+             return _mapper.Map<List<Model.Karta>>(lista);
+
+        }
+
+        /* public async Task CreateKarte(Dogadjaji dogadjaj, KarteDobavljacResponseList karteList)
+         {
+             var set = _context.Set<Karte>();
+             Dictionary<string, int> tipKarteMap = new Dictionary<string, int>();
+             foreach (var karta in karteList.KarteList)
+             {
+                 Karte k = new Karte();
+                 k.Sifra = karta.Sifra;
+                 k.Sjediste = karta.Sjediste;
+
+                 if (tipKarteMap.Count != 0 && tipKarteMap.TryGetValue(karta.TipKarte, out var tipKarteId))
+                 {
+                     k.TipKarteId = tipKarteId;
+                     set.Add(k);
+                 }
+                 else
+                 {
+                     Database.TipKarte tip = await _tipKarteService.FindTip(karta.TipKarte, dogadjaj.DogadjajId);
+                     if (tip != null)
+                     {
+                         k.TipKarteId = tip.TipKarteId;
+                         tipKarteMap.Add(karta.TipKarte, tip.TipKarteId);
+                         set.Add(k);
+
+                     }
+                 }
+             }
+         }*/
     }
 }

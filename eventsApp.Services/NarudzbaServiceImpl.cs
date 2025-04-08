@@ -18,13 +18,17 @@ namespace eventsApp.Services
         protected readonly EventsDbContext _context;
         protected IMapper _mapper;
         protected readonly INarudzbaStavkeService _narudzbaStavkeService;
-        public NarudzbaServiceImpl(EventsDbContext context, IMapper mapper, ILogger<NarudzbaServiceImpl> logger, ITipKarteService tipKarteService, INarudzbaStavkeService narudzbaStavkeService)
+        protected readonly IKarteService _karteService;
+        protected readonly INotificationService _notificationService;
+        public NarudzbaServiceImpl(EventsDbContext context, IMapper mapper, ILogger<NarudzbaServiceImpl> logger, ITipKarteService tipKarteService, INarudzbaStavkeService narudzbaStavkeService, IKarteService karteService, INotificationService notificationService)
         {
             _logger = logger;
             _tipKarteService = tipKarteService;
             _context = context;
             _mapper = mapper;
             _narudzbaStavkeService = narudzbaStavkeService;
+            _karteService = karteService;
+            _notificationService = notificationService;
         }
 
         public async Task<List<Model.ValidTipKarte>> ValidateRequest(Dictionary<int, int> request)
@@ -45,6 +49,8 @@ namespace eventsApp.Services
             {
                 var set = _context.Set<Database.Narudzbe>();
 
+                var dogadjaj = await _tipKarteService.GetDogadjajByTipKarte(request.ListaKarata[0].TipKarteId);
+
                 Database.Narudzbe narudzbaEntity = _mapper.Map<Database.Narudzbe>(request);
 
                 narudzbaEntity.BrojNarudzbe = Guid.NewGuid().ToString("N").Substring(0, 9).ToUpper();
@@ -55,9 +61,17 @@ namespace eventsApp.Services
 
                 await _narudzbaStavkeService.CreateNarudzbaStavke(request.ListaKarata, narudzbaEntity.NarudzbaId);
 
+                await _tipKarteService.UpdateStanjeOduzmi(request.ListaKarata);
+
+                var karte = await _karteService.NaruciKarte(request.ListaKarata);
+
                 await transaction.CommitAsync();
 
-                return _mapper.Map<Model.Narudzbe>(narudzbaEntity);
+                var narudzba = _mapper.Map<Model.Narudzbe>(narudzbaEntity);
+
+                _notificationService.SendOrderMail(dogadjaj, narudzba, request.ListaKarata, karte);
+
+                return narudzba;
             } catch(Exception e)
             {
                 await transaction.RollbackAsync();

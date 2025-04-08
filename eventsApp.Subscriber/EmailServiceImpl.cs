@@ -1,8 +1,9 @@
-﻿using eventsApp.Model.Messages;
+﻿using eventsApp.Model;
+using eventsApp.Model.Messages;
 using System;
 using System.Net;
 using System.Net.Mail;
-
+using System.Text;
 
 namespace MailingService
 {
@@ -17,7 +18,7 @@ namespace MailingService
             //DeliveryMethod = System.Net.Mail.SmtpDeliveryMethod.Network,
             UseDefaultCredentials = false,
             Credentials = new NetworkCredential(_mail, _pass),
-            Timeout = 10000
+            Timeout = 30000
         };
         private static readonly Queue<Func<Task>> eventInFollowingCategoryQueue = new Queue<Func<Task>>();
         private static bool eventInFollowingCategoryIsProcessing = false;
@@ -114,6 +115,154 @@ Vaš Tim EventsApp
             {
                 Console.WriteLine($"Error sending email: {ex.Message}");
             }
+        }
+
+
+
+        public static async Task SendOrderEmail(OrderModel order)
+        {
+            try
+            {
+                string emailBody = $@"
+Pozdrav {order.Narudzba.Ime},  
+
+Hvala Vam što ste izvršili kupovinu putem EventsApp-a! 🎟️  
+Vaša narudžba je uspješno zaprimljena.
+
+Detalji Vaše narudžbe:  
+- **Broj narudžbe:** {order.Narudzba.BrojNarudzbe}  
+- **Datum narudžbe:** {order.Narudzba.Datum}  
+
+**Pregled narudžbe:**  
+- Naziv događaja: {order.Dogadjaj.Naziv}  
+- Datum i vrijeme: {order.Dogadjaj.DatumOd} - {order.Dogadjaj.DatumDo}
+- Lokacija: {order.Dogadjaj.Lokacija}
+
+-Karte:";
+
+        foreach(ValidTipKarte tipKarte in order.ListaKarata)
+                {
+                    emailBody += $@"
+{tipKarte.Naziv} x{tipKarte.Kolicina} - {tipKarte.Cijena}KM";
+                }
+
+
+
+                emailBody += $@"
+Ukupno: {order.Narudzba.Cijena}KM
+
+**Adresa za isporuku:**  
+{order.Narudzba.Ime} {order.Narudzba.Prezime}  
+{order.Narudzba.Adresa}
+{order.Narudzba.PostanskiBroj} {order.Narudzba.Grad}
+{order.Narudzba.Drzava}
+{order.Narudzba.Telefon}
+
+
+";
+
+                if (order.Narudzba.Tip == "Poštom")
+                {
+                    emailBody += $@"
+
+Vaše ulaznice će biti poslane na navedenu adresu putem pošte.";
+                } else if (order.Narudzba.Tip == "E-karta")
+                {
+                    emailBody += $@"
+
+Ulaznice možete preuzeti u prilogu mail-a i pokazati na ulazu.";
+                }
+
+
+
+emailBody += $@"
+Ako imate bilo kakvih pitanja ili trebate dodatne informacije, slobodno nas kontaktirajte – ovdje smo da Vam pomognemo!  
+
+Još jednom, hvala što koristite EventsApp i uživajte na Vašem događaju!  
+
+Srdačno,  
+Vaš Tim EventsApp  
+";
+
+
+
+                var message = new MailMessage(
+                    from: _mail,
+                    to: order.Narudzba.Email,
+                    subject: $"Potvrda narudžbe na EventsApp",
+                    body: emailBody
+                );
+                if (order.Narudzba.Tip == "E-karta")
+                {
+                     string documentName = GenerateETickets(order.Dogadjaj, order.Karte);
+                    // byte[] ticketBytes = Encoding.Unicode.GetBytes(fileContent);
+
+                    /*   using (var memoryStream = new MemoryStream(ticketBytes))
+                       {
+                           memoryStream.Position = 0;
+                           string fileName = $"{order.Dogadjaj.Naziv.Replace(" ","_")}_eTicket.txt";
+
+                           // Attachment attachment = new Attachment(memoryStream, fileName, "text/plain; charset=utf-16");
+                           // message.Attachments.Add(attachment);
+                           if (memoryStream.CanRead)
+                           {
+                               Attachment attachment = new Attachment(memoryStream, fileName, "text/plain; charset=utf-16");
+                               message.Attachments.Add(attachment);
+                           }
+                       }*/
+                    message.Attachments.Add(new Attachment("C:\\Users\\Hana\\Desktop\\" + documentName));
+                }
+                
+                Console.WriteLine($"From: {_mail}, To:{order.Narudzba.Email}");
+                await client.SendMailAsync(message);
+                Console.WriteLine("Email sent successfully.");
+            }
+            catch (SmtpException smtpEx)
+            {
+                Console.WriteLine($"SMTP Error: {smtpEx.Message}");
+                if (smtpEx.InnerException != null)
+                {
+                    Console.WriteLine($"Inner Exception: {smtpEx.InnerException.Message}");
+                }
+                Console.WriteLine($"Retrying... Attempt");
+                await Task.Delay(3000);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error sending email: {ex.Message}");
+            }
+        }
+
+        private static string GenerateETickets(Dogadjaji dogadjaj, List<Karta> karte)
+        {
+            string documentName = dogadjaj.Naziv.Replace(" ","_") + "_eTicket.txt";
+            string fileContent="";
+
+            foreach(Karta karta in karte)
+            {
+                fileContent += $@"
+
+*******************************
+EventsApp - E-Karta
+
+Naziv događaja: {dogadjaj.Naziv}
+Datum i vrijeme: {dogadjaj.DatumOd}
+Lokacija:{dogadjaj.Lokacija}
+
+Detalji ulaznice:
+- Broj ulaznice: {karta.Sifra}
+- Sektor: {karta.TipKarte.Naziv}";
+                if (karta.Sjediste != null)
+                {
+                    fileContent += $@"
+- Sjedište: {karta.Sjediste}
+*******************************";
+                }
+
+            }
+
+            File.WriteAllText("C:\\Users\\Hana\\Desktop\\"+documentName, fileContent);
+            return fileContent;
         }
 
     }

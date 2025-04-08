@@ -1,4 +1,5 @@
-﻿using eventsApp.Model.Requests;
+﻿using eventsApp.Model;
+using eventsApp.Model.Requests;
 using eventsApp.Model.SearchObjects;
 using System;
 using System.Collections.Generic;
@@ -16,5 +17,8 @@ namespace eventsApp.Services
         public Task UpdateStanje(Dictionary<string, int> stanje, int dogadjajId);
         public Task<bool> DeleteByDogadjaj(int dogadjajId);
         public Task<Database.TipKarte> TicketsAvailable(int tipKarteId, int kolicina);
+        public Task UpdateStanjeOduzmi(List<ValidTipKarte> listaKarata);
+
+        public Task<Model.Dogadjaji> GetDogadjajByTipKarte(int tipKarteId);
     }
 }

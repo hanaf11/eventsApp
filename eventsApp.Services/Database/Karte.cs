@@ -14,4 +14,8 @@ public partial class Karte
     public int? TipKarteId { get; set; }
 
     public virtual TipKarte? TipKarte { get; set; }
+
+    public bool Valid { get; set; }
+
+    public DateTime Created { get; set; }
 }

@@ -105,6 +105,8 @@ namespace eventsApp.Services.DogadjajiStateMachine
                     Karte k = new Karte();
                     k.Sifra = karta.Sifra;
                     k.Sjediste = karta.Sjediste;
+                    k.Created = DateTime.Now;
+                    k.Valid = true;
 
                     if (tipKarteMap.Count != 0 && tipKarteMap.TryGetValue(karta.TipKarte, out var tipKarteId))
                     {

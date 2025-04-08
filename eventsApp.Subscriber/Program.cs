@@ -27,6 +27,12 @@ public class EmailService
                 await EmailServiceImpl.SendUserRegisteredEmail(msg);
             });
 
+            await bus.PubSub.SubscribeAsync<OrderModel>("order", async msg =>
+            {
+                Console.WriteLine($"New order was made");
+                await EmailServiceImpl.SendOrderEmail(msg);
+            });
+
 
 
             await bus.PubSub.SubscribeAsync<NotifySubscribers>("event_activated", async msg =>

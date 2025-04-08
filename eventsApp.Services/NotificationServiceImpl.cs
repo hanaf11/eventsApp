@@ -47,5 +47,13 @@ namespace eventsApp.Services
             UserRegisteredModel message = new UserRegisteredModel(email,ime);
             bus.PubSub.Publish(message);
         }
+
+        public void SendOrderMail(Model.Dogadjaji dogadjaj, Model.Narudzbe narudzba, List<ValidTipKarte> listaKarata, List<Model.Karta> karte)
+        {
+            using var bus = RabbitHutch.CreateBus("host=localhost");
+
+            OrderModel message = new OrderModel(dogadjaj, narudzba, karte, listaKarata);
+            bus.PubSub.Publish(message);
+        }
     }
 }

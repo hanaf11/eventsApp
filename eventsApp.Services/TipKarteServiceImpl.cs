@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using eventsApp.Model;
 
 namespace eventsApp.Services
 {
@@ -44,6 +45,16 @@ namespace eventsApp.Services
             return await query.Where(x => x.Naziv == naziv && x.DogadjajId == dogadjajId).FirstOrDefaultAsync();
         }
 
+        public async Task<Model.Dogadjaji> GetDogadjajByTipKarte(int tipKarteId)
+        {
+            var query = _context.Set<Database.TipKarte>();
+            var tipKarte= await query.Where(x => x.TipKarteId == tipKarteId).Include(x=>x.Dogadjaj).FirstOrDefaultAsync();
+
+            if (tipKarte == null) throw new UserException("Ne postoji tip karte s tim ID");
+
+            return _mapper.Map<Model.Dogadjaji>(tipKarte.Dogadjaj);
+        }
+
         public async Task UpdateStanje(Dictionary<string, int> stanjeMap, int dogadjajId)
         {
             foreach (var entry in stanjeMap)
@@ -75,7 +86,7 @@ namespace eventsApp.Services
         {
             var tipKarteToDelete = await _context.TipKartes.Where(k => k.DogadjajId == dogadjajId).ToListAsync();
 
-            foreach(TipKarte tip in tipKarteToDelete)
+            foreach(Database.TipKarte tip in tipKarteToDelete)
             {
                 bool hasTickets = await _context.Kartes.Where(k => k.TipKarteId == tip.TipKarteId).AnyAsync();
                 if (hasTickets) await _karteService.DeleteByTipKarte(tip.TipKarteId);
@@ -103,6 +114,19 @@ namespace eventsApp.Services
                 throw new Model.UserException("Odabrani broj karata nije dostupan");
             }
             return tipkarte;
+        }
+
+        public async Task UpdateStanjeOduzmi(List<ValidTipKarte> listaKarata)
+        {
+            foreach (var tipKarte in listaKarata)
+            {
+                Database.TipKarte? tip = await _context.Set<Database.TipKarte>().Where(x => x.TipKarteId==tipKarte.TipKarteId).FirstOrDefaultAsync();
+                if (tip != null)
+                {
+                    tip.Stanje -= tipKarte.Kolicina;
+                }
+            }
+            await _context.SaveChangesAsync();
         }
     }
 }

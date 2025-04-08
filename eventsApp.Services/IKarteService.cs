@@ -9,6 +9,8 @@ namespace eventsApp.Services
     {
         public Task<bool> DeleteByTipKarte(int tipKarteId);
 
-       // public Task CreateKarte(Database.Dogadjaji dogadjaj, KarteDobavljacResponseList karteList); 
+      //  public Task CreateKarte(Database.Dogadjaji dogadjaj, KarteDobavljacResponseList karteList);
+
+        public Task<List<Model.Karta>> NaruciKarte(List<ValidTipKarte> listaKarata);
     }
 }
