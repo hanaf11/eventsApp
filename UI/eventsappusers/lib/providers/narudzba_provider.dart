@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:ffi';
+import 'package:eventsappusers/models/dogadjaj.dart';
 import 'package:eventsappusers/models/komentar.dart';
 import 'package:eventsappusers/models/narudzba.dart';
 import 'package:eventsappusers/models/search_result.dart';
@@ -59,6 +60,31 @@ class NarudzbaProvider extends BaseProvider<Narudzba> {
     }
   }
 
+  Future<List<Dogadjaj>> getNarudzbeByKorisnik(dynamic filter) async {
+    var url = "$_baseUrl$_endpoint/narudzbe-by-korisnik";
+    var queryString = BaseProvider.getQueryString(filter);
+    url = "$url?$queryString";
+
+    var uri = Uri.parse(url);
+    var headers = BaseProvider.createHeaders();
+
+    print("this is my uri: ${uri}");
+
+    var response = await http.get(uri, headers: headers);
+
+    if (BaseProvider.isValidResponse(response)) {
+      var data = jsonDecode(response.body);
+
+      List<Dogadjaj> result = [];
+      for (var item in data) {
+        result.add(fromJsonDogadjaj(item));
+      }
+      return result;
+    } else {
+      throw new Exception("Unknown exception");
+    }
+  }
+
   ValidTipKarte fromJsonValidTipKarte(data) {
     return ValidTipKarte.fromJson(data);
   }
@@ -66,5 +92,9 @@ class NarudzbaProvider extends BaseProvider<Narudzba> {
   @override
   Narudzba fromJson(data) {
     return Narudzba.fromJson(data);
+  }
+
+  Dogadjaj fromJsonDogadjaj(data) {
+    return Dogadjaj.fromJson(data);
   }
 }

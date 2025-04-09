@@ -1,4 +1,6 @@
-﻿using eventsApp.Model.Requests;
+﻿using eventsApp.Model;
+using eventsApp.Model.Requests;
+using eventsApp.Model.SearchObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +13,6 @@ namespace eventsApp.Services
     {
         public Task<List<Model.ValidTipKarte>> ValidateRequest(Dictionary<int, int> request);
         public Task<Model.Narudzbe> CreateNarudzba(NarudzbaInsertRequest request);
+        public Task<List<Model.Dogadjaji>> GetNarudzbeDogadjaji(NarudzbaSearchObject? search);
     }
 }

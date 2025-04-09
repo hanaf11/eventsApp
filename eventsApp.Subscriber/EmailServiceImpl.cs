@@ -170,12 +170,16 @@ Vaše ulaznice će biti poslane na navedenu adresu putem pošte.";
                 {
                     emailBody += $@"
 
-Ulaznice možete preuzeti u prilogu mail-a i pokazati na ulazu.";
+Ulaznice Van šaljemo u nastavku mail-a. Molimo Vas da ih pokažete na ulazu.";
+                }
+
+                if (order.Narudzba.Tip == "E-karta")
+                {
+                    emailBody += GenerateETickets(order.Dogadjaj, order.Karte);
                 }
 
 
-
-emailBody += $@"
+                emailBody += $@"
 Ako imate bilo kakvih pitanja ili trebate dodatne informacije, slobodno nas kontaktirajte – ovdje smo da Vam pomognemo!  
 
 Još jednom, hvala što koristite EventsApp i uživajte na Vašem događaju!  
@@ -192,26 +196,7 @@ Vaš Tim EventsApp
                     subject: $"Potvrda narudžbe na EventsApp",
                     body: emailBody
                 );
-                if (order.Narudzba.Tip == "E-karta")
-                {
-                     string documentName = GenerateETickets(order.Dogadjaj, order.Karte);
-                    // byte[] ticketBytes = Encoding.Unicode.GetBytes(fileContent);
 
-                    /*   using (var memoryStream = new MemoryStream(ticketBytes))
-                       {
-                           memoryStream.Position = 0;
-                           string fileName = $"{order.Dogadjaj.Naziv.Replace(" ","_")}_eTicket.txt";
-
-                           // Attachment attachment = new Attachment(memoryStream, fileName, "text/plain; charset=utf-16");
-                           // message.Attachments.Add(attachment);
-                           if (memoryStream.CanRead)
-                           {
-                               Attachment attachment = new Attachment(memoryStream, fileName, "text/plain; charset=utf-16");
-                               message.Attachments.Add(attachment);
-                           }
-                       }*/
-                    message.Attachments.Add(new Attachment("C:\\Users\\Hana\\Desktop\\" + documentName));
-                }
                 
                 Console.WriteLine($"From: {_mail}, To:{order.Narudzba.Email}");
                 await client.SendMailAsync(message);
@@ -224,8 +209,6 @@ Vaš Tim EventsApp
                 {
                     Console.WriteLine($"Inner Exception: {smtpEx.InnerException.Message}");
                 }
-                Console.WriteLine($"Retrying... Attempt");
-                await Task.Delay(3000);
             }
             catch (Exception ex)
             {
@@ -235,7 +218,6 @@ Vaš Tim EventsApp
 
         private static string GenerateETickets(Dogadjaji dogadjaj, List<Karta> karte)
         {
-            string documentName = dogadjaj.Naziv.Replace(" ","_") + "_eTicket.txt";
             string fileContent="";
 
             foreach(Karta karta in karte)
@@ -251,7 +233,7 @@ Lokacija:{dogadjaj.Lokacija}
 
 Detalji ulaznice:
 - Broj ulaznice: {karta.Sifra}
-- Sektor: {karta.TipKarte.Naziv}";
+- Tip karte: {karta.TipKarte.Naziv}";
                 if (karta.Sjediste != null)
                 {
                     fileContent += $@"
@@ -261,7 +243,6 @@ Detalji ulaznice:
 
             }
 
-            File.WriteAllText("C:\\Users\\Hana\\Desktop\\"+documentName, fileContent);
             return fileContent;
         }
 

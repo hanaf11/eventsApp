@@ -1,4 +1,5 @@
 ﻿using eventsApp.Model.Requests;
+using eventsApp.Model.SearchObjects;
 using eventsApp.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -33,6 +34,12 @@ namespace eventsApp.Controllers
         public async Task<Model.Narudzbe> CreateNarudzba([FromBody] NarudzbaInsertRequest request)
         {
             return await (_service as INarudzbaService).CreateNarudzba(request);
+        }
+
+        [HttpGet("narudzbe-by-korisnik")]
+        public async Task<List<Model.Dogadjaji>> GetNarudzbeDogadjaji([FromQuery]NarudzbaSearchObject? search=null)
+        {
+            return await (_service as INarudzbaService).GetNarudzbeDogadjaji(search);
         }
     }
 }

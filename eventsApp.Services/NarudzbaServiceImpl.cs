@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using eventsApp.Model;
 using eventsApp.Model.Requests;
+using eventsApp.Model.SearchObjects;
 using eventsApp.Services.Database;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -77,6 +79,29 @@ namespace eventsApp.Services
                 await transaction.RollbackAsync();
                 throw new Exception("Neuspjesno kreiranje narudzbe:", e);
             }
+        }
+
+        public async Task<List<Model.Dogadjaji>> GetNarudzbeDogadjaji(NarudzbaSearchObject? search)
+        {
+            var result = new List<Model.Dogadjaji>();
+            var query = _context.Set<Database.Narudzbe>().AsQueryable();
+
+            if (search?.OrderBy == "Datum")
+            {
+                 query = query.OrderBy(n => n.Datum);
+            }
+
+
+            if (search?.KorisnikId!=null)
+            {
+                var dogadjajiEntities = query.Where(n => n.KorisnikId == search.KorisnikId)
+               .Include(n => n.NarudzbaStavkes).ThenInclude(ns => ns.TipKarte).ThenInclude(tk => tk.Dogadjaj)
+               .ThenInclude(d => d.Kategorija).SelectMany(n => n.NarudzbaStavkes).Select(ns => ns.TipKarte.Dogadjaj);
+
+                result =_mapper.Map<List<Model.Dogadjaji>>(dogadjajiEntities);
+
+            }
+            return result;
         }
 
 

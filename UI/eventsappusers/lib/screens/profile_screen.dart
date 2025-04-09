@@ -2,6 +2,7 @@ import 'package:eventsappusers/main.dart';
 import 'package:eventsappusers/models/dogadjaj.dart';
 import 'package:eventsappusers/models/korisnik_global.dart';
 import 'package:eventsappusers/providers/dogadjaj_provider.dart';
+import 'package:eventsappusers/providers/narudzba_provider.dart';
 import 'package:eventsappusers/screens/edit_profile_screen.dart';
 import 'package:eventsappusers/screens/kreiraj_dogadjaj_screen.dart';
 import 'package:eventsappusers/utils/formatting_util.dart';
@@ -31,6 +32,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   List<Dogadjaj>? _pregledanoList;
   List<Dogadjaj>? _kupljenoList;
   late DogadjajProvider _dogadjajProvider;
+  late NarudzbaProvider _narudzbaProvider;
 
   _ProfileScreenState();
 
@@ -38,6 +40,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     _dogadjajProvider = context.read<DogadjajProvider>();
+    _narudzbaProvider = context.read<NarudzbaProvider>();
     loadKupljeno();
     loadHistorijaPregleda();
     loadKreirano();
@@ -75,13 +78,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   loadKupljeno() async {
     var filterReq = {
-      'Username': KorisnikGlobal.username,
-      'KategorijaIncluded': true,
-      'OrderBy': '-created'
+      'KorisnikId': KorisnikGlobal.korisnikId,
+      'OrderBy': 'Datum'
     };
-    await _dogadjajProvider.get(filter: filterReq).then((value) {
+    await _narudzbaProvider.getNarudzbeByKorisnik(filterReq).then((value) {
       setState(() {
-        _kupljenoList = value.result;
+        _kupljenoList = value;
         _kupovinaLoaded = true;
       });
     });
