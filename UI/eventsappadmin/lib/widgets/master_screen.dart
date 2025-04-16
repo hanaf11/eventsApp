@@ -1,6 +1,7 @@
 import 'package:eventsappadmin/main.dart';
 import 'package:eventsappadmin/screens/dobavljaci_screen.dart';
 import 'package:eventsappadmin/screens/dogadjaj_details_screen.dart';
+import 'package:eventsappadmin/screens/izvjestaji_screen.dart';
 import 'package:eventsappadmin/screens/kategorije_screen.dart';
 import 'package:eventsappadmin/screens/narudzbe_list_screen.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +34,7 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> {
     "Narudžbe",
     "Kategorije",
     "Dobavljači",
+    "Izvještaji",
     "Log out"
   ];
 
@@ -129,6 +131,8 @@ Widget getScreen(int index) {
     case 5:
       return DobavljaciScreen(selected: index);
     case 6:
+      return IzvjestajiScreen(selected: index);
+    case 7:
       return LoginPage();
     default:
       return DogadjajiListScreen();
