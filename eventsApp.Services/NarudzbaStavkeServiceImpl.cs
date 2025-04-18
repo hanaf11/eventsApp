@@ -2,6 +2,7 @@
 using eventsApp.Model;
 using eventsApp.Model.Requests;
 using eventsApp.Services.Database;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -39,5 +40,64 @@ namespace eventsApp.Services
             await _context.SaveChangesAsync();
             return "OK";
         }
+
+        public async Task<List<Dictionary<string, object>>> GetNumOfSoldTickets()
+        {
+            var oneMonthAgo = DateTime.Now.AddMonths(-1);
+
+            var totalTicketsSold = await _context.NarudzbaStavkes
+                .SumAsync(ns => ns.Kolicina);
+            var lastMonthTicketsSold = await _context.NarudzbaStavkes
+                .Where(ns => ns.Narudzba.Datum >= oneMonthAgo)
+                .SumAsync(ns => ns.Kolicina);
+
+            return new List<Dictionary<string, object>>
+    {
+        new Dictionary<string, object>
+        {
+            { "time", "Month" },
+            { "tickets", lastMonthTicketsSold }
+        },
+        new Dictionary<string, object>
+        {
+            { "time", "All time" },
+            { "tickets", totalTicketsSold }
+        }
+    };
+        }
+
+
+        public async Task<List<Dictionary<string, object>>> GetMostSoldEvents()
+        {
+            var mostSoldEvents = await _context.NarudzbaStavkes
+                .GroupBy(ns => ns.TipKarte.DogadjajId)
+                .Select(group => new
+                {
+                    DogadjajId = group.Key,
+                    TicketsSold = group.Sum(ns => ns.Kolicina)
+                })
+                .OrderByDescending(x => x.TicketsSold)
+                .Take(3)
+                .Join(
+                    _context.Dogadjajis,
+                    aggregated => aggregated.DogadjajId,
+                    dogadjaj => dogadjaj.DogadjajId,
+                    (aggregated, dogadjaj) => new
+                    {
+                        DogadjajName = dogadjaj.Naziv,
+                        TicketsSold = aggregated.TicketsSold
+                    })
+                .ToListAsync();
+
+            return mostSoldEvents
+                .Select(e => new Dictionary<string, object>
+                {
+            { "dogadjaj", e.DogadjajName },
+            { "tickets", e.TicketsSold }
+                })
+                .ToList();
+        }
+
+
     }
 }

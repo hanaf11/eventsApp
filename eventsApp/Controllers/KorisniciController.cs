@@ -1,4 +1,6 @@
-﻿using eventsApp.Model.Requests;
+﻿using eventsApp.Model;
+using eventsApp.Model.Requests;
+using eventsApp.Model.SearchObjects;
 using eventsApp.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,6 +28,12 @@ namespace eventsApp.Controllers
         public override async Task<Model.Korisnici> Insert([FromBody] Model.Requests.KorisniciInsertRequest insert)
         {
             return await _service.Insert(insert);
+        }
+
+        [HttpGet("report")]
+        public virtual async Task<KorisniciReportResponse> Get([FromQuery] KorisniciReportSearchObject? search = null)
+        {
+            return await (_service as IKorisniciService).GetReportData(search);
         }
 
     }

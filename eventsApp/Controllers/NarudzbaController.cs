@@ -1,4 +1,5 @@
-﻿using eventsApp.Model.Requests;
+﻿using eventsApp.Model;
+using eventsApp.Model.Requests;
 using eventsApp.Model.SearchObjects;
 using eventsApp.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -40,6 +41,12 @@ namespace eventsApp.Controllers
         public async Task<List<Model.Dogadjaji>> GetNarudzbeDogadjaji([FromQuery]NarudzbaSearchObject? search=null)
         {
             return await (_service as INarudzbaService).GetNarudzbeDogadjaji(search);
+        }
+
+        [HttpGet("report")]
+        public virtual async Task<NarudzbeReportResponse> Get([FromQuery] NarudzbeReportSearchObject? search = null)
+        {
+            return await (_service as INarudzbaService).GetReportData(search);
         }
     }
 }

@@ -17,13 +17,19 @@ namespace eventsApp.Services
     {
         ILogger<KorisniciServiceImpl> _logger;
         protected readonly INotificationService _notificationService;
-        public KorisniciServiceImpl(EventsDbContext context, IMapper mapper, ILogger<KorisniciServiceImpl> logger, INotificationService notificationService) : base(context, mapper)
+        protected readonly IKomentariService _komentariService;
+        protected readonly IPracenjeService _pracenjeService;
+        protected readonly INarudzbaService _narudzbaService;
+        public KorisniciServiceImpl(EventsDbContext context, IMapper mapper, ILogger<KorisniciServiceImpl> logger, INotificationService notificationService, IKomentariService komentariService, IPracenjeService pracenjeService, INarudzbaService narudzbaService) : base(context, mapper)
         {
            _logger = logger;
             _notificationService = notificationService;
+            _komentariService = komentariService;
+            _pracenjeService = pracenjeService;
+            _narudzbaService = narudzbaService;
         }
 
-        public override async Task BeforeInsert(Korisnici entity, KorisniciInsertRequest insert)
+        public override async Task BeforeInsert(Database.Korisnici entity, KorisniciInsertRequest insert)
         {
             _logger.LogInformation($"Adding user: {entity.KorisnickoIme}");
             await base.BeforeInsert(entity, insert);
@@ -48,7 +54,7 @@ namespace eventsApp.Services
             }
         }
 
-        public override async Task BeforeUpdate(Korisnici entity, KorisniciUpdateRequest update)
+        public override async Task BeforeUpdate(Database.Korisnici entity, KorisniciUpdateRequest update)
         {
             base.BeforeUpdate(entity, update);
             if (update.Lozinka != update.LozinkaPotvrda)
@@ -126,5 +132,53 @@ namespace eventsApp.Services
 
             return _mapper.Map<Model.Korisnici>(entity);
         }
+
+        public async Task<Model.KorisniciReportResponse> GetReportData(KorisniciReportSearchObject? search)
+        {
+            var response = new Model.KorisniciReportResponse();
+            if (search == null) return response;
+
+            if (search.NumberOfRegistered != null && search.NumberOfRegistered == true)
+            {
+                response.NumberOfRegistered = await GetNumberOfRegistered();
+            }
+            if (search.MostOrdersUsers != null && search.MostOrdersUsers == true)
+            {
+                response.MostOrdersUsers = await _narudzbaService.GetMostOrdersUsers();
+            }
+            if (search.MostActiveUsers != null && search.MostActiveUsers == true)
+            {
+                response.MostActiveUsers = await _komentariService.GetMostActiveUsers();
+            }
+            if (search.MostSubscribedCategories != null && search.MostSubscribedCategories == true)
+            {
+                response.MostSubscribedCategories = await _pracenjeService.GetMostSubscribedCategories();
+            }
+            return response;
+        }
+
+        private async Task<List<Dictionary<string, object>>> GetNumberOfRegistered()
+        {
+            var currentDate = DateTime.Now;
+
+            var queryResult = await _context.Korisnicis
+                .GroupBy(k => k.Created >= currentDate.AddMonths(-1) ? "Month" : "All time")
+                .Select(group => new
+                {
+                    Time = group.Key,
+                    Registered = group.Count()
+                })
+                .ToListAsync();
+
+            var monthCount = queryResult.FirstOrDefault(x => x.Time == "Month")?.Registered ?? 0;
+            var allTimeCount = queryResult.Sum(x => x.Registered);
+
+            return new List<Dictionary<string, object>>{
+        new Dictionary<string, object> { { "time", "Month" }, { "registered", monthCount } },
+        new Dictionary<string, object> { { "time", "All time" }, { "registered", allTimeCount } } };
+        }
+
+
+
     }
 }

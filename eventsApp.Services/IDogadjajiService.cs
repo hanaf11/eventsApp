@@ -29,6 +29,8 @@ namespace eventsApp.Services
 
         public Task<HttpResponseMessage> LoadTickets(KarteDobavljacResponseList karteList);
 
+        public Task<DogadjajiReportResponse> GetReportData(DogadjajiReportSearchObject? search);
+
         //  List<Model.Dogadjaji> Recommend(int id);
     }
 }

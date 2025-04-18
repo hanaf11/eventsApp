@@ -10,5 +10,8 @@ namespace eventsApp.Services
     public interface INarudzbaStavkeService
     {
         public Task<string> CreateNarudzbaStavke(List<ValidTipKarte> request, int narudzbaId);
+        public Task<List<Dictionary<string, object>>> GetNumOfSoldTickets();
+
+        public Task<List<Dictionary<string, object>>> GetMostSoldEvents();
     }
 }

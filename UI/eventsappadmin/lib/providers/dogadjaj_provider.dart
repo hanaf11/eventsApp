@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:eventsappadmin/models/dogadjaj.dart';
+import 'package:eventsappadmin/models/dogadjaji_report_response.dart';
 import 'package:eventsappadmin/models/search_result.dart';
 import 'package:eventsappadmin/providers/base_provider.dart';
 import 'package:eventsappadmin/screens/zahtjevi_list_screen.dart';
@@ -95,8 +96,34 @@ class DogadjajProvider extends BaseProvider<Dogadjaj> {
     }
   }
 
+  Future<DogadjajiReportResponse> getReportData({dynamic filter}) async {
+    var url = "${_baseUrl}Dogadjaji/report";
+    if (filter != null) {
+      var queryString = getQueryString(filter);
+      url = "$url?$queryString";
+    }
+    var uri = Uri.parse(url);
+    var headers = createHeaders();
+
+    var response = await http.get(uri, headers: headers);
+
+    if (isValidResponse(response)) {
+      var data = jsonDecode(response.body);
+
+      var result = reportfromJson(data);
+
+      return result;
+    } else {
+      throw new Exception("Unknown exception");
+    }
+  }
+
   @override
   Dogadjaj fromJson(data) {
     return Dogadjaj.fromJson(data);
+  }
+
+  DogadjajiReportResponse reportfromJson(data) {
+    return DogadjajiReportResponse.fromJson(data);
   }
 }

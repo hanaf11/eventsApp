@@ -104,7 +104,115 @@ namespace eventsApp.Services
             return result;
         }
 
+        public async Task<List<Dictionary<string, object>>> GetMostOrdersUsers()
+        {
+            var query = await _context.Narudzbes
+                .GroupBy(n => n.KorisnikId)
+                .Select(group => new
+                {
+                    KorisnikId = group.Key,
+                    OrdersCount = group.Count()
+                })
+                .OrderByDescending(x => x.OrdersCount)
+                .Take(3)
+                .ToListAsync();
+
+            var names = await _context.Korisnicis
+                .Where(k => query.Select(s => s.KorisnikId).Contains(k.KorisnikId))
+                .Select(k => new
+                {
+                    k.KorisnikId,
+                    k.Ime
+                })
+                .ToListAsync();
+
+            return query
+                .Join(names,
+                      topSubscriber => topSubscriber.KorisnikId,
+                      subscriber => subscriber.KorisnikId,
+                      (topSubscriber, subscriber) => new Dictionary<string, object>
+                      {
+                  { "korisnik", subscriber.Ime },
+                  { "narudzbe", topSubscriber.OrdersCount }
+                      })
+                .ToList();
+        }
+
+        public async Task<Model.NarudzbeReportResponse> GetReportData(NarudzbeReportSearchObject? search)
+        {
+            var response = new Model.NarudzbeReportResponse();
+            if (search == null) return response;
+
+            if (search.NumOfOrders != null && search.NumOfOrders == true)
+            {
+                response.NumOfOrders = await GetNumOfOrders();
+            }
+            if (search.Revenue != null && search.Revenue == true)
+            {
+                response.Revenue = await GetRevenue();
+            }
+            if (search.NumOfSoldTickets != null && search.NumOfSoldTickets == true)
+            {
+                response.NumOfSoldTickets = await _narudzbaStavkeService.GetNumOfSoldTickets();
+            }
+            if (search.MostSoldEvents != null && search.MostSoldEvents == true)
+            {
+                response.MostSoldEvents = await _narudzbaStavkeService.GetMostSoldEvents();
+            }
+            return response;
+        }
+
+        private async Task<List<Dictionary<string, object>>> GetNumOfOrders()
+        {
+            var oneMonthAgo = DateTime.Now.AddMonths(-1);
+
+            var totalOrdersCount = await _context.Narudzbes.CountAsync();
+            var lastMonthOrdersCount = await _context.Narudzbes
+                .Where(n => n.Datum >= oneMonthAgo)
+                .CountAsync();
+
+            return new List<Dictionary<string, object>>{
+        new Dictionary<string, object>
+        {
+            { "time", "Month" },
+            { "narudzbe", lastMonthOrdersCount }
+        },
+        new Dictionary<string, object>
+        {
+            { "time", "All time" },
+            { "narudzbe", totalOrdersCount }
+        }
+    };
+
+        }
+
+        private async Task<List<Dictionary<string, object>>> GetRevenue()
+        {
+            var oneMonthAgo = DateTime.Now.AddMonths(-1);
+
+            var totalRevenue = await _context.Narudzbes
+                .SumAsync(n => n.Cijena);
+            var lastMonthRevenue = await _context.Narudzbes
+                .Where(n => n.Datum >= oneMonthAgo)
+                .SumAsync(n => n.Cijena);
+
+            return new List<Dictionary<string, object>>
+    {
+        new Dictionary<string, object>
+        {
+            { "time", "Month" },
+            { "revenue", lastMonthRevenue }
+        },
+        new Dictionary<string, object>
+        {
+            { "time", "All time" },
+            { "revenue", totalRevenue }
+        }
+    };
+        }
 
 
     }
+
+
 }

@@ -66,6 +66,12 @@ namespace eventsApp.Controllers
             return await (_service as IDogadjajiService).LoadTickets(karteList);
         }
 
+        [HttpGet("report")]
+        public virtual async Task<DogadjajiReportResponse> Get([FromQuery] DogadjajiReportSearchObject? search = null)
+        {
+            return await (_service as IDogadjajiService).GetReportData(search);
+        }
+
         /* [HttpGet("{id}/recommend")]
          public virtual List<Model.Dogadjaji> Recommend(int id)
          {

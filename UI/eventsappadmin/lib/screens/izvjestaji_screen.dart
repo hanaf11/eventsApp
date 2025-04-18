@@ -27,7 +27,7 @@ class _IzvjestajiScreenState extends State<IzvjestajiScreen> {
     0: [
       "Broj događaja po statusima",
       "Broj događaja po kategorijama",
-      "Top 3 događaja s najviše prodanih karata",
+      "Top 3 događaja s najvećim prihodom",
       "Top 3 događaja s najviše pregleda",
       "Top 3 najviše sačuvanih događaja"
     ],
@@ -38,10 +38,10 @@ class _IzvjestajiScreenState extends State<IzvjestajiScreen> {
       "Top 3 kategorije događaja prema broju pratilaca"
     ],
     2: [
-      "Broj narudžbi sa zaradom",
-      "Broj prodanih karata sa zaradom",
-      "Top 5 događaja s najviše prodanih karata",
-      "Broj narudžbi po kategorijama"
+      "Broj narudžbi u zadnjih mjesec dana",
+      "Zarada u zadnjih mjesec dana",
+      "Broj prodanih karata u zadnjih mjesec dana",
+      "Top 3 događaja s najviše prodanih karata",
     ],
   };
   List<bool> optionsValues = [];
@@ -110,11 +110,15 @@ class _IzvjestajiScreenState extends State<IzvjestajiScreen> {
   getReportScreen() {
     switch (_selectedCard) {
       case 0:
-        return DogadjajIzvjestajScreen();
+        return DogadjajIzvjestajScreen(
+          options: optionsValues,
+        );
       case 1:
-        return KorisniciIzvjestajScreen();
+        return KorisniciIzvjestajScreen(
+          options: optionsValues,
+        );
       case 2:
-        return NarudzbeIzvjestajScreen();
+        return NarudzbeIzvjestajScreen(options: optionsValues);
     }
   }
 
@@ -175,6 +179,7 @@ class _IzvjestajiScreenState extends State<IzvjestajiScreen> {
                                   ),
                                 );
                               } else {
+                                print(optionsValues);
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
                                       builder: (context) => getReportScreen()),

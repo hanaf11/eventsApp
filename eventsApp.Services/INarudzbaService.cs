@@ -14,5 +14,8 @@ namespace eventsApp.Services
         public Task<List<Model.ValidTipKarte>> ValidateRequest(Dictionary<int, int> request);
         public Task<Model.Narudzbe> CreateNarudzba(NarudzbaInsertRequest request);
         public Task<List<Model.Dogadjaji>> GetNarudzbeDogadjaji(NarudzbaSearchObject? search);
+        public Task<List<Dictionary<string, object>>> GetMostOrdersUsers();
+
+        public Task<NarudzbeReportResponse> GetReportData(NarudzbeReportSearchObject? search);
     }
 }

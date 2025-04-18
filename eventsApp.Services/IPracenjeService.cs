@@ -14,6 +14,7 @@ namespace eventsApp.Services
         Task<bool> IsFollowing(PracenjeObject search);
         Task<bool> Follow(PracenjeObject insert);
         Task<bool> Unfollow(PracenjeObject request);
+        public Task<List<Dictionary<string, object>>> GetMostSubscribedCategories();
     }
 }
 

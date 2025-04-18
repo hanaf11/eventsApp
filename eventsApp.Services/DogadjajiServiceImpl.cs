@@ -232,6 +232,144 @@ namespace eventsApp.Services
             return await query.Where(x => x.Naziv == naziv).Where(x => x.DatumOd.Date == datum.Date).Where(x => x.Lokacija == lokacija).SingleOrDefaultAsync();
         }
 
+        public async Task<DogadjajiReportResponse> GetReportData(DogadjajiReportSearchObject? search)
+        {
+            var response = new DogadjajiReportResponse();
+            if (search == null) return response;
+
+            if(search.EventsByStatus!=null && search.EventsByStatus == true)
+            {
+                response.EventsByStatus = await GetEventsByStatus();
+            }
+            if (search.EventsByCategory != null && search.EventsByCategory == true)
+            {
+                response.EventsByCategory = await GetEventsByCategory();
+            }
+            if (search.TopSellingEvents != null && search.TopSellingEvents == true)
+            {
+                response.TopSellingEvents = await GetTopSellingEvents();
+            }
+            /*if (search.EventsByCategory != null && search.EventsByCategory == true)
+            {
+                response.EventsByCategory = await GetEventsByCategory();
+            }*/
+            if (search.MostSavedEvents != null && search.MostSavedEvents == true)
+            {
+                response.MostSavedEvents = await _savingService.GetMostSavedEvents();
+            }
+            return response;
+        }
+
+        private async Task<List<Dictionary<string,object>>> GetEventsByStatus()
+        {
+            var queryResult = await _context.Dogadjajis.GroupBy(d => d.Status).Select(group => new
+             {
+                Status = group.Key,
+                Count = group.Count()
+              }).ToListAsync();
+
+            return queryResult.Select(item => new Dictionary<string, object>{ { "status", item.Status }, {"count",item.Count }}).ToList();
+        }
+
+        private async Task<List<Dictionary<string, object>>> GetEventsByCategory()
+        {
+            var queryResult = await _context.Dogadjajis.GroupBy(d => d.KategorijaId).Select(group => new
+            {
+                KategorijaId = group.Key,
+                Count = group.Count()
+            }).ToListAsync();
+
+            return queryResult
+                .Join(_context.Kategorijes,
+                      grouped => grouped.KategorijaId,
+                      kategorija => kategorija.KategorijaId,
+                      (grouped, kategorija) => new
+                      {
+                          Kategorija = kategorija.Naziv,
+                          grouped.Count
+                      }).Select(item => new Dictionary<string, object> { { "kategorija", item.Kategorija },
+        { "count", item.Count } }).ToList();
+        }
+
+        private async Task<List<Dictionary<string, object>>> GetTopSellingEvents()
+        {
+
+            var top3Revenue = await _context.Dogadjajis
+                .Join(
+                    _context.TipKartes,
+                    dogadjaj => dogadjaj.DogadjajId,
+                    tipKarte => tipKarte.DogadjajId,
+                    (dogadjaj, tipKarte) => new { dogadjaj, tipKarte }
+                )
+                .Join(
+                    _context.NarudzbaStavkes,
+                    joined => joined.tipKarte.TipKarteId,
+                    narudzbaStavka => narudzbaStavka.TipKarteId,
+                    (joined, narudzbaStavka) => new
+                    {
+                        joined.dogadjaj.DogadjajId,
+                        joined.dogadjaj.Naziv,
+                        Revenue = narudzbaStavka.Cijena
+                    }
+                )
+                .GroupBy(x => new { x.DogadjajId, x.Naziv })
+                .Select(group => new
+                {
+                    group.Key.DogadjajId,
+                    group.Key.Naziv,
+                    Revenue = group.Sum(x => x.Revenue)
+                })
+                .OrderByDescending(x => x.Revenue)
+                .Take(3)
+                .ToListAsync();
+
+ 
+            var top3DogadjajIds = top3Revenue.Select(x => x.DogadjajId).ToList();
+
+            var karteData = await _context.Dogadjajis
+                .Join(
+                    _context.TipKartes,
+                    dogadjaj => dogadjaj.DogadjajId,
+                    tipKarte => tipKarte.DogadjajId,
+                    (dogadjaj, tipKarte) => new { dogadjaj, tipKarte }
+                )
+                .Join(
+                    _context.NarudzbaStavkes,
+                    joined => joined.tipKarte.TipKarteId,
+                    narudzbaStavka => narudzbaStavka.TipKarteId,
+                    (joined, narudzbaStavka) => new
+                    {
+                        joined.dogadjaj.DogadjajId,
+                        joined.dogadjaj.Naziv,
+                        TicketCount = narudzbaStavka.Kolicina
+                    }
+                )
+                .Where(x => top3DogadjajIds.Contains(x.DogadjajId))
+                .GroupBy(x => new { x.DogadjajId, x.Naziv })
+                .Select(group => new
+                {
+                    group.Key.Naziv,
+                    TicketCount = group.Sum(x => x.TicketCount)
+                })
+                .ToListAsync();
+
+            var result = top3Revenue.Select(prihod => new Dictionary<string, object>{
+            { "type", "Prihod" },
+            { "dogadjaj", prihod.Naziv },
+            { "value", prihod.Revenue }
+                })
+                .Concat(
+                    karteData.Select(karte => new Dictionary<string, object>
+                    {
+                { "type", "Karte" },
+                { "dogadjaj", karte.Naziv },
+                { "value", karte.TicketCount }
+                    })
+                )
+                .ToList();
+
+            return result;
+        }
 
 
 

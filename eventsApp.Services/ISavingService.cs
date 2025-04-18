@@ -16,6 +16,7 @@ namespace eventsApp.Services
         Task<bool> Delete(SavingObject request);
         Task<List<Model.DogadjajiListResponse>> GetSavedEvents(int korisnikId);
         Task<bool> DeleteByDogadjaj(int dogadjajId);
+        Task<List<Dictionary<string, object>>> GetMostSavedEvents();
     }
 }
 

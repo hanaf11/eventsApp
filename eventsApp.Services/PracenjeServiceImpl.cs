@@ -86,6 +86,41 @@ namespace eventsApp.Services
             }
         }
 
-      
+        public async Task<List<Dictionary<string, object>>> GetMostSubscribedCategories()
+        {
+            var topCategories = await _context.Pracenjes
+                .GroupBy(p => p.KategorijaId)
+                .Select(group => new
+                {
+                    KategorijaId = group.Key,
+                    SubscribersCount = group.Count()
+                })
+                .OrderByDescending(x => x.SubscribersCount)
+                .Take(3)
+                .ToListAsync();
+
+            var categoryNames = await _context.Kategorijes
+                .Where(k => topCategories.Select(c => c.KategorijaId).Contains(k.KategorijaId))
+                .Select(k => new
+                {
+                    k.KategorijaId,
+                    k.Naziv
+                })
+                .ToListAsync();
+
+            return topCategories
+                .Join(categoryNames,
+                      topCategory => topCategory.KategorijaId,
+                      category => category.KategorijaId,
+                      (topCategory, category) => new Dictionary<string, object>
+                      {
+                  { "kategorija", category.Naziv },
+                  { "subscribers", topCategory.SubscribersCount }
+                      })
+                .ToList();
+        }
+
+
+
     }
 }

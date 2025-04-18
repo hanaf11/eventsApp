@@ -104,5 +104,29 @@ namespace eventsApp.Services
 
             return true;
         }
+
+        public async Task<List<Dictionary<string, object>>> GetMostSavedEvents()
+        {
+          var queryResult = await _context.Savings.GroupBy(s => s.DogadjajId).Select(group => new
+            {
+                DogadjajId = group.Key,
+                Count = group.Count()
+            }).OrderByDescending(g => g.Count).Take(3).ToListAsync();
+
+            var result = queryResult.Join(_context.Dogadjajis,
+             savings => savings.DogadjajId,
+             dogadjaj => dogadjaj.DogadjajId,
+             (savings, dogadjaj) => new
+             {
+                 Dogadjaj = dogadjaj.Naziv,
+                 Count = savings.Count
+             }).ToList();
+
+            return result.Select(item => new Dictionary<string, object>
+                {
+                    { "dogadjaj", item.Dogadjaj },
+                    { "count", item.Count }
+                 }).ToList();
+        }
     }
 }

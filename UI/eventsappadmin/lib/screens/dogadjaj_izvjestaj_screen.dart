@@ -1,10 +1,14 @@
+import 'package:eventsappadmin/models/dogadjaji_report_response.dart';
+import 'package:eventsappadmin/providers/dogadjaj_provider.dart';
 import 'package:eventsappadmin/widgets/master_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:graphic/graphic.dart';
+import 'package:provider/provider.dart';
 
 class DogadjajIzvjestajScreen extends StatefulWidget {
   int? selected = 6;
-  DogadjajIzvjestajScreen({this.selected, super.key});
+  List<bool> options;
+  DogadjajIzvjestajScreen({this.selected, required this.options, super.key});
 
   @override
   State<DogadjajIzvjestajScreen> createState() =>
@@ -12,6 +16,9 @@ class DogadjajIzvjestajScreen extends StatefulWidget {
 }
 
 class _DogadjajIzvjestajScreenState extends State<DogadjajIzvjestajScreen> {
+  late DogadjajProvider _dogadjajProvider;
+  DogadjajiReportResponse? result;
+  bool isLoading = true;
   var basicData = [
     {'genre': 'Sports', 'sold': 275},
     {'genre': 'Strategy', 'sold': 115},
@@ -19,74 +26,74 @@ class _DogadjajIzvjestajScreenState extends State<DogadjajIzvjestajScreen> {
     {'genre': 'Shooter', 'sold': 350},
     {'genre': 'Other', 'sold': 150},
   ];
-  var adjustData = [
-    {"type": "Email", "index": 0, "value": 120},
-    {"type": "Email", "index": 1, "value": 132},
-    {"type": "Email", "index": 2, "value": 101},
-    {"type": "Email", "index": 3, "value": 134},
-    {"type": "Email", "index": 4, "value": 90},
-    {"type": "Email", "index": 5, "value": 230},
-    {"type": "Email", "index": 6, "value": 210},
-    {"type": "Affiliate", "index": 0, "value": 220},
-    {"type": "Affiliate", "index": 1, "value": 182},
-    {"type": "Affiliate", "index": 2, "value": 191},
-    {"type": "Affiliate", "index": 3, "value": 234},
-    {"type": "Affiliate", "index": 4, "value": 290},
-    {"type": "Affiliate", "index": 5, "value": 330},
-    {"type": "Affiliate", "index": 6, "value": 310},
-    {"type": "Video", "index": 0, "value": 150},
-    {"type": "Video", "index": 1, "value": 232},
-    {"type": "Video", "index": 2, "value": 201},
-    {"type": "Video", "index": 3, "value": 154},
-    {"type": "Video", "index": 4, "value": 190},
-    {"type": "Video", "index": 5, "value": 330},
-    {"type": "Video", "index": 6, "value": 410},
-    {"type": "Direct", "index": 0, "value": 320},
-    {"type": "Direct", "index": 1, "value": 332},
-    {"type": "Direct", "index": 2, "value": 301},
-    {"type": "Direct", "index": 3, "value": 334},
-    {"type": "Direct", "index": 4, "value": 390},
-    {"type": "Direct", "index": 5, "value": 330},
-    {"type": "Direct", "index": 6, "value": 320},
-    {"type": "Search", "index": 0, "value": 320},
-    {"type": "Search", "index": 1, "value": 432},
-    {"type": "Search", "index": 2, "value": 401},
-    {"type": "Search", "index": 3, "value": 434},
-    {"type": "Search", "index": 4, "value": 390},
-    {"type": "Search", "index": 5, "value": 430},
-    {"type": "Search", "index": 6, "value": 420},
-  ];
+
   _DogadjajIzvjestajScreenState();
+
+  @override
+  void initState() {
+    super.initState();
+    _dogadjajProvider = context.read<DogadjajProvider>();
+    getData();
+  }
+
+  getData() async {
+    var data = await _dogadjajProvider.getReportData(filter: {
+      'EventsByStatus': widget.options[0],
+      'EventsByCategory': widget.options[1],
+      'TopSellingEvents': widget.options[2],
+      'MostViewedEvents': widget.options[3],
+      'MostSavedEvents': widget.options[4],
+    });
+    setState(() {
+      result = data;
+      isLoading = false;
+    });
+    print(result?.eventsByStatus);
+  }
 
   @override
   Widget build(BuildContext context) {
     return MasterScreenWidget(
         selectedIndex: widget.selected,
-        child: Expanded(
-            child: Container(
-                alignment: Alignment.topLeft,
-                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                child: SingleChildScrollView(
-                    child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text("Događaji izvještaj",
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 91, 91, 91),
-                        )),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    _buildEventsByStatus(),
-                    // _buildEventsByCategory(),
-                    _buildTop3Events(),
-                    _buildMostViewedEvents(),
-                    // _buildMostSavedEvents()
-                  ],
-                )))));
+        child: isLoading
+            ? Expanded(
+                child: Container(
+                    child: Center(child: const CircularProgressIndicator())))
+            : Expanded(
+                child: Container(
+                    alignment: Alignment.topLeft,
+                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                    child: SingleChildScrollView(
+                        child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text("Događaji izvještaj",
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 91, 91, 91),
+                            )),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        result?.eventsByStatus != null
+                            ? _buildEventsByStatus()
+                            : Container(),
+                        result?.eventsByCategory != null
+                            ? _buildEventsByCategory()
+                            : Container(),
+                        result?.topSellingEvents != null
+                            ? _buildTop3Events()
+                            : Container(),
+                        result?.mostViewedEvents != null
+                            ? _buildMostViewedEvents()
+                            : Container(),
+                        result?.mostSavedEvents != null
+                            ? _buildMostSavedEvents()
+                            : Container(),
+                      ],
+                    )))));
   }
 
 //pie
@@ -100,35 +107,95 @@ class _DogadjajIzvjestajScreenState extends State<DogadjajIzvjestajScreen> {
           )),
       Container(
         margin: const EdgeInsets.only(top: 10),
-        height: 300,
+        height: 350,
         child: Chart(
-          data: basicData,
+          // data: statusData,
+          data: result!.eventsByStatus!,
           variables: {
-            'genre': Variable(
-              accessor: (Map map) => map['genre'] as String,
+            'status': Variable(
+              accessor: (Map map) => map['status'] as String,
             ),
-            'sold': Variable(
-              accessor: (Map map) => map['sold'] as num,
+            'count': Variable(
+              accessor: (Map map) => map['count'] as num,
             ),
           },
           transforms: [
             Proportion(
-              variable: 'sold',
+              variable: 'count',
               as: 'percent',
             )
           ],
           marks: [
             IntervalMark(
-              position: Varset('percent') / Varset('genre'),
+              position: Varset('percent') / Varset('status'),
               label: LabelEncode(
                   encoder: (tuple) => Label(
-                        "${tuple['genre']}:  ${tuple['sold'].toString()}",
+                        "${tuple['status']}:  ${tuple['count'].toString()}",
                       )),
-              color: ColorEncode(variable: 'genre', values: Defaults.colors10),
+              color: ColorEncode(variable: 'status', values: Defaults.colors10),
               modifiers: [StackModifier()],
             )
           ],
-          coord: PolarCoord(transposed: true, dimCount: 1, dimFill: 1.05),
+          coord: PolarCoord(
+            transposed: true,
+            dimCount: 1,
+            dimFill: 1.05,
+            radiusRange: [0, 0.8],
+          ),
+        ),
+      ),
+      SizedBox(
+        height: 40,
+      ),
+    ]);
+  }
+
+  _buildEventsByCategory() {
+    return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+      Text("Broj događaja po kategorijama",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Color.fromARGB(255, 91, 91, 91),
+          )),
+      Container(
+        margin: const EdgeInsets.only(top: 10),
+        height: 350,
+        child: Chart(
+          // data: statusData,
+          data: result!.eventsByCategory!,
+          variables: {
+            'kategorija': Variable(
+              accessor: (Map map) => map['kategorija'] as String,
+            ),
+            'count': Variable(
+              accessor: (Map map) => map['count'] as num,
+            ),
+          },
+          transforms: [
+            Proportion(
+              variable: 'count',
+              as: 'percent',
+            )
+          ],
+          marks: [
+            IntervalMark(
+              position: Varset('percent') / Varset('kategorija'),
+              label: LabelEncode(
+                  encoder: (tuple) => Label(
+                        "${tuple['kategorija']}:  ${tuple['count'].toString()}",
+                      )),
+              color: ColorEncode(
+                  variable: 'kategorija', values: Defaults.colors10),
+              modifiers: [StackModifier()],
+            )
+          ],
+          coord: PolarCoord(
+            transposed: true,
+            dimCount: 1,
+            dimFill: 1.05,
+            radiusRange: [0, 0.8],
+          ),
         ),
       ),
       SizedBox(
@@ -140,7 +207,7 @@ class _DogadjajIzvjestajScreenState extends State<DogadjajIzvjestajScreen> {
 //double column
   _buildTop3Events() {
     return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-      Text("Top 3 događaja s najviše prodanih karata",
+      Text("Top 3 događaja s najvećim prihodom",
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
@@ -152,10 +219,10 @@ class _DogadjajIzvjestajScreenState extends State<DogadjajIzvjestajScreen> {
         height: 300,
         child: Chart(
           padding: (_) => const EdgeInsets.fromLTRB(40, 5, 10, 40),
-          data: adjustData,
+          data: result!.topSellingEvents!,
           variables: {
-            'index': Variable(
-              accessor: (Map map) => map['index'].toString(),
+            'dogadjaj': Variable(
+              accessor: (Map map) => map['dogadjaj'].toString(),
             ),
             'type': Variable(
               accessor: (Map map) => map['type'] as String,
@@ -166,7 +233,7 @@ class _DogadjajIzvjestajScreenState extends State<DogadjajIzvjestajScreen> {
           },
           marks: [
             IntervalMark(
-              position: Varset('index') * Varset('value') / Varset('type'),
+              position: Varset('dogadjaj') * Varset('value') / Varset('type'),
               color: ColorEncode(variable: 'type', values: Defaults.colors10),
               size: SizeEncode(value: 2),
               modifiers: [DodgeModifier(ratio: 0.1)],
@@ -181,11 +248,11 @@ class _DogadjajIzvjestajScreenState extends State<DogadjajIzvjestajScreen> {
           ],
           selections: {
             'tap': PointSelection(
-              variable: 'index',
+              variable: 'dogadjaj',
             )
           },
           tooltip: TooltipGuide(multiTuples: true),
-          crosshair: CrosshairGuide(),
+          // crosshair: CrosshairGuide(),
           annotations: [
             CustomAnnotation(
                 renderer: (_, size) => [
@@ -197,7 +264,7 @@ class _DogadjajIzvjestajScreenState extends State<DogadjajIzvjestajScreen> {
                 anchor: (p0) => const Offset(0, 0)),
             TagAnnotation(
               label: Label(
-                'Email',
+                'Prihod',
                 LabelStyle(
                     textStyle: Defaults.textStyle,
                     align: Alignment.centerRight),
@@ -214,63 +281,12 @@ class _DogadjajIzvjestajScreenState extends State<DogadjajIzvjestajScreen> {
                 anchor: (p0) => const Offset(0, 0)),
             TagAnnotation(
               label: Label(
-                'Affiliate',
+                'Karte',
                 LabelStyle(
                     textStyle: Defaults.textStyle,
                     align: Alignment.centerRight),
               ),
               anchor: (size) => Offset(34 + size.width / 5, 290),
-            ),
-            CustomAnnotation(
-                renderer: (_, size) => [
-                      CircleElement(
-                          center: Offset(25 + size.width / 5 * 2, 290),
-                          radius: 5,
-                          style: PaintStyle(fillColor: Defaults.colors10[2]))
-                    ],
-                anchor: (p0) => const Offset(0, 0)),
-            TagAnnotation(
-              label: Label(
-                'Video',
-                LabelStyle(
-                    textStyle: Defaults.textStyle,
-                    align: Alignment.centerRight),
-              ),
-              anchor: (size) => Offset(34 + size.width / 5 * 2, 290),
-            ),
-            CustomAnnotation(
-                renderer: (_, size) => [
-                      CircleElement(
-                          center: Offset(25 + size.width / 5 * 3, 290),
-                          radius: 5,
-                          style: PaintStyle(fillColor: Defaults.colors10[3]))
-                    ],
-                anchor: (p0) => const Offset(0, 0)),
-            TagAnnotation(
-              label: Label(
-                'Direct',
-                LabelStyle(
-                    textStyle: Defaults.textStyle,
-                    align: Alignment.centerRight),
-              ),
-              anchor: (size) => Offset(34 + size.width / 5 * 3, 290),
-            ),
-            CustomAnnotation(
-                renderer: (_, size) => [
-                      CircleElement(
-                          center: Offset(25 + size.width / 5 * 4, 290),
-                          radius: 5,
-                          style: PaintStyle(fillColor: Defaults.colors10[4]))
-                    ],
-                anchor: (p0) => const Offset(0, 0)),
-            TagAnnotation(
-              label: Label(
-                'Search',
-                LabelStyle(
-                    textStyle: Defaults.textStyle,
-                    align: Alignment.centerRight),
-              ),
-              anchor: (size) => Offset(34 + size.width / 5 * 4, 290),
             ),
           ],
         ),
@@ -308,6 +324,55 @@ class _DogadjajIzvjestajScreenState extends State<DogadjajIzvjestajScreen> {
             IntervalMark(
               label: LabelEncode(
                   encoder: (tuple) => Label(tuple['sold'].toString())),
+              elevation: ElevationEncode(value: 0, updaters: {
+                'tap': {true: (_) => 5}
+              }),
+              color: ColorEncode(value: Defaults.primaryColor, updaters: {
+                'tap': {false: (color) => color.withAlpha(100)}
+              }),
+            )
+          ],
+          axes: [
+            Defaults.horizontalAxis,
+            Defaults.verticalAxis,
+          ],
+          selections: {'tap': PointSelection(dim: Dim.x)},
+          tooltip: TooltipGuide(),
+          crosshair: CrosshairGuide(),
+        ),
+      ),
+      SizedBox(
+        height: 40,
+      ),
+    ]);
+  }
+
+  _buildMostSavedEvents() {
+    return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+      Text("Top 3 najviše sačuvanih događaja",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Color.fromARGB(255, 91, 91, 91),
+          )),
+      Container(
+        margin: const EdgeInsets.only(top: 10),
+        //    width: 350,
+        height: 350,
+        child: Chart(
+          data: result!.mostSavedEvents!,
+          variables: {
+            'dogadjaj': Variable(
+              accessor: (Map map) => map['dogadjaj'] as String,
+            ),
+            'count': Variable(
+              accessor: (Map map) => map['count'] as num,
+            ),
+          },
+          marks: [
+            IntervalMark(
+              label: LabelEncode(
+                  encoder: (tuple) => Label(tuple['count'].toString())),
               elevation: ElevationEncode(value: 0, updaters: {
                 'tap': {true: (_) => 5}
               }),

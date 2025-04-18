@@ -85,6 +85,41 @@ namespace eventsApp.Services
             return true;
         }
 
+        public async Task<List<Dictionary<string, object>>> GetMostActiveUsers()
+        {
+            var topUsers = await _context.Komentaris
+                .GroupBy(k => k.KorisnikId)
+                .Select(group => new
+                {
+                    KorisnikId = group.Key,
+                    KomentariCount = group.Count()
+                })
+                .OrderByDescending(x => x.KomentariCount)
+                .Take(3)
+                .ToListAsync();
+
+            var result = await _context.Korisnicis
+                .Where(k => topUsers.Select(u => u.KorisnikId).Contains(k.KorisnikId))
+                .Select(k => new
+                {
+                    k.KorisnikId,
+                    k.Ime
+                })
+                .ToListAsync();
+
+            return topUsers
+                .Join(result,
+                      topUser => topUser.KorisnikId,
+                      korisnik => korisnik.KorisnikId,
+                      (topUser, korisnik) => new Dictionary<string, object>
+                      {
+                  { "korisnik", korisnik.Ime },
+                  { "komentari", topUser.KomentariCount }
+                      })
+                .ToList();
+        }
+
+
 
     }
 
