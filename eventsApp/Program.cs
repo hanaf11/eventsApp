@@ -28,6 +28,7 @@ builder.Services.AddTransient<INotificationService, NotificationServiceImpl>();
 builder.Services.AddTransient<IKarteService, KarteServiceImpl>();
 builder.Services.AddTransient<INarudzbaService, NarudzbaServiceImpl>();
 builder.Services.AddTransient<INarudzbaStavkeService, NarudzbaStavkeServiceImpl>();
+builder.Services.AddTransient<IHistorijaPregledaService, HistorijaPregledaServiceImpl>();
 
 builder.Services.AddTransient<BaseState>();
 builder.Services.AddTransient<ActiveEventState>();

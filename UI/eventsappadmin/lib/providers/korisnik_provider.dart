@@ -18,18 +18,36 @@ class KorisnikProvider extends BaseProvider<Korisnik> {
         defaultValue: "http://localhost:7294/");
   }
 
-  Future<KorisniciReportResponse> getReportData({dynamic filter}) async {
-    var url = "${_baseUrl}Korisnici/report";
-    if (filter != null) {
-      var queryString = getQueryString(filter);
-      url = "$url?$queryString";
-    }
+  Future<Korisnik> login(dynamic credentials) async {
+    var url = "${_baseUrl}Korisnici/login";
+    var queryString = BaseProvider.getQueryString(credentials);
+    url = "$url?$queryString";
     var uri = Uri.parse(url);
-    var headers = createHeaders();
+    print("moj uri ${uri}");
+    var headers = BaseProvider.createHeaders();
 
     var response = await http.get(uri, headers: headers);
 
-    if (isValidResponse(response)) {
+    if (BaseProvider.isValidResponse(response)) {
+      var data = jsonDecode(response.body);
+      return fromJson(data);
+    } else {
+      throw new Exception("Unknown exception");
+    }
+  }
+
+  Future<KorisniciReportResponse> getReportData({dynamic filter}) async {
+    var url = "${_baseUrl}Korisnici/report";
+    if (filter != null) {
+      var queryString = BaseProvider.getQueryString(filter);
+      url = "$url?$queryString";
+    }
+    var uri = Uri.parse(url);
+    var headers = BaseProvider.createHeaders();
+
+    var response = await http.get(uri, headers: headers);
+
+    if (BaseProvider.isValidResponse(response)) {
       var data = jsonDecode(response.body);
 
       var result = reportfromJson(data);

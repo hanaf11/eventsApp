@@ -2,6 +2,7 @@ import 'package:eventsappusers/main.dart';
 import 'package:eventsappusers/models/dogadjaj.dart';
 import 'package:eventsappusers/models/korisnik_global.dart';
 import 'package:eventsappusers/providers/dogadjaj_provider.dart';
+import 'package:eventsappusers/providers/historija_pregleda_provider.dart';
 import 'package:eventsappusers/providers/narudzba_provider.dart';
 import 'package:eventsappusers/screens/edit_profile_screen.dart';
 import 'package:eventsappusers/screens/kreiraj_dogadjaj_screen.dart';
@@ -33,6 +34,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   List<Dogadjaj>? _kupljenoList;
   late DogadjajProvider _dogadjajProvider;
   late NarudzbaProvider _narudzbaProvider;
+  late HistorijaPregledaProvider _historijaPregledaProvider;
 
   _ProfileScreenState();
 
@@ -41,6 +43,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     _dogadjajProvider = context.read<DogadjajProvider>();
     _narudzbaProvider = context.read<NarudzbaProvider>();
+    _historijaPregledaProvider = context.read<HistorijaPregledaProvider>();
     loadKupljeno();
     loadHistorijaPregleda();
     loadKreirano();
@@ -63,13 +66,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   loadHistorijaPregleda() async {
     var filterReq = {
-      'Username': KorisnikGlobal.username,
-      'KategorijaIncluded': true,
-      'OrderBy': '-created'
+      'KorisnikId': KorisnikGlobal.korisnikId,
     };
-    await _dogadjajProvider.get(filter: filterReq).then((value) {
+    await _historijaPregledaProvider.getViewedHistory(filterReq).then((value) {
       setState(() {
-        _pregledanoList = value.result;
+        _pregledanoList = value;
         _pregledanoLoaded = true;
       });
     });
@@ -217,6 +218,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Text("Nema rezultata"))
                 : Container(
                     height: 240,
+                    // width: MediaQuery.of(context).size.width,
                     child: ListView(
                         scrollDirection: Axis.horizontal,
                         padding: EdgeInsets.symmetric(vertical: 5),

@@ -30,7 +30,13 @@ namespace eventsApp.Controllers
         [HttpGet("{id}")]
         public virtual async Task<TDetails> GetById(int id)
         {
-            return await _service.GetById(id);
+            int? korisnikId = null;
+            if (Request.Headers.TryGetValue("UserId", out var korisnikIdHeader) && int.TryParse(korisnikIdHeader, out var parsedKorisnikId))
+            {
+                 korisnikId = parsedKorisnikId;
+            }
+
+            return await _service.GetById(korisnikId,id);
         }
     }
 }

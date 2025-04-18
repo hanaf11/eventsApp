@@ -6,6 +6,7 @@ import 'package:eventsappusers/providers/auth_provider.dart';
 import 'package:eventsappusers/providers/dobavljac_provider.dart';
 import 'package:eventsappusers/providers/dogadjaj_provider.dart';
 import 'package:eventsappusers/providers/galerija_provider.dart';
+import 'package:eventsappusers/providers/historija_pregleda_provider.dart';
 import 'package:eventsappusers/providers/kategorije_provider.dart';
 import 'package:eventsappusers/providers/komentari_provider.dart';
 import 'package:eventsappusers/providers/korisnik_provider.dart';
@@ -51,6 +52,8 @@ void main() {
         create: (_) => DobavljacProvider()),
     ChangeNotifierProvider<TipkarteProvider>(create: (_) => TipkarteProvider()),
     ChangeNotifierProvider<NarudzbaProvider>(create: (_) => NarudzbaProvider()),
+    ChangeNotifierProvider<HistorijaPregledaProvider>(
+        create: (_) => HistorijaPregledaProvider()),
   ], child: const MyApp()));
 }
 

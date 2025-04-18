@@ -1,3 +1,5 @@
+import 'package:eventsappadmin/models/korisnik.dart';
+import 'package:eventsappadmin/models/korisnik_global.dart';
 import 'package:eventsappadmin/providers/dobavljac_provider.dart';
 import 'package:eventsappadmin/providers/dogadjaj_provider.dart';
 import 'package:eventsappadmin/providers/galerija_provider.dart';
@@ -191,6 +193,9 @@ class LoginPage extends StatelessWidget {
                   ),
                   ElevatedButton(
                       onPressed: () async {
+                        KorisnikProvider _korisnikprovider =
+                            new KorisnikProvider();
+
                         var username = _usernameController.text;
                         var password = _passwordController.text;
 
@@ -198,7 +203,13 @@ class LoginPage extends StatelessWidget {
                         Authorization.password = password;
 
                         try {
-                          await _dogadjajProvider.get();
+                          var credentials = {
+                            'username': Authorization.username,
+                            'password': Authorization.password
+                          };
+                          Korisnik data =
+                              await _korisnikprovider.login(credentials);
+                          KorisnikGlobal(data);
 
                           Navigator.of(context).push(
                             MaterialPageRoute(

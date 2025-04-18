@@ -48,10 +48,12 @@ namespace eventsApp.Services
             return result;
         }
 
-        public virtual async Task<TDetails> GetById(int id)
+        public virtual async Task<TDetails> GetById(int? korisnikId,int id)
         {
             //var entity = await _context.Set<TDb>().FindAsync(id);
             var entity = await FindEntity(id);
+
+            await WriteInHistory(korisnikId,id);
 
             if (entity != null)
             {
@@ -85,6 +87,11 @@ namespace eventsApp.Services
         public virtual async Task<TDb> FindEntity(int id)
         {
             return await _context.Set<TDb>().FindAsync(id);
+        }
+
+        public virtual Task WriteInHistory(int? korisnikId, int? id)
+        {
+            return Task.CompletedTask;
         }
     }
 }

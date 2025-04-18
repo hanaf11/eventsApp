@@ -11,7 +11,7 @@ namespace eventsApp.Services
     public interface IService<T, TDetails, TSearch> where TSearch:BaseSearchObject where TDetails : class
     {
         Task<PagedResult<T>> Get(TSearch search=null);
-        Task<TDetails> GetById(int id);
+        Task<TDetails> GetById(int? korisnikId,int id);
    
     }
 }

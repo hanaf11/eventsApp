@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:eventsappadmin/models/korisnik_global.dart';
 import 'package:eventsappadmin/models/search_result.dart';
 import 'package:eventsappadmin/utils/util.dart';
 import 'package:flutter/material.dart';
@@ -112,7 +113,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
     throw Exception("Method not implemented");
   }
 
-  bool isValidResponse(Response response) {
+  static bool isValidResponse(Response response) {
     if (response.statusCode < 299) {
       return true;
     } else if (response.statusCode == 401) {
@@ -133,7 +134,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
     throw new Exception("Something bad happened. Please try again");
   }
 
-  Map<String, String> createHeaders() {
+  static Map<String, String> createHeaders() {
     String username = Authorization.username ?? "";
     String password = Authorization.password ?? "";
 
@@ -144,11 +145,14 @@ abstract class BaseProvider<T> with ChangeNotifier {
       "Content-Type": "application/json",
       "Authorization": basicAuth
     };
+    if (KorisnikGlobal.korisnikId != null) {
+      headers["UserId"] = KorisnikGlobal.korisnikId.toString();
+    }
 
     return headers;
   }
 
-  String getQueryString(Map params,
+  static String getQueryString(Map params,
       {String prefix = '&', bool inRecursion = false}) {
     String query = '';
     params.forEach((key, value) {

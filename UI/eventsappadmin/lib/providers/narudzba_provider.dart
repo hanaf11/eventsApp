@@ -22,15 +22,15 @@ class NarudzbaProvider extends BaseProvider<Narudzba> {
   Future<NarudzbeReportResponse> getReportData({dynamic filter}) async {
     var url = "${_baseUrl}Narudzba/report";
     if (filter != null) {
-      var queryString = getQueryString(filter);
+      var queryString = BaseProvider.getQueryString(filter);
       url = "$url?$queryString";
     }
     var uri = Uri.parse(url);
-    var headers = createHeaders();
+    var headers = BaseProvider.createHeaders();
 
     var response = await http.get(uri, headers: headers);
 
-    if (isValidResponse(response)) {
+    if (BaseProvider.isValidResponse(response)) {
       var data = jsonDecode(response.body);
 
       var result = reportfromJson(data);

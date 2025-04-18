@@ -20,7 +20,8 @@ namespace eventsApp.Services
         protected readonly IKomentariService _komentariService;
         protected readonly IPracenjeService _pracenjeService;
         protected readonly INarudzbaService _narudzbaService;
-        public KorisniciServiceImpl(EventsDbContext context, IMapper mapper, ILogger<KorisniciServiceImpl> logger, INotificationService notificationService, IKomentariService komentariService, IPracenjeService pracenjeService, INarudzbaService narudzbaService) : base(context, mapper)
+
+        public KorisniciServiceImpl(EventsDbContext context, IMapper mapper, ILogger<KorisniciServiceImpl> logger, INotificationService notificationService, IKomentariService komentariService, IPracenjeService pracenjeService, INarudzbaService narudzbaService, IHistorijaPregledaService historijaPregledaService) : base(context, mapper)
         {
            _logger = logger;
             _notificationService = notificationService;
@@ -177,8 +178,6 @@ namespace eventsApp.Services
         new Dictionary<string, object> { { "time", "Month" }, { "registered", monthCount } },
         new Dictionary<string, object> { { "time", "All time" }, { "registered", allTimeCount } } };
         }
-
-
 
     }
 }

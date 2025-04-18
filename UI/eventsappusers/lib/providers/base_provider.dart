@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:eventsappusers/models/korisnik_global.dart';
 import 'package:eventsappusers/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -151,6 +152,9 @@ abstract class BaseProvider<T> with ChangeNotifier {
       "Content-Type": "application/json",
       "Authorization": basicAuth
     };
+    if (KorisnikGlobal.korisnikId != null) {
+      headers["UserId"] = KorisnikGlobal.korisnikId.toString();
+    }
 
     return headers;
   }

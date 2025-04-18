@@ -311,19 +311,19 @@ class _DogadjajIzvjestajScreenState extends State<DogadjajIzvjestajScreen> {
         //    width: 350,
         height: 300,
         child: Chart(
-          data: basicData,
+          data: result!.mostViewedEvents!,
           variables: {
-            'genre': Variable(
-              accessor: (Map map) => map['genre'] as String,
+            'dogadjaj': Variable(
+              accessor: (Map map) => map['dogadjaj'] as String,
             ),
-            'sold': Variable(
-              accessor: (Map map) => map['sold'] as num,
+            'views': Variable(
+              accessor: (Map map) => map['views'] as num,
             ),
           },
           marks: [
             IntervalMark(
               label: LabelEncode(
-                  encoder: (tuple) => Label(tuple['sold'].toString())),
+                  encoder: (tuple) => Label(tuple['views'].toString())),
               elevation: ElevationEncode(value: 0, updaters: {
                 'tap': {true: (_) => 5}
               }),

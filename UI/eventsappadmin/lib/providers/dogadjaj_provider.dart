@@ -20,12 +20,12 @@ class DogadjajProvider extends BaseProvider<Dogadjaj> {
   Future<Dogadjaj> hide(int id) async {
     var url = "${_baseUrl}Dogadjaji/$id/hide";
     var uri = Uri.parse(url);
-    var headers = createHeaders();
+    var headers = BaseProvider.createHeaders();
     print("my url is $url");
 
     var response = await http.put(uri, headers: headers);
 
-    if (isValidResponse(response)) {
+    if (BaseProvider.isValidResponse(response)) {
       var data = jsonDecode(response.body);
       return fromJson(data);
     } else {
@@ -36,12 +36,12 @@ class DogadjajProvider extends BaseProvider<Dogadjaj> {
   Future<Dogadjaj> accept(int id) async {
     var url = "${_baseUrl}Dogadjaji/$id/verify";
     var uri = Uri.parse(url);
-    var headers = createHeaders();
+    var headers = BaseProvider.createHeaders();
     print("my url is $url");
 
     var response = await http.put(uri, headers: headers);
 
-    if (isValidResponse(response)) {
+    if (BaseProvider.isValidResponse(response)) {
       var data = jsonDecode(response.body);
       return fromJson(data);
     } else {
@@ -52,16 +52,16 @@ class DogadjajProvider extends BaseProvider<Dogadjaj> {
   Future<SearchResult<Dogadjaj>> findVerified({dynamic filter}) async {
     var url = "${_baseUrl}Dogadjaji/find-verified";
     if (filter != null) {
-      var queryString = getQueryString(filter);
+      var queryString = BaseProvider.getQueryString(filter);
       url = "$url?$queryString";
     }
     var uri = Uri.parse(url);
-    var headers = createHeaders();
+    var headers = BaseProvider.createHeaders();
     print("my url is $url");
 
     var response = await http.get(uri, headers: headers);
 
-    if (isValidResponse(response)) {
+    if (BaseProvider.isValidResponse(response)) {
       var data = jsonDecode(response.body);
       var result = SearchResult<Dogadjaj>();
       result.count = data["count"];
@@ -79,7 +79,7 @@ class DogadjajProvider extends BaseProvider<Dogadjaj> {
   Future<Dogadjaj> sendRequestForTickets(int id, dynamic req) async {
     var url = "${_baseUrl}Dogadjaji/$id/send-ticket-request";
     var uri = Uri.parse(url);
-    var headers = createHeaders();
+    var headers = BaseProvider.createHeaders();
     print("my url is $url");
     print("ono sto dobijem $req");
 
@@ -88,7 +88,7 @@ class DogadjajProvider extends BaseProvider<Dogadjaj> {
     print("ovo saljem $jsonRequest");
     var response = await http.put(uri, headers: headers, body: jsonRequest);
 
-    if (isValidResponse(response)) {
+    if (BaseProvider.isValidResponse(response)) {
       var data = jsonDecode(response.body);
       return fromJson(data);
     } else {
@@ -99,15 +99,15 @@ class DogadjajProvider extends BaseProvider<Dogadjaj> {
   Future<DogadjajiReportResponse> getReportData({dynamic filter}) async {
     var url = "${_baseUrl}Dogadjaji/report";
     if (filter != null) {
-      var queryString = getQueryString(filter);
+      var queryString = BaseProvider.getQueryString(filter);
       url = "$url?$queryString";
     }
     var uri = Uri.parse(url);
-    var headers = createHeaders();
+    var headers = BaseProvider.createHeaders();
 
     var response = await http.get(uri, headers: headers);
 
-    if (isValidResponse(response)) {
+    if (BaseProvider.isValidResponse(response)) {
       var data = jsonDecode(response.body);
 
       var result = reportfromJson(data);

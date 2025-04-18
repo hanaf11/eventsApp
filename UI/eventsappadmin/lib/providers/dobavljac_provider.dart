@@ -19,12 +19,12 @@ class DobavljacProvider extends BaseProvider<Dobavljac> {
   Future<Dobavljac> changeStatus(int id, bool status) async {
     var url = "${_baseUrl}Dobavljaci/${id}/change-status";
     var uri = Uri.parse(url);
-    var headers = createHeaders();
+    var headers = BaseProvider.createHeaders();
 
     var jsonRequest = jsonEncode(status);
     var response = await http.put(uri, headers: headers, body: jsonRequest);
 
-    if (isValidResponse(response)) {
+    if (BaseProvider.isValidResponse(response)) {
       var data = jsonDecode(response.body);
       return fromJson(data);
     } else {

@@ -33,7 +33,9 @@ namespace eventsApp.Services
         private IKomentariService _komentariService;
 
         private IGalerijaService _galerijaService;
-        public DogadjajiServiceImpl(BaseState baseState, EventsDbContext context, IMapper mapper, ILogger<DogadjajiServiceImpl> logger, ITipKarteService tipKarteService, ISavingService savingService, IKomentariService komentariService, IGalerijaService galerijaService) : base(context, mapper)
+
+        protected readonly IHistorijaPregledaService _historijaPregledaService;
+        public DogadjajiServiceImpl(BaseState baseState, EventsDbContext context, IMapper mapper, ILogger<DogadjajiServiceImpl> logger, ITipKarteService tipKarteService, ISavingService savingService, IKomentariService komentariService, IGalerijaService galerijaService, IHistorijaPregledaService historijaPregledaService) : base(context, mapper)
         {
             _baseState = baseState;
             _logger = logger;
@@ -41,6 +43,7 @@ namespace eventsApp.Services
             _savingService = savingService;
             _komentariService = komentariService;
             _galerijaService = galerijaService;
+            _historijaPregledaService = historijaPregledaService;
         }
 
         public override IQueryable<Database.Dogadjaji> AddFilter(IQueryable<Database.Dogadjaji> query, DogadjajiSearchObject? search = null)
@@ -156,8 +159,8 @@ namespace eventsApp.Services
             bool eventInTicketTypes = await _context.TipKartes.Where(s => s.DogadjajId == dogadjajId).AnyAsync();
             if (eventInTicketTypes) { await _tipKarteService.DeleteByDogadjaj(dogadjaj.DogadjajId); }
 
-            /*bool eventInHistory = await _context.HistorijaPregleda.Where(h => h.DogadjajId == dogadjajId).AnyAsync();
-            if (eventInHistory) { await _historijaPregledaService.DeleteByDogadjaj(dogadjaj.DogadjajId); }*/
+            bool eventInHistory = await _context.HistorijaPregleda.Where(h => h.DogadjajId == dogadjajId).AnyAsync();
+            if (eventInHistory) { await _historijaPregledaService.DeleteByDogadjaj(dogadjaj.DogadjajId); }
 
         }
 
@@ -249,10 +252,10 @@ namespace eventsApp.Services
             {
                 response.TopSellingEvents = await GetTopSellingEvents();
             }
-            /*if (search.EventsByCategory != null && search.EventsByCategory == true)
+            if (search.MostViewedEvents != null && search.MostViewedEvents == true)
             {
-                response.EventsByCategory = await GetEventsByCategory();
-            }*/
+                response.MostViewedEvents = await _historijaPregledaService.GetMostViewedEvents();
+            }
             if (search.MostSavedEvents != null && search.MostSavedEvents == true)
             {
                 response.MostSavedEvents = await _savingService.GetMostSavedEvents();
@@ -369,6 +372,11 @@ namespace eventsApp.Services
                 .ToList();
 
             return result;
+        }
+
+        public override async Task WriteInHistory(int? korisnikId, int? dogadjajId)
+        {
+            await _historijaPregledaService.Create(korisnikId, dogadjajId);
         }
 
 
