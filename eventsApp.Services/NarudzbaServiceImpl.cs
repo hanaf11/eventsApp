@@ -13,21 +13,17 @@ using System.Threading.Tasks;
 
 namespace eventsApp.Services
 {
-    public class NarudzbaServiceImpl:INarudzbaService
+    public class NarudzbaServiceImpl:BaseService<Model.Narudzbe, Model.Narudzbe, Database.Narudzbe, NarudzbaSearchObject>, INarudzbaService
     {
         protected readonly ILogger<NarudzbaServiceImpl> _logger;
         protected readonly ITipKarteService _tipKarteService;
-        protected readonly EventsDbContext _context;
-        protected IMapper _mapper;
         protected readonly INarudzbaStavkeService _narudzbaStavkeService;
         protected readonly IKarteService _karteService;
         protected readonly INotificationService _notificationService;
-        public NarudzbaServiceImpl(EventsDbContext context, IMapper mapper, ILogger<NarudzbaServiceImpl> logger, ITipKarteService tipKarteService, INarudzbaStavkeService narudzbaStavkeService, IKarteService karteService, INotificationService notificationService)
+        public NarudzbaServiceImpl(EventsDbContext context, IMapper mapper, ILogger<NarudzbaServiceImpl> logger, ITipKarteService tipKarteService, INarudzbaStavkeService narudzbaStavkeService, IKarteService karteService, INotificationService notificationService):base(context,mapper)
         {
             _logger = logger;
             _tipKarteService = tipKarteService;
-            _context = context;
-            _mapper = mapper;
             _narudzbaStavkeService = narudzbaStavkeService;
             _karteService = karteService;
             _notificationService = notificationService;
@@ -81,7 +77,7 @@ namespace eventsApp.Services
             }
         }
 
-        public async Task<List<Model.Dogadjaji>> GetNarudzbeDogadjaji(NarudzbaSearchObject? search)
+        public async Task<List<Model.Dogadjaji>> GetNarudzbeDogadjaji(NarudzbaDogaadjajSearchObject? search)
         {
             var result = new List<Model.Dogadjaji>();
             var query = _context.Set<Database.Narudzbe>().AsQueryable();
@@ -211,7 +207,32 @@ namespace eventsApp.Services
     };
         }
 
+        public override IQueryable<Database.Narudzbe> AddFilter(IQueryable<Database.Narudzbe> query, NarudzbaSearchObject? search = null)
+        {
+            if (!string.IsNullOrWhiteSpace(search?.BrojNarudzbe))
+            {
+                query = query.Where(x => x.BrojNarudzbe.Contains(search.BrojNarudzbe));
+            }
+            if (!string.IsNullOrWhiteSpace(search?.Username))
+            {
+                query = query.Where(x => x.Korisnik.KorisnickoIme.Contains(search.Username));
+            }
+            if (search?.Datum != null)
+            {
+                var startOfDay = search.Datum.Value.Date;
+                var endOfDay = startOfDay.AddDays(1).AddTicks(-1);
+                query = query.Where(x => x.Datum >= startOfDay && x.Datum <= endOfDay);
+            }
 
+
+            return base.AddFilter(query, search);
+        }
+
+        public override IQueryable<Database.Narudzbe> AddInclude(IQueryable<Database.Narudzbe> query, NarudzbaSearchObject? search = null)
+        {
+            query = query.Include(k => k.Korisnik);
+            return base.AddInclude(query, search);
+        }
     }
 
 

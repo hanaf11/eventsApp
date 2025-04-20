@@ -42,7 +42,9 @@ namespace eventsApp.Services
             CreateMap<Database.TipKarte, Model.TipKarte>();
             CreateMap<Database.Karte, Model.Karta>();
             CreateMap<Model.Requests.NarudzbaInsertRequest, Database.Narudzbe>();
-            CreateMap<Database.Narudzbe, Model.Narudzbe>();
+           // CreateMap<Database.Narudzbe, Model.Narudzbe>();
+            CreateMap<Database.Narudzbe, Model.Narudzbe>()
+            .ForMember(model => model.KorisnickoIme, source => source.MapFrom(src => src.Korisnik.KorisnickoIme));
             CreateMap<Model.ValidTipKarte, Database.NarudzbaStavke>();
             CreateMap<Database.Karte, Model.Karta>();
 

@@ -8,7 +8,9 @@ namespace eventsApp.Model.SearchObjects
 {
     public class NarudzbaSearchObject : BaseSearchObject
     {
-        public int? KorisnikId { get; set; }
+        public string? Username { get; set; }
+        public string? BrojNarudzbe { get; set; }
+        public DateTime? Datum { get; set; }
 
     }
 }

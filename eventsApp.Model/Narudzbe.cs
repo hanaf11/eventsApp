@@ -33,6 +33,7 @@ namespace eventsApp.Model
         public string? Drzava { get; set; }
 
         public string Tip { get; set; } = null!;
+        public string KorisnickoIme { get; set; } = null!;
 
     }
 }

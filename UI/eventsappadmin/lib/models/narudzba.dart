@@ -6,11 +6,13 @@ part 'narudzba.g.dart';
 @JsonSerializable()
 class Narudzba {
   int korisnikId;
-  int brojNarudzbe;
+  String brojNarudzbe;
   DateTime datum;
-  double iznosSaPdv;
+  double cijena;
+  String korisnickoIme;
 
-  Narudzba(this.korisnikId, this.brojNarudzbe, this.datum, this.iznosSaPdv);
+  Narudzba(this.korisnikId, this.brojNarudzbe, this.datum, this.cijena,
+      this.korisnickoIme);
 
   factory Narudzba.fromJson(Map<String, dynamic> json) =>
       _$NarudzbaFromJson(json);

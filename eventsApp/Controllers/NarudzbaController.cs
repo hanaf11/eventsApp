@@ -11,14 +11,10 @@ namespace eventsApp.Controllers
     [ApiController]
     [Route("[controller]")]
     [Authorize]
-    public class NarudzbaController : ControllerBase
+    public class NarudzbaController : BaseController<Model.Narudzbe, Model.Narudzbe, NarudzbaSearchObject>
     {
-        protected readonly INarudzbaService _service;
-        protected readonly ILogger<NarudzbaController> _logger;
-        public NarudzbaController(ILogger<NarudzbaController> logger, INarudzbaService service)
+        public NarudzbaController(ILogger<NarudzbaController> logger, INarudzbaService service):base(logger,service)
         {
-            _service = service;
-            _logger = logger;
         }
 
         [HttpPost("validate-request")]
@@ -38,15 +34,16 @@ namespace eventsApp.Controllers
         }
 
         [HttpGet("narudzbe-by-korisnik")]
-        public async Task<List<Model.Dogadjaji>> GetNarudzbeDogadjaji([FromQuery]NarudzbaSearchObject? search=null)
+        public async Task<List<Model.Dogadjaji>> GetNarudzbeDogadjaji([FromQuery]NarudzbaDogaadjajSearchObject? search=null)
         {
             return await (_service as INarudzbaService).GetNarudzbeDogadjaji(search);
         }
 
         [HttpGet("report")]
-        public virtual async Task<NarudzbeReportResponse> Get([FromQuery] NarudzbeReportSearchObject? search = null)
+        public virtual async Task<NarudzbeReportResponse> GetReportData([FromQuery] NarudzbeReportSearchObject? search = null)
         {
             return await (_service as INarudzbaService).GetReportData(search);
         }
+
     }
 }

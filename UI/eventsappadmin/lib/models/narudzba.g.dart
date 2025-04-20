@@ -8,14 +8,16 @@ part of 'narudzba.dart';
 
 Narudzba _$NarudzbaFromJson(Map<String, dynamic> json) => Narudzba(
       json['korisnikId'] as int,
-      json['brojNarudzbe'] as int,
+      json['brojNarudzbe'] as String,
       DateTime.parse(json['datum'] as String),
-      (json['iznosSaPdv'] as num).toDouble(),
+      (json['cijena'] as num).toDouble(),
+      json['korisnickoIme'] as String,
     );
 
 Map<String, dynamic> _$NarudzbaToJson(Narudzba instance) => <String, dynamic>{
       'korisnikId': instance.korisnikId,
       'brojNarudzbe': instance.brojNarudzbe,
       'datum': instance.datum.toIso8601String(),
-      'iznosSaPdv': instance.iznosSaPdv,
+      'cijena': instance.cijena,
+      'korisnickoIme': instance.korisnickoIme,
     };

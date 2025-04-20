@@ -41,6 +41,11 @@ class NarudzbaProvider extends BaseProvider<Narudzba> {
     }
   }
 
+  @override
+  Narudzba fromJson(data) {
+    return Narudzba.fromJson(data);
+  }
+
   NarudzbeReportResponse reportfromJson(data) {
     return NarudzbeReportResponse.fromJson(data);
   }
