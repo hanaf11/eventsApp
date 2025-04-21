@@ -13,5 +13,7 @@ namespace eventsApp.Services
         public Task<List<Dictionary<string, object>>> GetNumOfSoldTickets();
 
         public Task<List<Dictionary<string, object>>> GetMostSoldEvents();
+
+        public Task<List<Model.StavkeNarudzbe>> Get(int narudzbaId);
     }
 }

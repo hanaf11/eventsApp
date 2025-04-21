@@ -408,7 +408,7 @@ class _DobavljacDetailsScreenState extends State<DobavljacDetailsScreen> {
         ),
         TextButton(
             onPressed: () => {Navigator.pop(context, 'Zatvori')},
-            style: buttonSecondary,
+            // style: buttonSecondary,
             child: const Text('Zatvori')),
       ],
     );

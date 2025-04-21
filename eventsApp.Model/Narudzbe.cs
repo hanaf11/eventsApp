@@ -8,6 +8,7 @@ namespace eventsApp.Model
 {
     public class Narudzbe
     {
+        public int NarudzbaId { get; set; }
         public string BrojNarudzbe { get; set; } = null!;
 
         public int KorisnikId { get; set; }

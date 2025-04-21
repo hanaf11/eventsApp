@@ -41,6 +41,24 @@ class NarudzbaProvider extends BaseProvider<Narudzba> {
     }
   }
 
+  /* @override
+  Future<NarudzbaDetails> getNarudzbaDetails(id) async {
+    var url = "${_baseUrl}Narudzba/${id}"; // Construct the URL
+    var uri = Uri.parse(url);
+    var headers = BaseProvider
+        .createHeaders(); // Assume this method creates required headers
+
+    var response = await http.get(uri, headers: headers);
+
+    if (BaseProvider.isValidResponse(response)) {
+      var data = jsonDecode(response.body);
+
+      return NarudzbaDetails.fromJson(data);
+    } else {
+      throw Exception("Failed to fetch NarudzbaDetails");
+    }
+  }*/
+
   @override
   Narudzba fromJson(data) {
     return Narudzba.fromJson(data);

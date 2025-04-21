@@ -7,7 +7,9 @@ import 'package:eventsappadmin/providers/kategorija_provider.dart';
 import 'package:eventsappadmin/providers/korisnik_provider.dart';
 import 'package:eventsappadmin/providers/narudzba_provider.dart';
 import 'package:eventsappadmin/providers/podkategorija_provider.dart';
+import 'package:eventsappadmin/providers/stavke_narudzbe_provider.dart';
 import 'package:eventsappadmin/providers/tipkarte_provider.dart';
+import 'package:eventsappadmin/utils/style_util.dart';
 import 'package:eventsappadmin/utils/util.dart';
 import 'package:provider/provider.dart';
 
@@ -24,7 +26,8 @@ void main() {
       ChangeNotifierProvider(create: (_) => KorisnikProvider()),
       ChangeNotifierProvider(create: (_) => DobavljacProvider()),
       ChangeNotifierProvider(create: (_) => TipkarteProvider()),
-      ChangeNotifierProvider(create: (_) => NarudzbaProvider())
+      ChangeNotifierProvider(create: (_) => NarudzbaProvider()),
+      ChangeNotifierProvider(create: (_) => StavkeNarudzbeProvider()),
     ],
     child: const MyApp(),
   ));
@@ -213,6 +216,9 @@ class LoginPage extends StatelessWidget {
                               .cover, // Ensures the image fits well inside the rounded corners
                         ),
                       ),
+                      SizedBox(
+                        height: 25,
+                      ),
                       TextField(
                         decoration: InputDecoration(
                           labelText: "Username",
@@ -228,8 +234,9 @@ class LoginPage extends StatelessWidget {
                         ),
                         controller: _passwordController,
                       ),
-                      SizedBox(height: 8),
+                      SizedBox(height: 10),
                       ElevatedButton(
+                        //style: buttonPrimary,
                         onPressed: () async {
                           KorisnikProvider _korisnikprovider =
                               new KorisnikProvider();

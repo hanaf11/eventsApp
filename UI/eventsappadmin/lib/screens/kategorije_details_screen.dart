@@ -427,9 +427,10 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
           ),
         ),
         TextButton(
-            onPressed: () => {Navigator.pop(context, 'Zatvori')},
-            child: const Text('Zatvori'),
-            style: buttonSecondary),
+          onPressed: () => {Navigator.pop(context, 'Zatvori')},
+          child: const Text('Zatvori'),
+          //style: buttonSecondary
+        ),
       ],
     );
   }

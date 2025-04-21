@@ -4,6 +4,7 @@ import 'package:eventsappadmin/models/narudzba.dart';
 import 'package:eventsappadmin/providers/dogadjaj_provider.dart';
 import 'package:eventsappadmin/providers/narudzba_provider.dart';
 import 'package:eventsappadmin/screens/dogadjaj_details_screen.dart';
+import 'package:eventsappadmin/screens/narudzba_details_screen.dart';
 import 'package:eventsappadmin/utils/style_util.dart';
 import 'package:eventsappadmin/utils/util.dart';
 import 'package:eventsappadmin/widgets/master_screen.dart';
@@ -231,8 +232,8 @@ class _NarudzbeListScreenState extends State<NarudzbeListScreen>
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               )),
                               DataCell(Text(
-                                  "${e.datum.day}.${e.datum.month}.${e.datum.year}.")),
-                              DataCell(Text(e.korisnickoIme)),
+                                  "${e.datum?.day}.${e.datum?.month}.${e.datum?.year}.")),
+                              DataCell(Text(e.korisnickoIme ?? "")),
                               DataCell(Text(formatCijena(e.cijena))),
                               DataCell(IconButton(
                                   icon: const Icon(Icons.remove_red_eye),
@@ -240,19 +241,7 @@ class _NarudzbeListScreenState extends State<NarudzbeListScreen>
                                   splashRadius: 20,
                                   hoverColor: Color.fromRGBO(224, 224, 224, 1),
                                   onPressed: () {
-                                    /*setState(() {
-                                      isLoading = true;
-                                    });
-
-                                    _korisnikProvider
-                                        .getById(e.korisnikId)
-                                        .then((value) {
-                                      setState(() {
-                                        isLoading = false;
-                                        korisnik = value;
-                                      });
-                                      _buildKorisnikDetails(korisnik);
-                                    });*/
+                                    _buildNarudzbaDetails(e!.narudzbaId!);
                                   })),
                             ]))
                         .toList() ??
@@ -261,14 +250,31 @@ class _NarudzbeListScreenState extends State<NarudzbeListScreen>
     });
   }
 
-  _buildKorisnikDetails(Korisnik? k) {
+  _buildNarudzbaDetails(int narudzbaId) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text('Detalji o narudžbi', style: h2),
+        content: NarudzbaDetailsScreen(narudzbaId: narudzbaId),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'Zatvori'),
+            child: const Text('Zatvori'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /* _buildNarudzbaDetails() {
     showDialog<String>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-              title: Text('Detalji o korisniku', style: h2),
+              title: Text('Detalji o narudžbi', style: h2),
               content: isLoading
                   ? const CircularProgressIndicator()
-                  : Padding(
+                  : //Container()
+                  Padding(
                       padding: EdgeInsets.symmetric(horizontal: 15),
                       child: Column(
                         children: [
@@ -437,7 +443,8 @@ class _NarudzbeListScreenState extends State<NarudzbeListScreen>
                                 ]),
                           ])
                         ],
-                      )),
+                      )
+                    ),
               actions: <Widget>[
                 TextButton(
                   onPressed: () => Navigator.pop(context, 'Zatvori'),
@@ -445,7 +452,7 @@ class _NarudzbeListScreenState extends State<NarudzbeListScreen>
                 ),
               ],
             ));
-  }
+  }*/
 
   Image _buildProfilna(String? img) {
     if (img == null || img == "") {

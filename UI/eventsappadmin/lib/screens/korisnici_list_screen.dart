@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:eventsappadmin/providers/dogadjaj_provider.dart';
 import 'package:eventsappadmin/screens/dogadjaj_details_screen.dart';
+import 'package:eventsappadmin/screens/korisnik_details_screen.dart';
 import 'package:eventsappadmin/utils/style_util.dart';
 import 'package:eventsappadmin/utils/util.dart';
 import 'package:eventsappadmin/widgets/master_screen.dart';
@@ -199,7 +200,7 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
                                   splashRadius: 20,
                                   hoverColor: Color.fromRGBO(224, 224, 224, 1),
                                   onPressed: () {
-                                    setState(() {
+                                    /*  setState(() {
                                       isLoading = true;
                                     });
 
@@ -211,7 +212,8 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
                                         korisnik = value;
                                       });
                                       _buildKorisnikDetails(korisnik);
-                                    });
+                                    });*/
+                                    _buildKorisnikDetails(e!.korisnikId);
                                   })),
                               DataCell(IconButton(
                                 icon: const Icon(Icons.delete),
@@ -260,8 +262,22 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
     });
   }
 
-  _buildKorisnikDetails(Korisnik? k) {
+  _buildKorisnikDetails(int korisnikId) {
     showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text('Detalji o korisniku', style: h2),
+        content: KorisnikDetailsScreen(korisnikId: korisnikId),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'Zatvori'),
+            child: const Text('Zatvori'),
+          ),
+        ],
+      ),
+    );
+
+    /* showDialog<String>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
               title: Text('Detalji o korisniku', style: h2),
@@ -443,19 +459,6 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
                   child: const Text('Zatvori'),
                 ),
               ],
-            ));
-  }
-
-  Image _buildProfilna(String? img) {
-    if (img == null || img == "") {
-      return Image.asset('assets/images/blankprofile.jpg', fit: BoxFit.cover);
-    } else {
-      try {
-        Image slika = Image.memory(base64Decode(img), fit: BoxFit.cover);
-        return slika;
-      } on Exception catch (e) {
-        return Image.asset('assets/images/blankprofile.jpg', fit: BoxFit.cover);
-      }
-    }
+            ));*/
   }
 }

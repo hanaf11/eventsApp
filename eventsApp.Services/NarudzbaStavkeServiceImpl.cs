@@ -98,6 +98,17 @@ namespace eventsApp.Services
                 .ToList();
         }
 
+        public async Task<List<Model.StavkeNarudzbe>> Get(int narudzbaId)
+        {
+            List<Database.NarudzbaStavke> stavke = await _context.Set<NarudzbaStavke>()
+                .Where(ns => ns.NarudzbaId == narudzbaId).Include(ns => ns.TipKarte)
+                .ToListAsync();
+
+            var result = _mapper.Map<List<Model.StavkeNarudzbe>>(stavke);
+
+            return result;
+        }
+
 
     }
 }
