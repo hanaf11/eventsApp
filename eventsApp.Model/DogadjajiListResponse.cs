@@ -28,6 +28,10 @@ namespace eventsApp.Model
 
         public Dobavljaci Dobavljac { get; set; }
 
+        public double? Latitude { get; set; }
+
+        public double? Longitude { get; set; }
+
 
     }
 }

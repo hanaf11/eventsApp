@@ -41,6 +41,9 @@ public partial class Dogadjaji
 
     public DateTime Created { get; set; }
 
+    public double Latitude { get; set; }
+
+    public double Longitude { get; set; }
     public virtual ICollection<HistorijaPregledum> HistorijaPregleda { get; } = new List<HistorijaPregledum>();
 
     public virtual Kategorije Kategorija { get; set; } = null!;

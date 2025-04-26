@@ -29,6 +29,8 @@ Dogadjaj _$DogadjajFromJson(Map<String, dynamic> json) => Dogadjaj(
       (json['podkategorijaId'] as num?)?.toInt(),
       json['status'] as String?,
       (json['dobavljacId'] as num?)?.toInt(),
+      (json['latitude'] as num?)?.toDouble(),
+      (json['longitude'] as num?)?.toDouble(),
     );
 
 Map<String, dynamic> _$DogadjajToJson(Dogadjaj instance) => <String, dynamic>{
@@ -48,4 +50,6 @@ Map<String, dynamic> _$DogadjajToJson(Dogadjaj instance) => <String, dynamic>{
       'podkategorijaId': instance.podkategorijaId,
       'status': instance.status,
       'dobavljacId': instance.dobavljacId,
+      'latitude': instance.latitude,
+      'longitude': instance.longitude,
     };

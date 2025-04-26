@@ -19,5 +19,7 @@ namespace eventsApp.Model.SearchObjects
         public string? Status { get; set; }
         public bool? DobavljacIncluded { get; set; }
         public string? Username { get; set; }
+        public double? Latitude { get; set; } 
+        public double? Longitude { get; set; }
     }
 }

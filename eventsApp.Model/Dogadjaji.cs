@@ -40,6 +40,10 @@ namespace eventsApp.Model
 
         public string? Organizator { get; set; }
 
+        public double? Latitude { get; set; }
+
+        public double? Longitude { get; set; }
+
         public virtual Kategorije Kategorija { get; set; }
 
         /*  public virtual Dobavljaci? Dobavljac { get; set; }

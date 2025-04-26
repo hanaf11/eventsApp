@@ -40,8 +40,8 @@ class _MapScreenState extends State<MapScreen> {
   bool isLoading = true;
   bool kategorijaLoaded = false;
   bool mapLoaded = false;
-  DateTime? _datumOd;
-  DateTime? _datumDo;
+  DateTime? _datumOd = DateTime.now();
+  DateTime? _datumDo = DateTime.now().add(Duration(days: 30));
   String defaultLokacija = KorisnikGlobal.lokacija ?? 'Sarajevo';
   late DogadjajProvider _dogadjajProvider;
   late List<Dogadjaj>? _dogadjajiResult;
@@ -58,8 +58,8 @@ class _MapScreenState extends State<MapScreen> {
     super.initState();
     _kategorijeProvider = context.read<KategorijeProvider>();
     _dogadjajProvider = context.read<DogadjajProvider>();
-    loadData();
-    _search(defaultLokacija);
+    loadKategorije();
+    getLatLong(defaultLokacija);
   }
 
   handleLoading() {
@@ -72,7 +72,7 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  loadData() async {
+  loadKategorije() async {
     _kategorijeProvider.get().then((value) {
       setState(() {
         _kategorijeList = value.result;
@@ -144,6 +144,7 @@ class _MapScreenState extends State<MapScreen> {
             onPressed: () {
               handleLoading();
               Navigator.pop(context, 'OK');
+              Navigator.pop(context);
             },
             child: const Text('OK'),
           ),
@@ -179,7 +180,7 @@ class _MapScreenState extends State<MapScreen> {
             ));
   }
 
-  _search(String lokacija) async {
+  getLatLong(String lokacija) async {
     try {
       await locationFromAddress(lokacija).then((locations) {
         print("dobili smo neku lokaciju");
@@ -190,12 +191,12 @@ class _MapScreenState extends State<MapScreen> {
         }
       });
     } on Exception catch (e) {
-      if (lokacija == defaultLokacija)
+      /* if (lokacija == defaultLokacija)
         handleException(
             "Nije moguće pronaći vašu lokaciju. \n U postavkama profila unesite validnu adresu.");
-      else
-        handleException(
-            "Nije moguće pronaći traženu lokaciju, unesite validnu adresu");
+      else*/
+      handleException(
+          "Nije moguće pronaći traženu lokaciju, unesite validnu adresu");
       setState(() {
         initialCenter = null;
         mapLoaded = true;
@@ -203,7 +204,7 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  filter() {
+  filter() async {
     //TBD
     var filterReq = {
       'FTS': _searchController.text,
@@ -211,18 +212,29 @@ class _MapScreenState extends State<MapScreen> {
       'Kategorija': _kategorijaSelected,
       'DatumOd': _datumOd,
       'DatumDo': _datumDo,
+      'Status': 'ACTIVE',
+      'Latitude': initialCenter?.latitude,
+      'Longitude': initialCenter?.longitude
     };
     print("filtriranje ${filterReq}");
+
     try {
-      _dogadjajProvider.get(filter: filterReq).then((value) {
-        setState(() {
-          _dogadjajiResult = value.result;
-        });
-        print("dogadjaji result $_dogadjajiResult");
+      var value = await _dogadjajProvider.get(filter: filterReq);
+      setState(() {
+        _dogadjajiResult = value.result;
+        mapLoaded = true;
+        handleLoading();
       });
+      print("dogadjaji result $_dogadjajiResult");
     } on Exception catch (e) {
+      print("uslo u exception");
       handleException(e.toString());
     }
+  }
+
+  void _showEventDetails(Dogadjaj event) {
+    // Implement navigation or popup to show event details
+    print('Tapped on event: ${event.naziv}');
   }
 
   _refreshMap(String output) {
@@ -230,9 +242,8 @@ class _MapScreenState extends State<MapScreen> {
     setState(() {
       mapKey = UniqueKey();
       initialCenter = newCenter;
-      mapLoaded = true;
     });
-    handleLoading();
+    filter();
   }
 
   @override
@@ -300,7 +311,8 @@ class _MapScreenState extends State<MapScreen> {
               Container(
                   child: IconButton(
                 onPressed: () {
-                  _search(_cityController.text);
+                  // filter(_cityController.text);
+                  filter();
                 },
                 icon: const Icon(Icons.search),
                 iconSize: 25,
@@ -316,33 +328,60 @@ class _MapScreenState extends State<MapScreen> {
     print('initialCenter: $initialCenter,');
     if (initialCenter == null)
       return Text("Greška prilikom učitavanja lokacije");
+
+    List<Marker> eventMarkers = _dogadjajiResult?.map((event) {
+          print(
+              "dogadjaj ${event.naziv} lat ${event.latitude} long ${event.longitude}");
+          return Marker(
+            key: Key(event.dogadjajId.toString()),
+            point: LatLng(event.latitude ?? 0, event.longitude ?? 0),
+            width: 60,
+            height: 60,
+            alignment: Alignment.center,
+            child: GestureDetector(
+              onTap: () {
+                _showEventDetails(event);
+              },
+              child: Icon(
+                Icons.location_on,
+                size: 40,
+                color: Colors.blueAccent,
+              ),
+            ),
+          );
+        }).toList() ??
+        [];
+
+    print("jesu li dosli dogadjaji ${eventMarkers.first.key}");
+
+    eventMarkers.add(
+      Marker(
+        key: Key('you'),
+        point: initialCenter,
+        width: 60,
+        height: 60,
+        alignment: Alignment.center,
+        child: Icon(
+          Icons.pin_drop,
+          size: 40,
+          color: Color.fromRGBO(232, 66, 54, 1),
+        ),
+      ),
+    );
+
     return Expanded(
         child: Stack(children: [
       FlutterMap(
           key: mapKey,
           options: MapOptions(
             initialCenter: initialCenter,
-            initialZoom: 18.0,
+            initialZoom: 15.0,
           ),
           children: [
             TileLayer(
               urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
             ),
-            MarkerLayer(
-              markers: [
-                Marker(
-                    key: Key('you'),
-                    point: initialCenter,
-                    width: 60,
-                    height: 60,
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.pin_drop,
-                      size: 40,
-                      color: Color.fromRGBO(232, 66, 54, 1),
-                    )),
-              ],
-            ),
+            MarkerLayer(markers: eventMarkers),
           ]),
       /*Positioned(
         top: 10,

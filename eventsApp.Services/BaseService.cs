@@ -43,6 +43,8 @@ namespace eventsApp.Services
             }
             var list = await query.ToListAsync();
 
+            list = FilterResultsAfterDatabaseCall(list, search);
+
             result.Result = _mapper.Map<List<T>>(list);
 
             return result;
@@ -70,6 +72,11 @@ namespace eventsApp.Services
         public virtual IQueryable<TDb> AddFilter(IQueryable<TDb> query, TSearch? search = null)
         {
             return query;
+        }
+
+        public virtual List<TDb> FilterResultsAfterDatabaseCall(List<TDb> results, TSearch? search = null)
+        {
+            return results;
         }
         public virtual IQueryable<TDb> AddOrderBy(IQueryable<TDb> query, TSearch? search = null)
         {
