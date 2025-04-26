@@ -64,8 +64,11 @@ namespace eventsApp.Services
             {
                 throw new Model.UserException("Korisnik nije pronadjen");
             }
+    
             var dogadjajiList = await _context.Korisnicis.Where(k => k.KorisnikId == korisnikId).SelectMany(k => k.Savings)
-             .Include(s => s.Dogadjaj.Kategorija).OrderByDescending(s => s.Vrijeme).Select(s => s.Dogadjaj).ToListAsync();
+            .Include(s => s.Dogadjaj.Kategorija).Where(s => s.Dogadjaj.Status == "ACTIVE").OrderByDescending(s => s.Vrijeme)
+            .Select(s => s.Dogadjaj).ToListAsync();
+
             return _mapper.Map<List<Model.DogadjajiListResponse>>(dogadjajiList);
         }
 

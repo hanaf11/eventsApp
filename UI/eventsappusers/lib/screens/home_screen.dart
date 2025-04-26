@@ -32,10 +32,12 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Dogadjaj>? _recommendedList;
   List<Dogadjaj>? _nearYouList;
   List<Dogadjaj>? _searchList = null;
+  List<Dogadjaj>? _newList;
   bool pratiteLoaded = false;
   bool recommendedLoaded = false;
   bool nearYouLoaded = false;
   bool kategorijeLoaded = false;
+  bool newLoaded = false;
   bool searchLoaded = false;
 
   _HomeScreenState();
@@ -54,7 +56,8 @@ class _HomeScreenState extends State<HomeScreen> {
     if (pratiteLoaded == true &&
         nearYouLoaded == true &&
         recommendedLoaded == true &&
-        kategorijeLoaded == true) {
+        kategorijeLoaded == true &&
+        newLoaded == true) {
       setState(() {
         isLoading = false;
       });
@@ -80,6 +83,19 @@ class _HomeScreenState extends State<HomeScreen> {
         pratiteLoaded = true;
         nearYouLoaded = true;
         recommendedLoaded = true;
+      });
+      handleLoading();
+    });
+
+    var filterReq = {
+      'Status': 'ACTIVE',
+      'KategorijaIncluded': true,
+      'OrderBy': '-created'
+    };
+    await _dogadjajProvider.get(filter: filterReq).then((value) {
+      setState(() {
+        _newList = value.result;
+        newLoaded = true;
       });
       handleLoading();
     });
@@ -132,6 +148,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       _buildSearch(),
                       if (searchLoaded)
                         _buildDogadjajiTiles("Pretraga", _searchList),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      _buildDogadjajiTiles("Najnovije", _newList),
                       SizedBox(
                         height: 20,
                       ),

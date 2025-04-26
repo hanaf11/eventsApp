@@ -210,7 +210,7 @@ class _MapScreenState extends State<MapScreen> {
       'Lokacija': _cityController.text,
       'Kategorija': _kategorijaSelected,
       'DatumOd': _datumOd,
-      'DatumDo': _datumDo
+      'DatumDo': _datumDo,
     };
     print("filtriranje ${filterReq}");
     try {
