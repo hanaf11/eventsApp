@@ -45,10 +45,6 @@ public partial class EventsDbContext : DbContext
 
     public virtual DbSet<TipKarte> TipKartes { get; set; }
 
-    public virtual DbSet<UlazStavke> UlazStavkes { get; set; }
-
-    public virtual DbSet<Ulazi> Ulazis { get; set; }
-
     public virtual DbSet<Uloge> Uloges { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -364,56 +360,6 @@ public partial class EventsDbContext : DbContext
             entity.HasOne(d => d.Dogadjaj).WithMany(p => p.TipKartes)
                 .HasForeignKey(d => d.DogadjajId)
                 .HasConstraintName("FK_TipKarte_Dogadjaji");
-        });
-
-        modelBuilder.Entity<UlazStavke>(entity =>
-        {
-            entity.HasKey(e => e.UlazStavkaId);
-
-            entity.ToTable("UlazStavke");
-
-            entity.Property(e => e.UlazStavkaId).HasColumnName("UlazStavkaID");
-            entity.Property(e => e.Cijena).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.TipKarteId).HasColumnName("TipKarteID");
-            entity.Property(e => e.UlazId).HasColumnName("UlazID");
-
-            entity.HasOne(d => d.TipKarte).WithMany(p => p.UlazStavkes)
-                .HasForeignKey(d => d.TipKarteId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_UlazStavke_TipKarte");
-
-            entity.HasOne(d => d.Ulaz).WithMany(p => p.UlazStavkes)
-                .HasForeignKey(d => d.UlazId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_UlazStavke_Ulazi");
-        });
-
-        modelBuilder.Entity<Ulazi>(entity =>
-        {
-            entity.HasKey(e => e.UlazId);
-
-            entity.ToTable("Ulazi");
-
-            entity.Property(e => e.UlazId).HasColumnName("UlazID");
-            entity.Property(e => e.BrojFakture).HasMaxLength(20);
-            entity.Property(e => e.Datum).HasColumnType("datetime");
-            entity.Property(e => e.DobavljacId).HasColumnName("DobavljacID");
-            entity.Property(e => e.IznosRacuna).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.KorisnikId).HasColumnName("KorisnikID");
-            entity.Property(e => e.Napomena).HasMaxLength(500);
-            entity.Property(e => e.Pdv)
-                .HasColumnType("numeric(18, 2)")
-                .HasColumnName("PDV");
-
-            entity.HasOne(d => d.Dobavljac).WithMany(p => p.Ulazis)
-                .HasForeignKey(d => d.DobavljacId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Ulazi_Dobavljaci");
-
-            entity.HasOne(d => d.Korisnik).WithMany(p => p.Ulazis)
-                .HasForeignKey(d => d.KorisnikId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Ulazi_Korisnici");
         });
 
         modelBuilder.Entity<Uloge>(entity =>

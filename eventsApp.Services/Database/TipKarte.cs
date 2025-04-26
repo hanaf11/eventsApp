@@ -22,6 +22,4 @@ public partial class TipKarte
     public virtual ICollection<Karte> Kartes { get; } = new List<Karte>();
 
     public virtual ICollection<NarudzbaStavke> NarudzbaStavkes { get; } = new List<NarudzbaStavke>();
-
-    public virtual ICollection<UlazStavke> UlazStavkes { get; } = new List<UlazStavke>();
 }

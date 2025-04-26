@@ -38,6 +38,23 @@ class KorisnikProvider extends BaseProvider<Korisnik> {
     }
   }
 
+  Future<Korisnik> updateProfilePicture(int id, String image) async {
+    var url = "$_baseUrl$_endpoint/$id/update-picture";
+    var uri = Uri.parse(url);
+    var headers = BaseProvider.createHeaders();
+
+    var jsonRequest = jsonEncode(image);
+
+    var response = await http.put(uri, headers: headers, body: jsonRequest);
+
+    if (BaseProvider.isValidResponse(response)) {
+      var data = jsonDecode(response.body);
+      return fromJson(data);
+    } else {
+      throw new Exception("Unknown exception");
+    }
+  }
+
   @override
   Korisnik fromJson(data) {
     return Korisnik.fromJson(data);

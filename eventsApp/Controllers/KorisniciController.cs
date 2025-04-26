@@ -36,5 +36,11 @@ namespace eventsApp.Controllers
             return await (_service as IKorisniciService).GetReportData(search);
         }
 
+        [HttpPut("{id}/update-picture")]
+        public async Task<Model.Korisnici> UpdatePicture(int id, [FromBody] byte[] slika)
+        {
+            return await (_service as IKorisniciService).UpdatePicture(id, slika);
+        }
+
     }
 }

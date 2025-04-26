@@ -99,6 +99,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  refreshUserData() {
+    setState(() {
+      _profilna = imageFromBase64String(KorisnikGlobal.slika);
+      _lokacija = KorisnikGlobal.lokacija ?? '';
+    });
+  }
+
   logout() {
     KorisnikGlobal.clear();
     Navigator.push(
@@ -170,7 +177,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             onPressed: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                    builder: (context) => EditProfileScreen()),
+                                    builder: (context) => EditProfileScreen(
+                                        onProfileUpdated: refreshUserData)),
                               );
                             },
                           ),
@@ -197,7 +205,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildDogadjajiTiles(String naslov, List<Dogadjaj>? dogadjajiList) {
-    print("evo događaja ${dogadjajiList?.first.naziv}");
+    // print("evo događaja ${dogadjajiList?.first.naziv}");
     return Padding(
         padding: EdgeInsets.all(8),
         child: Column(

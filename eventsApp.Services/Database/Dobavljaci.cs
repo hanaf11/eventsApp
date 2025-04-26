@@ -27,5 +27,4 @@ public partial class Dobavljaci
 
     public virtual ICollection<Dogadjaji> Dogadjajis { get; } = new List<Dogadjaji>();
 
-    public virtual ICollection<Ulazi> Ulazis { get; } = new List<Ulazi>();
 }

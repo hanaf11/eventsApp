@@ -55,7 +55,7 @@ namespace eventsApp.Services
             }
         }
 
-        public override async Task BeforeUpdate(Database.Korisnici entity, KorisniciUpdateRequest update)
+       /* public override async Task BeforeUpdate(Database.Korisnici entity, KorisniciUpdateRequest update)
         {
             base.BeforeUpdate(entity, update);
             if (update.Lozinka != update.LozinkaPotvrda)
@@ -65,7 +65,7 @@ namespace eventsApp.Services
             entity.LozinkaSalt = GenerateSalt();
             entity.LozinkaHash = GenerateHash(entity.LozinkaSalt, update.Lozinka);
 
-        }
+        }*/
 
         public override async Task AfterInsert(KorisniciInsertRequest insert)
         {
@@ -178,6 +178,28 @@ namespace eventsApp.Services
         new Dictionary<string, object> { { "time", "Month" }, { "registered", monthCount } },
         new Dictionary<string, object> { { "time", "All time" }, { "registered", allTimeCount } } };
         }
+
+        public async Task<Model.Korisnici> UpdatePicture(int korisnikId, byte[] slika)
+        {
+            if (slika == null || slika.Length == 0)
+            {
+                throw new Model.UserException("Invalid image data.");
+            }
+
+                var korisnik = await _context.Set<Database.Korisnici>().FindAsync(korisnikId);
+                if (korisnik == null)
+                {
+                   throw new Model.UserException("Korisnik nije pronađen.");
+                }
+
+                korisnik.Slika = slika;
+
+                await _context.SaveChangesAsync();
+
+                return _mapper.Map<Model.Korisnici>(korisnik);   
+
+        }
+
 
     }
 }

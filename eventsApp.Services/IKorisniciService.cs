@@ -15,5 +15,7 @@ namespace eventsApp.Services
 
         public Task<KorisniciReportResponse> GetReportData(KorisniciReportSearchObject? search);
 
+        public Task<Model.Korisnici> UpdatePicture(int korisnikId, byte[] slika);
+
     }
 }

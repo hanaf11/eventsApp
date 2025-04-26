@@ -43,5 +43,4 @@ public partial class Korisnici
 
     public virtual ICollection<Saving> Savings { get; } = new List<Saving>();
 
-    public virtual ICollection<Ulazi> Ulazis { get; } = new List<Ulazi>();
 }
