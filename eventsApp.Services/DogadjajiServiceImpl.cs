@@ -89,21 +89,26 @@ namespace eventsApp.Services
             {
                 filteredQuery = filteredQuery.Where(x => x.Organizator.Equals(search.Username));
             }
-          /*  if (search?.Latitude != null && search?.Longitude != null)
-            {
-                var latitudeParameter = search.Latitude.Value;
-                var longitudeParameter = search.Longitude.Value;
-
-                filteredQuery = filteredQuery.Where(x =>
-                    CalculateDistance(latitudeParameter, longitudeParameter, x.Latitude, x.Longitude) <= 50);
-            }*/
 
             return filteredQuery;
         }
 
         public override List<Database.Dogadjaji> FilterResultsAfterDatabaseCall(List<Database.Dogadjaji> dogadjaji, DogadjajiSearchObject? search=null)
         {
-            if (search?.Latitude !=null && search?.Longitude!=null)
+            if (search?.Latitude != null && search?.Longitude != null && !string.IsNullOrWhiteSpace(search?.FTS))
+            {
+                var filteredDogadjaji = new List<Database.Dogadjaji>();
+                var latitudeParameter = search.Latitude.Value;
+                var longitudeParameter = search.Longitude.Value;
+
+                var closestEvent = dogadjaji
+                   .OrderBy(d => CalculateDistance(latitudeParameter, longitudeParameter, d.Latitude, d.Longitude))
+                  .FirstOrDefault();
+
+                if (closestEvent != null) filteredDogadjaji.Add(closestEvent);
+                return filteredDogadjaji;
+            }
+              else  if (search?.Latitude !=null && search?.Longitude!=null)
             {
                 var filteredDogadjaji = new List<Database.Dogadjaji>();
                 var latitudeParameter = search.Latitude.Value;
@@ -111,7 +116,7 @@ namespace eventsApp.Services
 
                 foreach (var d in dogadjaji)
                 {
-                    if (CalculateDistance(latitudeParameter, longitudeParameter, d.Latitude, d.Longitude) <= 50)
+                    if (CalculateDistance(latitudeParameter, longitudeParameter, d.Latitude, d.Longitude) <= 20)
                     {
                         filteredDogadjaji.Add(d);
                     }

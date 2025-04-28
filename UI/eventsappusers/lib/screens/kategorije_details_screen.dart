@@ -142,8 +142,8 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
     showDatePicker(
             context: context,
             initialDate: DateTime.now(),
-            firstDate: DateTime(2020),
-            lastDate: DateTime(2026))
+            firstDate: DateTime(2022),
+            lastDate: DateTime(2030))
         .then((value) {
       if (value != null) {
         setState(() {
@@ -276,7 +276,8 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            InputField(
+            Expanded(
+                child: InputField(
               name: "Od:",
               field: TextField(
                 style: const TextStyle(
@@ -296,11 +297,12 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
                 },
               ),
               clearable: this,
-            ),
+            )),
             SizedBox(
               width: 10,
             ),
-            InputField(
+            Expanded(
+                child: InputField(
               name: "Do:",
               field: TextField(
                 style: const TextStyle(
@@ -320,7 +322,7 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
                 },
               ),
               clearable: this,
-            ),
+            )),
           ],
         ));
   }

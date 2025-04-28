@@ -6,7 +6,12 @@ import 'package:eventsappusers/models/korisnik_global.dart';
 import 'package:eventsappusers/providers/dogadjaj_provider.dart';
 import 'package:eventsappusers/providers/kategorije_provider.dart';
 import 'package:eventsappusers/utils/formatting_util.dart';
+import 'package:eventsappusers/utils/category_color_util.dart';
 import 'package:eventsappusers/utils/style_util.dart';
+import 'package:eventsappusers/widgets/dogadjaj_small_overview.dart';
+import 'package:eventsappusers/widgets/dogadjaj_vertical.dart';
+import 'package:eventsappusers/widgets/events_map_filter.dart';
+import 'package:eventsappusers/widgets/input_field.dart';
 import 'package:eventsappusers/widgets/input_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -28,8 +33,12 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   final TextEditingController _searchController = TextEditingController();
   TextEditingController _cityController = TextEditingController();
-  TextEditingController _datumOdDateController = TextEditingController();
-  TextEditingController _datumDoDateController = TextEditingController();
+  /*TextEditingController _datumOdDateController = TextEditingController();
+  TextEditingController _datumDoDateController = TextEditingController();*/
+  DateTime? _datumOd = DateTime.now();
+  DateTime? _datumDo = DateTime.now().add(Duration(days: 30));
+  late TextEditingController _datumOdController;
+  late TextEditingController _datumDoController;
   int? _kategorijaSelected;
   double latitude = 50;
   double longitude = 50;
@@ -40,8 +49,7 @@ class _MapScreenState extends State<MapScreen> {
   bool isLoading = true;
   bool kategorijaLoaded = false;
   bool mapLoaded = false;
-  DateTime? _datumOd = DateTime.now();
-  DateTime? _datumDo = DateTime.now().add(Duration(days: 30));
+
   String defaultLokacija = KorisnikGlobal.lokacija ?? 'Sarajevo';
   late DogadjajProvider _dogadjajProvider;
   late List<Dogadjaj>? _dogadjajiResult;
@@ -58,6 +66,14 @@ class _MapScreenState extends State<MapScreen> {
     super.initState();
     _kategorijeProvider = context.read<KategorijeProvider>();
     _dogadjajProvider = context.read<DogadjajProvider>();
+    _datumOdController = TextEditingController(
+        text: _datumOd == null
+            ? ""
+            : "${_datumOd?.day}.${_datumOd?.month}.${_datumOd?.year}.");
+    _datumDoController = TextEditingController(
+        text: _datumDo == null
+            ? ""
+            : "${_datumDo?.day}.${_datumDo?.month}.${_datumDo?.year}.");
     loadKategorije();
     getLatLong(defaultLokacija);
   }
@@ -102,7 +118,7 @@ class _MapScreenState extends State<MapScreen> {
     return LatLng(double.parse(lat), double.parse(long));
   }
 
-  Future<void> _selectDate(BuildContext context, String caller) async {
+  /*Future<void> _selectDate(BuildContext context, String caller) async {
     final DateTime? picked = await showDatePicker(
         context: context,
         initialDate: DateTime.now(),
@@ -122,7 +138,7 @@ class _MapScreenState extends State<MapScreen> {
               };
       });
     }
-  }
+  }*/
 
   String printDate(DateTime date) {
     return date.day.toString() +
@@ -156,15 +172,58 @@ class _MapScreenState extends State<MapScreen> {
   showFilterDialog() {
     showDialog(
         context: context,
+        builder: (BuildContext context) => EventsMapFilter(
+              searchController: _searchController,
+              onFilterTap: filter,
+              kategorijaSelected: _kategorijaSelected,
+              kategorijeList: _kategorijeList,
+              onKategorijaSelected: (int? selected) {
+                setState(() {
+                  _kategorijaSelected = selected;
+                });
+              },
+              datumOd: _datumOd,
+              datumDo: _datumDo,
+              datumOdController: _datumOdController,
+              datumDoController: _datumDoController,
+              onDateSelected: (DateTime? value, String caller) {
+                if (caller == "_datumOd") {
+                  setState(() {
+                    _datumOd = value;
+                  });
+                } else {
+                  setState(() {
+                    _datumDo = value;
+                  });
+                }
+              },
+            ));
+  }
+
+  /*showFilterDialog() {
+    showDialog(
+        context: context,
         builder: (BuildContext context) => AlertDialog(
               title: Text("Filtriranje"),
               content: SingleChildScrollView(
                   child: Column(
                 children: [
-                  InputWidget(
+                  /* InputWidget(
                       label: "Lokacija:",
                       controller: _cityController,
-                      placeholder: "Lokacija"),
+                      placeholder: "Lokacija"),*/
+                  InputField(
+                      field: TextField(
+                        style: const TextStyle(
+                            color: Color.fromRGBO(68, 68, 68, 1),
+                            fontSize: 14,
+                            letterSpacing: 0.3,
+                            fontFamily: 'Montserrat'),
+                        decoration:
+                            InputDecoration.collapsed(hintText: 'Lokacija'),
+                        controller: _cityController,
+                      ),
+                      clearable: this),
                   if (!isLoading) _buildKategorija(),
                   _buildDatePicker(),
                 ],
@@ -178,7 +237,7 @@ class _MapScreenState extends State<MapScreen> {
                     child: Text("OK"))
               ],
             ));
-  }
+  }*/
 
   getLatLong(String lokacija) async {
     try {
@@ -204,18 +263,35 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
+  cityChanged() {
+    if (_cityController.text.isNotEmpty) {
+      getLatLong(_cityController.text);
+    }
+  }
+
   filter() async {
     //TBD
+    /* if (filterData) {
+      setState(() {
+        _cityController.text = filterData.cityController.text;
+      });
+    }*/
+    setState(() {
+      isLoading = true;
+    });
+
     var filterReq = {
       'FTS': _searchController.text,
-      'Lokacija': _cityController.text,
+      //'Lokacija': _cityController.text,
       'Kategorija': _kategorijaSelected,
       'DatumOd': _datumOd,
       'DatumDo': _datumDo,
       'Status': 'ACTIVE',
       'Latitude': initialCenter?.latitude,
-      'Longitude': initialCenter?.longitude
+      'Longitude': initialCenter?.longitude,
+      'KategorijaIncluded': true
     };
+
     print("filtriranje ${filterReq}");
 
     try {
@@ -233,8 +309,16 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void _showEventDetails(Dogadjaj event) {
-    // Implement navigation or popup to show event details
     print('Tapped on event: ${event.naziv}');
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Material(
+          color: Colors.transparent, // Transparent background
+          child: Center(child: DogadjajVerticalWidget(dogadjaj: event)),
+        );
+      },
+    );
   }
 
   _refreshMap(String output) {
@@ -263,7 +347,7 @@ class _MapScreenState extends State<MapScreen> {
                           SizedBox(
                             height: 15,
                           ),
-                          _buildMap(initialCenter),
+                          if (isLoading == false) _buildMap(initialCenter),
                         ],
                       ),
                       Positioned(
@@ -303,16 +387,16 @@ class _MapScreenState extends State<MapScreen> {
                   child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8),
                 child: TextField(
-                  controller: _searchController,
+                  controller: _cityController,
                   decoration:
-                      new InputDecoration.collapsed(hintText: 'Naziv događaja'),
+                      new InputDecoration.collapsed(hintText: 'Naziv grada'),
                 ),
               )),
               Container(
                   child: IconButton(
                 onPressed: () {
-                  // filter(_cityController.text);
-                  filter();
+                  //  filter();
+                  cityChanged();
                 },
                 icon: const Icon(Icons.search),
                 iconSize: 25,
@@ -329,45 +413,77 @@ class _MapScreenState extends State<MapScreen> {
     if (initialCenter == null)
       return Text("Greška prilikom učitavanja lokacije");
 
-    List<Marker> eventMarkers = _dogadjajiResult?.map((event) {
-          print(
-              "dogadjaj ${event.naziv} lat ${event.latitude} long ${event.longitude}");
-          return Marker(
-            key: Key(event.dogadjajId.toString()),
-            point: LatLng(event.latitude ?? 0, event.longitude ?? 0),
+    List<Marker> eventMarkers = [];
+
+    if (_searchController.text != null && _searchController.text != '') {
+      Dogadjaj? first = _dogadjajiResult?.first;
+      if (first != null) {
+        setState(() {
+          initialCenter = LatLng(first.latitude ?? 0, first.longitude ?? 0);
+        });
+
+        eventMarkers.add(
+          Marker(
+            key: Key(first.dogadjajId.toString()),
+            point: LatLng(first.latitude ?? 0, first.longitude ?? 0),
             width: 60,
             height: 60,
             alignment: Alignment.center,
             child: GestureDetector(
               onTap: () {
-                _showEventDetails(event);
+                _showEventDetails(first);
               },
               child: Icon(
                 Icons.location_on,
                 size: 40,
-                color: Colors.blueAccent,
+                color: CategoryColorManager()
+                    .getColorForCategory(first.kategorija?.kategorijaId ?? 0),
               ),
             ),
-          );
-        }).toList() ??
-        [];
+          ),
+        );
+      }
+    } else {
+      eventMarkers = _dogadjajiResult?.map((event) {
+            print(
+                "dogadjaj ${event.naziv} lat ${event.latitude} long ${event.longitude} kategorija ${event.kategorijaId}");
+            return Marker(
+              key: Key(event.dogadjajId.toString()),
+              point: LatLng(event.latitude ?? 0, event.longitude ?? 0),
+              width: 60,
+              height: 60,
+              alignment: Alignment.center,
+              child: GestureDetector(
+                onTap: () {
+                  _showEventDetails(event);
+                },
+                child: Icon(
+                  Icons.location_on,
+                  size: 40,
+                  color: CategoryColorManager()
+                      .getColorForCategory(event.kategorija?.kategorijaId ?? 0),
+                ),
+              ),
+            );
+          }).toList() ??
+          [];
 
-    print("jesu li dosli dogadjaji ${eventMarkers.first.key}");
-
-    eventMarkers.add(
-      Marker(
-        key: Key('you'),
-        point: initialCenter,
-        width: 60,
-        height: 60,
-        alignment: Alignment.center,
-        child: Icon(
-          Icons.pin_drop,
-          size: 40,
-          color: Color.fromRGBO(232, 66, 54, 1),
+      eventMarkers.add(
+        Marker(
+          key: Key('you'),
+          point: initialCenter,
+          width: 60,
+          height: 60,
+          alignment: Alignment.center,
+          child: Icon(
+            Icons.pin_drop,
+            size: 40,
+            color: const Color.fromARGB(255, 255, 93, 68),
+          ),
         ),
-      ),
-    );
+      );
+    }
+    //print("jesu li dosli dogadjaji ${eventMarkers.first.key}");
 
     return Expanded(
         child: Stack(children: [
@@ -394,8 +510,70 @@ class _MapScreenState extends State<MapScreen> {
     ]));
   }
 
-  _buildKategorija() {
+//jedan u drugom
+  /* _buildKategorija() {
     return Column(children: [
+      SizedBox(height: 5),
+      InputField(
+          field: FormField<int>(
+            builder: (FormFieldState<int> state) {
+              return Container(
+                  height: 35,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                  ),
+                  child: InputDecorator(
+                      decoration: InputDecoration(
+                          constraints: BoxConstraints(maxHeight: 35),
+                          contentPadding:
+                              EdgeInsets.symmetric(vertical: 6, horizontal: 0),
+                          hintStyle: const TextStyle(
+                              color: Color.fromRGBO(68, 68, 68, 1),
+                              fontSize: 14,
+                              letterSpacing: 0.3,
+                              fontFamily: 'Montserrat'),
+                          hintText: 'Kategorija',
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                          )),
+                      isEmpty: _kategorijaSelected == null,
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<int>(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                          value: _kategorijaSelected,
+                          isDense: true,
+                          onChanged: (int? newValue) {
+                            setState(() {
+                              _kategorijaSelected =
+                                  newValue ?? _kategorijaSelected;
+                              state.didChange(newValue);
+                            });
+                          },
+                          items: _kategorijeList.map((Kategorija value) {
+                            return DropdownMenuItem<int>(
+                              value: value.kategorijaId,
+                              child: Text(
+                                value.naziv ?? '',
+                                style: const TextStyle(
+                                    color: Color.fromRGBO(68, 68, 68, 1),
+                                    fontSize: 14,
+                                    letterSpacing: 0.3,
+                                    fontFamily: 'Montserrat'),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      )));
+            },
+          ),
+          clearable: this),
+    ]);
+  }*/
+
+//original
+  /* _buildKategorija() {
+   return Column(children: [
       SizedBox(height: 5),
       Padding(
           padding: EdgeInsets.symmetric(horizontal: 5),
@@ -471,9 +649,9 @@ class _MapScreenState extends State<MapScreen> {
         },
       )
     ]);
-  }
+  }*/
 
-  _buildDatePicker() {
+  /* _buildDatePicker() {
     return Padding(
         padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
         child: Column(children: [
@@ -503,5 +681,5 @@ class _MapScreenState extends State<MapScreen> {
                             controller: _datumDoDateController)))),
           ])
         ]));
-  }
+  }*/
 }

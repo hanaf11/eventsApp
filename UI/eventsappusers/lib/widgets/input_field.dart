@@ -2,21 +2,19 @@ import 'package:flutter/material.dart';
 import '../utils/util.dart';
 
 class InputField extends StatelessWidget {
-  String name;
+  String? name;
   Widget field;
   Clearable? clearable;
-  InputField(
-      {super.key, required this.name, required this.field, this.clearable});
+  InputField({super.key, this.name, required this.field, this.clearable});
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-        child: Container(
-            //padding: EdgeInsets.symmetric(horizontal: 10),
-            // color: Colors.red,
-            child: Row(children: [
+    return Container(
+        //padding: EdgeInsets.symmetric(horizontal: 10),
+        // color: Colors.red,
+        child: Row(children: [
       Text(
-        name,
+        name ?? '',
         style: TextStyle(
             color: Color.fromRGBO(34, 33, 33, 1), fontWeight: FontWeight.bold),
       ),
@@ -51,7 +49,7 @@ class InputField extends StatelessWidget {
               ],
             )),
       )
-    ])));
+    ]));
   }
 }
 
