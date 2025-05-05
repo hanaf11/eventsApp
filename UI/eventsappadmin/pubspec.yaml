@@ -43,7 +43,9 @@ dependencies:
   flutter_form_builder: ^9.1.0
   form_builder_validators: ^10.0.1
   graphic: ^2.5.1
- 
+  latlong2: ^0.9.1
+  flutter_nominatim: ^0.0.1+2
+
 
 dev_dependencies:
   json_serializable: ^6.7.0

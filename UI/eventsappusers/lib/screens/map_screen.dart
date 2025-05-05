@@ -416,33 +416,34 @@ class _MapScreenState extends State<MapScreen> {
     List<Marker> eventMarkers = [];
 
     if (_searchController.text != null && _searchController.text != '') {
+      if (_dogadjajiResult == null || _dogadjajiResult!.isEmpty) {
+        return Text("Događaj nije pronađen");
+      }
       Dogadjaj? first = _dogadjajiResult?.first;
-      if (first != null) {
-        setState(() {
-          initialCenter = LatLng(first.latitude ?? 0, first.longitude ?? 0);
-        });
+      setState(() {
+        initialCenter = LatLng(first?.latitude ?? 0, first?.longitude ?? 0);
+      });
 
-        eventMarkers.add(
-          Marker(
-            key: Key(first.dogadjajId.toString()),
-            point: LatLng(first.latitude ?? 0, first.longitude ?? 0),
-            width: 60,
-            height: 60,
-            alignment: Alignment.center,
-            child: GestureDetector(
-              onTap: () {
-                _showEventDetails(first);
-              },
-              child: Icon(
-                Icons.location_on,
-                size: 40,
-                color: CategoryColorManager()
-                    .getColorForCategory(first.kategorija?.kategorijaId ?? 0),
-              ),
+      eventMarkers.add(
+        Marker(
+          key: Key(first!.dogadjajId.toString()),
+          point: LatLng(first.latitude ?? 0, first.longitude ?? 0),
+          width: 60,
+          height: 60,
+          alignment: Alignment.center,
+          child: GestureDetector(
+            onTap: () {
+              _showEventDetails(first);
+            },
+            child: Icon(
+              Icons.location_on,
+              size: 40,
+              color: CategoryColorManager()
+                  .getColorForCategory(first.kategorija?.kategorijaId ?? 0),
             ),
           ),
-        );
-      }
+        ),
+      );
     } else {
       eventMarkers = _dogadjajiResult?.map((event) {
             print(

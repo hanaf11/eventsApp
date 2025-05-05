@@ -5,9 +5,12 @@ import 'package:eventsappusers/providers/dogadjaj_provider.dart';
 import 'package:eventsappusers/providers/kategorije_provider.dart';
 import 'package:eventsappusers/providers/korisnik_provider.dart';
 import 'package:eventsappusers/utils/category_color_util.dart';
+import 'package:eventsappusers/utils/util.dart';
 import 'package:eventsappusers/widgets/input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/dogadjaj_horizontal.dart';
@@ -39,17 +42,53 @@ class _HomeScreenState extends State<HomeScreen> {
   bool kategorijeLoaded = false;
   bool newLoaded = false;
   bool searchLoaded = false;
+  bool centerLoaded = false;
+  late LatLng? initialCenter;
+  String defaultLokacija = KorisnikGlobal.lokacija ?? 'Sarajevo';
 
   _HomeScreenState();
 
   @override
   void initState() {
     super.initState();
+    getLatLong(defaultLokacija);
     _korisnikProvider = context.read<KorisnikProvider>();
     _dogadjajProvider = context.read<DogadjajProvider>();
     _kategorijeProvider = context.read<KategorijeProvider>();
     loadKategorije();
     loadData();
+  }
+
+  initializeCenter(String lokacija) async {
+    print("lokacija $lokacija");
+    /*ry {
+      var locations = await locationFromAddress(lokacija);
+      if (locations.isNotEmpty) {
+        double lat = locations[0].latitude;
+        double long = locations[0].latitude;
+        print(lat);
+        print(long);
+        var latLong = LatLng(lat, long);
+        setState(() {
+          initialCenter = latLong;
+          centerLoaded = true;
+        });
+      } else {
+        setState(() {
+          initialCenter = LatLng(0, 0);
+          centerLoaded = true;
+        });
+      }
+    } on Exception catch (e) {
+      print("Nije moguće pronaći traženu lokaciju, unesite validnu adresu");
+      return const LatLng(0, 0);
+    }*/
+    LatLng latLong = await getLatLong(lokacija);
+    setState(() {
+      initialCenter = latLong;
+      centerLoaded = true;
+    });
+    if (centerLoaded) loadNearYou();
   }
 
   handleLoading() {
@@ -81,7 +120,6 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _pratiteList = value;
         pratiteLoaded = true;
-        nearYouLoaded = true;
         recommendedLoaded = true;
       });
       handleLoading();
@@ -96,6 +134,23 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _newList = value.result;
         newLoaded = true;
+      });
+      handleLoading();
+    });
+  }
+
+  loadNearYou() async {
+    var filterReq = {
+      'Status': 'ACTIVE',
+      'KategorijaIncluded': true,
+      'Latitude': initialCenter?.latitude,
+      'Longitude': initialCenter?.longitude,
+      'OrderBy': '-created',
+    };
+    await _dogadjajProvider.get(filter: filterReq).then((value) {
+      setState(() {
+        _nearYouList = value.result;
+        nearYouLoaded = true;
       });
       handleLoading();
     });

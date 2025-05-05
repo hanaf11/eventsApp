@@ -26,7 +26,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:intl/intl.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:multiselect_formfield/multiselect_formfield.dart';
 import 'package:provider/provider.dart';
 
@@ -331,6 +333,40 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
     }
   }
 
+  getLatLong(String lokacija) async {
+    print("lokacija $lokacija");
+    try {
+      var locations = await locationFromAddress(lokacija);
+      if (locations.isNotEmpty) {
+        print("locations ${locations[0]}");
+        var output = locations[0].toString();
+        String latitudeKey = 'Latitude: ';
+        String longitudeKey = 'Longitude: ';
+
+        int latitudeStartIndex =
+            output.indexOf(latitudeKey) + latitudeKey.length;
+        int longitudeStartIndex =
+            output.indexOf(longitudeKey) + longitudeKey.length;
+
+        int latitudeEndIndex = output.indexOf(',', latitudeStartIndex);
+        int longitudeEndIndex = output.indexOf(',', longitudeStartIndex);
+
+        String lat =
+            output.substring(latitudeStartIndex, latitudeEndIndex).trim();
+        String long =
+            output.substring(longitudeStartIndex, longitudeEndIndex).trim();
+        print(lat);
+        print(long);
+        return LatLng(double.parse(lat), double.parse(long));
+      } else {
+        return const LatLng(0, 0);
+      }
+    } on Exception catch (e) {
+      print("Nije moguće pronaći traženu lokaciju, unesite validnu adresu");
+      return const LatLng(0, 0);
+    }
+  }
+
   sendRequest(bool prodajaKarata) async {
     var request = {};
     var request1 = Map.from(_eventFormKey.currentState!.value);
@@ -352,6 +388,11 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
     request['ProgramSlika'] = _program?.base64Image;
     request['Organizator'] = KorisnikGlobal.username;
     request['Galerija'] = formGalleryRequest();
+    var latLong = await getLatLong(request['Lokacija']);
+    print("latlong koji smo dobili $latLong");
+
+    request['Latitude'] = latLong.latitude;
+    request['Longitude'] = latLong.longitude;
 
     if (prodajaKarata) {
       request['LokacijaSlika'] = _lokacijaSlika?.base64Image;

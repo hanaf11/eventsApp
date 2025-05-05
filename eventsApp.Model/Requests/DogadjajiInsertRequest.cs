@@ -46,5 +46,9 @@ namespace eventsApp.Model.Requests
       //  public bool? ProdajaKarata  { get; set; }
 
         public List<TipKarteInsertRequest>? TipoviKarata { get; set; }
+
+        public double? Latitude { get; set; }
+
+        public double? Longitude { get; set; }
     }
 }

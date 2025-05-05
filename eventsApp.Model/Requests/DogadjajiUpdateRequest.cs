@@ -35,6 +35,9 @@ namespace eventsApp.Model.Requests
 
         //public List<byte[]>? Galerija { get; set; }
 
+        public double? Latitude { get; set; }
+
+        public double? Longitude { get; set; }
         public byte[]? ProgramSlika { get; set; }
     }
 }

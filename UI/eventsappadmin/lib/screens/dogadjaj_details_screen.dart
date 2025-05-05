@@ -19,7 +19,9 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+
 import 'package:provider/provider.dart';
+import 'package:flutter_nominatim/flutter_nominatim.dart';
 
 import '../models/dogadjaj.dart';
 import '../models/kategorija.dart';
@@ -72,6 +74,8 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
       GlobalKey<ButtonWidgetState>();
   final GlobalKey<ButtonWidgetState> acceptButtonKey =
       GlobalKey<ButtonWidgetState>();
+  late Nominatim nominatim;
+
   @override
   void initState() {
     super.initState();
@@ -88,6 +92,7 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
       'website': widget.dogadjaj?.website,
       'organizator': widget.dogadjaj?.organizator
     };*/
+    nominatim = Nominatim.instance;
     _kategorijaProvider = context.read<KategorijaProvider>();
     _dogadjajProvider = context.read<DogadjajProvider>();
     _podkategorijaProvider = context.read<PodkategorijaProvider>();
@@ -400,6 +405,19 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
     ]);
   }
 
+  getLatLong(String address) async {
+    var result = await nominatim.search(address);
+    if (result != null && result.isNotEmpty) {
+      var lat = result[0].latitude;
+      var lon = result[0].longitude;
+      print('Latitude: $lat, Longitude: $lon');
+      return LatLng(lat, lon);
+    } else {
+      print('Address not found');
+      return const LatLng(0, 0);
+    }
+  }
+
   _buildButtonAccept() {
     return ButtonWidget(
       key: acceptButtonKey,
@@ -433,11 +451,16 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
           if (isFormValid) {
             var request = Map.from(_formKey.currentState!.value);
 
+            var latLong = await getLatLong(request['Lokacija']);
+            request['Latitude'] = latLong.latitude;
+            request['Longitude'] = latLong.longitude;
+
             request['DatumOd'] = request['DatumOd']?.toIso8601String();
             request['DatumDo'] = request['DatumDo']?.toIso8601String();
             request['Galerija'] = galleryItems;
             request['ProgramSlika'] = _programSlika?.base64Image;
             request['LokacijaSlika'] = _lokacijaSlika?.base64Image;
+
             print("request je $request");
 
             try {

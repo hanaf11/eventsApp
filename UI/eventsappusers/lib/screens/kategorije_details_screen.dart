@@ -95,7 +95,8 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
     });
     _dogadjajProvider.get(filter: {
       'Kategorija': widget.kategorijaId,
-      'KategorijaIncluded': true
+      'KategorijaIncluded': true,
+      'Status': 'ACTIVE'
     }).then((value) {
       setState(() {
         _dogadjajiResult = value;
@@ -122,7 +123,8 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
       'KategorijaIncluded': true,
       'Podkategorija': _selectedPodkategorija?.podkategorijaId,
       'DatumOd': _datumOd,
-      'DatumDo': _datumDo
+      'DatumDo': _datumDo,
+      'Status': 'ACTIVE'
     };
     var data = await _dogadjajProvider.get(filter: myFilter);
     setState(() {
