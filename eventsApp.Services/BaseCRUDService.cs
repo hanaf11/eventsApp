@@ -92,12 +92,31 @@ namespace eventsApp.Services
 
                 await BeforeDelete(entity);
 
-                set.Remove(entity);
+            // set.Remove(entity);
 
-                await _context.SaveChangesAsync();
+            if (RequiresSoftDelete(entity))
+            {
+                ApplySoftDelete(entity);
+            }
+            else
+            {
+                set.Remove(entity);
+            }
+
+            await _context.SaveChangesAsync();
 
                 return _mapper.Map<TDetails>(entity);
 
+        }
+
+        public virtual bool RequiresSoftDelete(TDb entity)
+        {
+            return false;
+        }
+
+        public virtual void ApplySoftDelete(TDb entity)
+        {
+            throw new NotImplementedException("Soft delete logic is not implemented for this entity.");
         }
     }
 }

@@ -33,7 +33,7 @@ namespace eventsApp.Services
             query = AddFilter(query, search);
              query=AddInclude(query, search);
 
-            result.Count = await query.CountAsync();
+            //result.Count = await query.CountAsync();
 
             query = AddOrderBy(query, search);
 
@@ -45,6 +45,7 @@ namespace eventsApp.Services
 
             list = FilterResultsAfterDatabaseCall(list, search);
 
+            result.Count = list.Count;
             result.Result = _mapper.Map<List<T>>(list);
 
             return result;

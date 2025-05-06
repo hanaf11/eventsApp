@@ -212,12 +212,22 @@ namespace eventsApp.Services
             bool eventHasComments =await  _context.Komentaris.Where(c => c.DogadjajId == dogadjajId).AnyAsync();
             if (eventHasComments) { await _komentariService.DeleteByDogadjaj(dogadjaj.DogadjajId); }
 
-            bool eventInTicketTypes = await _context.TipKartes.Where(s => s.DogadjajId == dogadjajId).AnyAsync();
-            if (eventInTicketTypes) { await _tipKarteService.DeleteByDogadjaj(dogadjaj.DogadjajId); }
+           /* bool eventInTicketTypes = await _context.TipKartes.Where(s => s.DogadjajId == dogadjajId).AnyAsync();
+            if (eventInTicketTypes) { await _tipKarteService.DeleteByDogadjaj(dogadjaj.DogadjajId); }*/
 
             bool eventInHistory = await _context.HistorijaPregleda.Where(h => h.DogadjajId == dogadjajId).AnyAsync();
             if (eventInHistory) { await _historijaPregledaService.DeleteByDogadjaj(dogadjaj.DogadjajId); }
 
+        }
+
+        public override bool RequiresSoftDelete(Database.Dogadjaji entity)
+        {
+            return true;
+        }
+
+        public override void ApplySoftDelete(Database.Dogadjaji entity)
+        {
+            entity.Status = "HIDDEN";
         }
 
         public async Task<Model.Dogadjaji> SendRequestForTickets(int id, List<KarteRequest> request)

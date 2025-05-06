@@ -139,15 +139,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 children: [
                                   Icon(
                                     Icons.location_on_outlined,
-                                    color: Color(0xFF28D4F3),
-                                    size: 13,
+                                    color: Color.fromRGBO(54, 112, 232, 1),
+                                    size: 15,
                                   ),
                                   Text(
                                     _lokacija,
                                     style: TextStyle(
-                                      color: Color(0xFF28D4F3),
-                                      fontFamily: 'Magra',
-                                    ),
+                                        color: Color.fromRGBO(54, 112, 232, 1),
+                                        fontFamily: 'Magra',
+                                        fontSize: 15),
                                   )
                                 ]),
                             SizedBox(

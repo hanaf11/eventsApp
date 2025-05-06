@@ -82,7 +82,7 @@ namespace eventsApp.Services
             return filteredQuery;
         }
 
-        public async Task<bool> DeleteByDogadjaj(int dogadjajId)
+      /*  public async Task<bool> DeleteByDogadjaj(int dogadjajId)
         {
             var tipKarteToDelete = await _context.TipKartes.Where(k => k.DogadjajId == dogadjajId).ToListAsync();
 
@@ -97,7 +97,7 @@ namespace eventsApp.Services
             await _context.SaveChangesAsync();
 
             return true;
-        }
+        }*/
 
         public async Task<Database.TipKarte> TicketsAvailable(int tipKarteId, int kolicina)
         {

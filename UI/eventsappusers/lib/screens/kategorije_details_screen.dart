@@ -108,7 +108,8 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
     _dogadjajProvider.get(filter: {
       'Kategorija': widget.kategorijaId,
       'KategorijaIncluded': true,
-      'Status': 'ACTIVE'
+      'Status': 'ACTIVE',
+      'OrderBy': '-created'
     }).then((value) {
       setState(() {
         _dogadjajiResult = value;
@@ -130,6 +131,9 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
   }
 
   filtriraj() async {
+    setState(() {
+      isLoading = true;
+    });
     var myFilter = {
       'Kategorija': widget.kategorijaId,
       'KategorijaIncluded': true,
@@ -143,10 +147,15 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
         'Latitude': initialCenter?.latitude,
         'Longitude': initialCenter?.longitude,
       });
+    } else {
+      myFilter.addAll({
+        'OrderBy': '-created',
+      });
     }
     var data = await _dogadjajProvider.get(filter: myFilter);
     setState(() {
       _dogadjajiResult = data;
+      isLoading = false;
     });
   }
 
