@@ -33,7 +33,7 @@ Future<LatLng> getLatLong(String lokacija) async {
     var locations = await locationFromAddress(lokacija);
     if (locations.isNotEmpty) {
       double lat = locations[0].latitude;
-      double long = locations[0].latitude;
+      double long = locations[0].longitude;
       print(lat);
       print(long);
       return LatLng(lat, long);
@@ -41,6 +41,7 @@ Future<LatLng> getLatLong(String lokacija) async {
       return LatLng(0, 0);
     }
   } on Exception catch (e) {
+    print("Exception: $e");
     print("Nije moguće pronaći traženu lokaciju, unesite validnu adresu");
     return const LatLng(0, 0);
   }

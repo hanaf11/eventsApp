@@ -99,23 +99,11 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-  extractLatitudeLongitude(String output) {
-    print("lokacija $output");
-    String latitudeKey = 'Latitude: ';
-    String longitudeKey = 'Longitude: ';
+  extractLatitudeLongitude(Location location) {
+    double lat = location.latitude;
+    double long = location.longitude;
 
-    int latitudeStartIndex = output.indexOf(latitudeKey) + latitudeKey.length;
-    int longitudeStartIndex =
-        output.indexOf(longitudeKey) + longitudeKey.length;
-
-    int latitudeEndIndex = output.indexOf(',', latitudeStartIndex);
-    int longitudeEndIndex = output.indexOf(',', longitudeStartIndex);
-
-    String lat = output.substring(latitudeStartIndex, latitudeEndIndex).trim();
-    String long =
-        output.substring(longitudeStartIndex, longitudeEndIndex).trim();
-
-    return LatLng(double.parse(lat), double.parse(long));
+    return LatLng(lat, long);
   }
 
   /*Future<void> _selectDate(BuildContext context, String caller) async {
@@ -241,14 +229,10 @@ class _MapScreenState extends State<MapScreen> {
 
   getLatLong(String lokacija) async {
     try {
-      await locationFromAddress(lokacija).then((locations) {
-        print("dobili smo neku lokaciju");
-        var output = 'No results found.';
-        if (locations.isNotEmpty) {
-          output = locations[0].toString();
-          _refreshMap(output);
-        }
-      });
+      var locations = await locationFromAddress(lokacija);
+      if (locations.isNotEmpty) {
+        _refreshMap(locations[0]);
+      }
     } on Exception catch (e) {
       /* if (lokacija == defaultLokacija)
         handleException(
@@ -321,8 +305,8 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  _refreshMap(String output) {
-    LatLng newCenter = extractLatitudeLongitude(output);
+  _refreshMap(Location location) {
+    LatLng newCenter = extractLatitudeLongitude(location);
     setState(() {
       mapKey = UniqueKey();
       initialCenter = newCenter;

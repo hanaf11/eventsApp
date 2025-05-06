@@ -51,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    getLatLong(defaultLokacija);
+    initializeCenter(defaultLokacija);
     _korisnikProvider = context.read<KorisnikProvider>();
     _dogadjajProvider = context.read<DogadjajProvider>();
     _kategorijeProvider = context.read<KategorijeProvider>();
@@ -148,6 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'OrderBy': '-created',
     };
     await _dogadjajProvider.get(filter: filterReq).then((value) {
+      print("dogadjaji: $value");
       setState(() {
         _nearYouList = value.result;
         nearYouLoaded = true;

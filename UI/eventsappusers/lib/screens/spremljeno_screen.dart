@@ -47,7 +47,8 @@ class _SpremljenoScreenState extends State<SpremljenoScreen> {
         showBackButton: true,
         child: Expanded(
             child: isLoading
-                ? const CircularProgressIndicator()
+                ? Container(
+                    child: Center(child: const CircularProgressIndicator()))
                 : Column(
                     children: [
                       HeadingWidget(text: "Spremljeno"),

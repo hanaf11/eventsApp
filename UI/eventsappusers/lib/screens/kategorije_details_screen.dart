@@ -7,10 +7,12 @@ import 'package:eventsappusers/providers/dogadjaj_provider.dart';
 import 'package:eventsappusers/providers/kategorije_provider.dart';
 import 'package:eventsappusers/providers/pracenje_provider.dart';
 import 'package:eventsappusers/utils/style_util.dart';
+import 'package:eventsappusers/utils/util.dart';
 import 'package:eventsappusers/widgets/dogadjaj_horizontal.dart';
 import 'package:eventsappusers/widgets/podkategorije_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/heading_widget.dart';
@@ -46,11 +48,14 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
   late SearchResult? _dogadjajiResult;
   late List<Podkategorija> _podkategorijeList;
   bool pratim = false;
+  late LatLng? initialCenter;
+  String defaultLokacija = KorisnikGlobal.lokacija ?? 'Sarajevo';
   _KategorijeDetailsScreenState();
 
   @override
   void initState() {
     super.initState();
+    initializeCenter(defaultLokacija);
     _kategorijaProvider = context.read<KategorijeProvider>();
     _dogadjajProvider = context.read<DogadjajProvider>();
     _pracenjeProvider = context.read<PracenjeProvider>();
@@ -65,6 +70,13 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
         isLoading = false;
       });
     }
+  }
+
+  initializeCenter(String lokacija) async {
+    LatLng latLong = await getLatLong(lokacija);
+    setState(() {
+      initialCenter = latLong;
+    });
   }
 
   handleException(Exception e) {
@@ -124,8 +136,14 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
       'Podkategorija': _selectedPodkategorija?.podkategorijaId,
       'DatumOd': _datumOd,
       'DatumDo': _datumDo,
-      'Status': 'ACTIVE'
+      'Status': 'ACTIVE',
     };
+    if (locationFilter) {
+      myFilter.addAll({
+        'Latitude': initialCenter?.latitude,
+        'Longitude': initialCenter?.longitude,
+      });
+    }
     var data = await _dogadjajProvider.get(filter: myFilter);
     setState(() {
       _dogadjajiResult = data;

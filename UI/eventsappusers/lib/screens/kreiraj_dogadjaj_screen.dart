@@ -333,40 +333,6 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
     }
   }
 
-  getLatLong(String lokacija) async {
-    print("lokacija $lokacija");
-    try {
-      var locations = await locationFromAddress(lokacija);
-      if (locations.isNotEmpty) {
-        print("locations ${locations[0]}");
-        var output = locations[0].toString();
-        String latitudeKey = 'Latitude: ';
-        String longitudeKey = 'Longitude: ';
-
-        int latitudeStartIndex =
-            output.indexOf(latitudeKey) + latitudeKey.length;
-        int longitudeStartIndex =
-            output.indexOf(longitudeKey) + longitudeKey.length;
-
-        int latitudeEndIndex = output.indexOf(',', latitudeStartIndex);
-        int longitudeEndIndex = output.indexOf(',', longitudeStartIndex);
-
-        String lat =
-            output.substring(latitudeStartIndex, latitudeEndIndex).trim();
-        String long =
-            output.substring(longitudeStartIndex, longitudeEndIndex).trim();
-        print(lat);
-        print(long);
-        return LatLng(double.parse(lat), double.parse(long));
-      } else {
-        return const LatLng(0, 0);
-      }
-    } on Exception catch (e) {
-      print("Nije moguće pronaći traženu lokaciju, unesite validnu adresu");
-      return const LatLng(0, 0);
-    }
-  }
-
   sendRequest(bool prodajaKarata) async {
     var request = {};
     var request1 = Map.from(_eventFormKey.currentState!.value);

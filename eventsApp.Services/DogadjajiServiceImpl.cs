@@ -110,18 +110,22 @@ namespace eventsApp.Services
             }
               else  if (search?.Latitude !=null && search?.Longitude!=null)
             {
-                var filteredDogadjaji = new List<Database.Dogadjaji>();
+                //var filteredDogadjaji = new List<Database.Dogadjaji>();
                 var latitudeParameter = search.Latitude.Value;
                 var longitudeParameter = search.Longitude.Value;
 
-                foreach (var d in dogadjaji)
+                /*foreach (var d in dogadjaji)
                 {
                     if (CalculateDistance(latitudeParameter, longitudeParameter, d.Latitude, d.Longitude) <= 20)
                     {
                         filteredDogadjaji.Add(d);
                     }
-                }
-               return filteredDogadjaji;
+                }*/
+
+                return dogadjaji.Select(d => new { Event = d, Distance = CalculateDistance(latitudeParameter, longitudeParameter, d.Latitude, d.Longitude) })
+                    .Where(x => x.Distance <= 20).OrderBy(x => x.Distance)
+                    .Select(x => x.Event).ToList();
+               // return filteredDogadjaji;
             }
             return dogadjaji;
         }
