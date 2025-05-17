@@ -215,8 +215,8 @@ namespace eventsApp.Services
            /* bool eventInTicketTypes = await _context.TipKartes.Where(s => s.DogadjajId == dogadjajId).AnyAsync();
             if (eventInTicketTypes) { await _tipKarteService.DeleteByDogadjaj(dogadjaj.DogadjajId); }*/
 
-            bool eventInHistory = await _context.HistorijaPregleda.Where(h => h.DogadjajId == dogadjajId).AnyAsync();
-            if (eventInHistory) { await _historijaPregledaService.DeleteByDogadjaj(dogadjaj.DogadjajId); }
+          /*  bool eventInHistory = await _context.HistorijaPregleda.Where(h => h.DogadjajId == dogadjajId).AnyAsync();
+            if (eventInHistory) { await _historijaPregledaService.DeleteByDogadjaj(dogadjaj.DogadjajId); }*/
 
         }
 
