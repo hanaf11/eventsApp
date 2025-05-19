@@ -3,7 +3,7 @@ import 'dart:ffi';
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:editable/editable.dart';
+//import 'package:editable/editable.dart';
 import 'package:eventsappusers/models/dobavljac.dart';
 import 'package:eventsappusers/models/kategorija.dart';
 import 'package:eventsappusers/models/korisnik_global.dart';

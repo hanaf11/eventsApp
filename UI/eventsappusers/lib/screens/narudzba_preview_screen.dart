@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import '../widgets/master_screen.dart';
 import '../widgets/narudzba_master_screen.dart';
 import 'package:country_picker/country_picker.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 
 class NarudzbaPreviewScreen extends StatefulWidget {
   Narudzba narudzba;
@@ -26,6 +27,7 @@ class _NarudzbaPreviewScreenState extends State<NarudzbaPreviewScreen> {
   double _contentHeight = 0;
   late NarudzbaProvider _narudzbaProvider;
   late double _ukupno = 0;
+  bool isLoading = false;
 
   _NarudzbaPreviewScreenState();
 
@@ -52,16 +54,62 @@ class _NarudzbaPreviewScreenState extends State<NarudzbaPreviewScreen> {
     n.imePrezimeKartica = null;
     n.cijena = _ukupno;
 
+    Map<String, dynamic> paymentIntentReq = {
+      "amount": (_ukupno * 100).toInt(),
+      "currency": "bam"
+    };
+
+    setState(() {
+      isLoading = true;
+    });
     try {
-      await _narudzbaProvider.createNarudzba(n).then((value) {
-        handleNarudzbaSuccess();
-      });
+      String? clientSecret =
+          await _narudzbaProvider.createPaymentIntent(paymentIntentReq);
+      if (clientSecret == null) return;
+
+      await Stripe.instance.initPaymentSheet(
+          paymentSheetParameters: SetupPaymentSheetParameters(
+              paymentIntentClientSecret: clientSecret,
+              merchantDisplayName: "eventsApp"));
+      var paymentSuccess = await processPayment();
+
+      if (paymentSuccess) {
+        await _narudzbaProvider.createNarudzba(n).then((value) {
+          handleNarudzbaSuccess();
+        });
+      }
     } on Exception catch (ex) {
-      handleException(ex);
+      setState(() {
+        isLoading = false;
+      });
+      if (ex is StripeException) {
+        handleException(ex.error.localizedMessage ?? ex.toString());
+      } else
+        handleException(ex.toString());
+    }
+  }
+
+  Future<bool> processPayment() async {
+    try {
+      await Stripe.instance.presentPaymentSheet();
+      await Stripe.instance.confirmPaymentSheetPayment();
+      return true;
+    } on Exception catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      if (e is StripeException) {
+        handleException(e.error.localizedMessage ?? e.toString());
+      } else
+        handleException(e.toString());
+      return false;
     }
   }
 
   handleNarudzbaSuccess() {
+    setState(() {
+      isLoading = false;
+    });
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -79,7 +127,7 @@ class _NarudzbaPreviewScreenState extends State<NarudzbaPreviewScreen> {
     );
   }
 
-  handleException(Exception e) {
+  handleException(String e) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -102,64 +150,66 @@ class _NarudzbaPreviewScreenState extends State<NarudzbaPreviewScreen> {
         showBackButton: true,
         showAppBar: true,
         child: Expanded(
-            child: NarudzbaMasterScreen(
-                naslov: "Narudžba",
-                childHeight: _contentHeight,
-                tabActive: 3,
-                onClickNext: clickNextStep,
-                child: LayoutBuilder(builder:
-                    (BuildContext context, BoxConstraints constraints) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (mounted) {
-                      setState(() {
-                        _contentHeight = context.size!.height;
+            child: isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : NarudzbaMasterScreen(
+                    naslov: "Narudžba",
+                    childHeight: _contentHeight,
+                    tabActive: 3,
+                    onClickNext: clickNextStep,
+                    child: LayoutBuilder(builder:
+                        (BuildContext context, BoxConstraints constraints) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (mounted) {
+                          setState(() {
+                            _contentHeight = context.size!.height;
+                          });
+                        }
                       });
-                    }
-                  });
-                  return Padding(
-                      padding: EdgeInsets.all(15),
-                      child: Container(
-                        padding: EdgeInsets.all(10),
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Color.fromARGB(255, 191, 190, 190),
-                                spreadRadius: 1,
-                                blurRadius: 5,
-                                offset: Offset(4, 5),
-                              ),
-                            ]),
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              DogadjajSmallOverview(
-                                naziv: widget.dogadjaj.naziv ?? '',
-                                datumOd:
-                                    widget.dogadjaj.datumOd ?? DateTime.now(),
-                                tickets: widget.narudzba.listaKarata,
-                                ukupno: _ukupno,
-                                naslovna: widget.dogadjaj.naslovna,
-                              ),
-                              SizedBox(
-                                height: 30,
-                              ),
-                              _buildLicniPodaci(),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              _buildPlacanjePodaci(),
-                              SizedBox(
-                                height: 50,
-                              ),
-                              Center(
-                                  child: _buildHeading(
-                                      "Ukupno za platiti: ${formatNumber(_ukupno)}"))
-                            ]),
-                      ));
-                }))));
+                      return Padding(
+                          padding: EdgeInsets.all(15),
+                          child: Container(
+                            padding: EdgeInsets.all(10),
+                            width: MediaQuery.of(context).size.width,
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Color.fromARGB(255, 191, 190, 190),
+                                    spreadRadius: 1,
+                                    blurRadius: 5,
+                                    offset: Offset(4, 5),
+                                  ),
+                                ]),
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  DogadjajSmallOverview(
+                                    naziv: widget.dogadjaj.naziv ?? '',
+                                    datumOd: widget.dogadjaj.datumOd ??
+                                        DateTime.now(),
+                                    tickets: widget.narudzba.listaKarata,
+                                    ukupno: _ukupno,
+                                    naslovna: widget.dogadjaj.naslovna,
+                                  ),
+                                  SizedBox(
+                                    height: 30,
+                                  ),
+                                  _buildLicniPodaci(),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  _buildPlacanjePodaci(),
+                                  SizedBox(
+                                    height: 50,
+                                  ),
+                                  Center(
+                                      child: _buildHeading(
+                                          "Ukupno za platiti: ${formatNumber(_ukupno)}"))
+                                ]),
+                          ));
+                    }))));
   }
 
   _buildLicniPodaci() {

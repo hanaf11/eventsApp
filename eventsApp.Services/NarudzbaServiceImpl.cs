@@ -4,7 +4,9 @@ using eventsApp.Model.Requests;
 using eventsApp.Model.SearchObjects;
 using eventsApp.Services.Database;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Stripe;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,13 +22,16 @@ namespace eventsApp.Services
         protected readonly INarudzbaStavkeService _narudzbaStavkeService;
         protected readonly IKarteService _karteService;
         protected readonly INotificationService _notificationService;
-        public NarudzbaServiceImpl(EventsDbContext context, IMapper mapper, ILogger<NarudzbaServiceImpl> logger, ITipKarteService tipKarteService, INarudzbaStavkeService narudzbaStavkeService, IKarteService karteService, INotificationService notificationService):base(context,mapper)
+        private readonly string stripeSecretKey;
+        public NarudzbaServiceImpl(EventsDbContext context, IMapper mapper, ILogger<NarudzbaServiceImpl> logger, ITipKarteService tipKarteService, INarudzbaStavkeService narudzbaStavkeService, IKarteService karteService, INotificationService notificationService, IConfiguration configuration) :base(context,mapper)
         {
             _logger = logger;
             _tipKarteService = tipKarteService;
             _narudzbaStavkeService = narudzbaStavkeService;
             _karteService = karteService;
             _notificationService = notificationService;
+          //  stripeSecretKey = configuration["StripeSettings:ApiKey"] ?? Environment.GetEnvironmentVariable("STRIPE_API_KEY");
+            stripeSecretKey = configuration["Stripe:SecretKey"] ?? Environment.GetEnvironmentVariable("STRIPE_API_KEY");
         }
 
         public async Task<List<Model.ValidTipKarte>> ValidateRequest(Dictionary<int, int> request)
@@ -38,6 +43,45 @@ namespace eventsApp.Services
                 response.Add(new ValidTipKarte { TipKarteId=tipKarte.TipKarteId, Naziv=tipKarte.Naziv, Kolicina=item.Value, Cijena=item.Value*tipKarte.Cijena});
             }
             return response;
+        }
+
+        public async Task<String> CreatePaymentIntent(PaymentIntentRequest request)
+        {
+            StripeConfiguration.ApiKey = stripeSecretKey;
+
+            try
+            {
+                var options = new PaymentIntentCreateOptions
+                {
+                    Amount = request.Amount,
+                    Currency = request.Currency,
+                    AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
+                    {
+                        Enabled = true,
+                    },
+                };
+
+                // Create the payment intent
+                var service = new PaymentIntentService();
+                var paymentIntent = await service.CreateAsync(options);
+
+                // Map the Stripe PaymentIntent to your model
+                /*return new Model.PaymentIntent
+                {
+                    ClientSecret = paymentIntent.ClientSecret,
+                    PaymentIntentId = paymentIntent.Id,
+                };*/
+                //return paymentIntent.Id;
+                return paymentIntent.ClientSecret;
+            }
+            catch (Exception ex)
+            {
+                // Log the error (you can use _logger here if needed)
+                _logger.LogError(ex, "Error creating PaymentIntent");
+
+                // Re-throw or handle the exception
+                throw new Exception("Error creating PaymentIntent", ex);
+            }
         }
 
         public async Task<Model.Narudzbe> CreateNarudzba(NarudzbaInsertRequest request)

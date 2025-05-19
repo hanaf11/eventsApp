@@ -27,6 +27,13 @@ namespace eventsApp.Controllers
             return await (_service as INarudzbaService).ValidateRequest(convertedQuantities);
         }
 
+
+        [HttpPost("payment-intent")]
+        public async Task<String> CreatePaymentIntent([FromBody] PaymentIntentRequest request)
+        {
+            return await (_service as INarudzbaService).CreatePaymentIntent(request);
+        }
+
         [HttpPost]
         public async Task<Model.Narudzbe> CreateNarudzba([FromBody] NarudzbaInsertRequest request)
         {

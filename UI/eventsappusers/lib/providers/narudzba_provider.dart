@@ -85,6 +85,25 @@ class NarudzbaProvider extends BaseProvider<Narudzba> {
     }
   }
 
+  Future<String> createPaymentIntent(dynamic request) async {
+    var url = "$_baseUrl$_endpoint/payment-intent";
+    var uri = Uri.parse(url);
+    var headers = BaseProvider.createHeaders();
+
+    request = request.map((key, value) => MapEntry(key.toString(), value));
+    var jsonRequest = jsonEncode(request);
+    var response = await http.post(uri, headers: headers, body: jsonRequest);
+
+    if (BaseProvider.isValidResponse(response)) {
+      var data = response.body;
+      print("data koju smo dobili $data");
+      //return data['clientSecret'];
+      return data;
+    } else {
+      throw new Exception("Unknown exception");
+    }
+  }
+
   ValidTipKarte fromJsonValidTipKarte(data) {
     return ValidTipKarte.fromJson(data);
   }

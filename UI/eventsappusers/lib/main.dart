@@ -33,9 +33,16 @@ import 'package:eventsappusers/utils/category_color_util.dart';
 import 'package:eventsappusers/utils/util.dart';
 import 'package:eventsappusers/widgets/master_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  stripe.Stripe.publishableKey =
+      "pk_test_51RNgF8Rx32cz44yvJVHVCLtK3dBZaXPtSPQyDxx4Gma72XFrhJsfMHs20IAUgtwjtlc4hc2xV2BmnbY792BTOp7E00Tip0ZfBJ";
+  stripe.Stripe.merchantIdentifier = 'eventsApp';
+  stripe.Stripe.urlScheme = "flutterstripe";
+  await stripe.Stripe.instance.applySettings();
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider<KategorijeProvider>(
         create: (_) => KategorijeProvider()),
