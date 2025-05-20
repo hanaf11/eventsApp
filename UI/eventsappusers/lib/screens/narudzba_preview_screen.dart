@@ -65,6 +65,7 @@ class _NarudzbaPreviewScreenState extends State<NarudzbaPreviewScreen> {
     try {
       String? clientSecret =
           await _narudzbaProvider.createPaymentIntent(paymentIntentReq);
+      print("client secret $clientSecret");
       if (clientSecret == null) return;
 
       await Stripe.instance.initPaymentSheet(
@@ -72,11 +73,12 @@ class _NarudzbaPreviewScreenState extends State<NarudzbaPreviewScreen> {
               paymentIntentClientSecret: clientSecret,
               merchantDisplayName: "eventsApp"));
       var paymentSuccess = await processPayment();
-
+      print("paymentSuccess $paymentSuccess");
       if (paymentSuccess) {
-        await _narudzbaProvider.createNarudzba(n).then((value) {
-          handleNarudzbaSuccess();
-        });
+        print("uslo u kreiranje narudzbe");
+        var value = await _narudzbaProvider.createNarudzba(n);
+        print("value $value");
+        handleNarudzbaSuccess();
       }
     } on Exception catch (ex) {
       setState(() {
@@ -84,15 +86,17 @@ class _NarudzbaPreviewScreenState extends State<NarudzbaPreviewScreen> {
       });
       if (ex is StripeException) {
         handleException(ex.error.localizedMessage ?? ex.toString());
-      } else
+      } else {
         handleException(ex.toString());
+      }
     }
   }
 
   Future<bool> processPayment() async {
     try {
+      print("Presenting payment sheet...");
       await Stripe.instance.presentPaymentSheet();
-      await Stripe.instance.confirmPaymentSheetPayment();
+      print("Payment sheet completed.");
       return true;
     } on Exception catch (e) {
       setState(() {
@@ -100,8 +104,9 @@ class _NarudzbaPreviewScreenState extends State<NarudzbaPreviewScreen> {
       });
       if (e is StripeException) {
         handleException(e.error.localizedMessage ?? e.toString());
-      } else
+      } else {
         handleException(e.toString());
+      }
       return false;
     }
   }
@@ -284,7 +289,7 @@ class _NarudzbaPreviewScreenState extends State<NarudzbaPreviewScreen> {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       _buildHeading("Plaćanje"),
       Text(
-        "Paypal",
+        "Stripe",
         style: _myTextStyle,
       )
     ]);

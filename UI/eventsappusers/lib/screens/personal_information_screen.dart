@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:eventsappusers/models/dogadjaj.dart';
 import 'package:eventsappusers/models/korisnik_global.dart';
 import 'package:eventsappusers/models/narudzba.dart';
+import 'package:eventsappusers/screens/narudzba_preview_screen.dart';
 import 'package:eventsappusers/screens/payment_information_screen.dart';
 import 'package:eventsappusers/utils/style_util.dart';
 import 'package:eventsappusers/widgets/field_with_validate.dart';
@@ -51,7 +52,8 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
 
       Navigator.of(context).push(MaterialPageRoute(
           builder: (context) =>
-              PaymentInfoScreen(narudzba: n, dogadjaj: widget.dogadjaj)));
+              //PaymentInfoScreen(narudzba: n, dogadjaj: widget.dogadjaj)
+              NarudzbaPreviewScreen(narudzba: n, dogadjaj: widget.dogadjaj)));
     }
   }
 
