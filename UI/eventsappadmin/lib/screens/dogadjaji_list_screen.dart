@@ -195,6 +195,47 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
     }
   }
 
+  editDogadjaj(int dogadjajId) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => DogadjajiDetailsScreen(
+          dogadjajId: dogadjajId,
+          refresh: getDogadjaji,
+        ),
+      ),
+    );
+  }
+
+  deleteDogadjaj(Dogadjaj e) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Potvrdite akciju'),
+        content: Text('Da li stvarno želite obrisati događaj ${e.naziv}?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context, 'Odustani');
+            },
+            child: const Text('Odustani'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context, 'Potvrdi');
+              _dogadjajProvider
+                  .delete(e.dogadjajId!)
+                  .then((value) => _handleDeleteSuccess(context))
+                  .onError(
+                    (error, stackTrace) => handleException(error as Exception),
+                  );
+            },
+            child: const Text('Potvrdi'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MasterScreenWidget(
@@ -338,348 +379,115 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
   }
 
   Widget _buildDataListView() {
-    return LayoutBuilder(builder: (context, constraints) {
-      return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minWidth: constraints.maxWidth,
-              ),
-              child: DataTable(
-                  columns: [
-                    DataColumn(
-                      label: Expanded(
-                        child: Text(
-                          'Naziv',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                    DataColumn(
-                      label: Expanded(
-                        child: Text(
-                          'Datum',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                    DataColumn(
-                      label: Expanded(
-                        child: Text(
-                          'Lokacija',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                    DataColumn(
-                      label: Expanded(
-                        child: Text(
-                          'Organizator',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                    DataColumn(
-                      label: Expanded(
-                        child: Text(
-                          'Status',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                    DataColumn(
-                      label: Expanded(
-                        child: Text(
-                          'Uredi',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                    DataColumn(
-                      label: Expanded(
-                        child: Text(
-                          'Obriši',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                    /* DataColumn(
-              label: Expanded(
-                child: Text(
-                  'Slika',
-                  style: TextStyle(fontStyle: FontStyle.italic),
-                ),
-              ),
-            ),*/
-                  ],
-                  rows: result?.result
-                          .map((Dogadjaj e) => DataRow(
-                                  /*  onSelectChanged: (selected) => {
-                                    if (selected == true)
-                                      {
-                                        Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                DogadjajiDetailsScreen(
-                                                    dogadjaj: e),
-                                          ),
-                                        )
-                                      }
-                                  },*/
-                                  cells: [
-                                    DataCell(Text(
-                                      e.naziv?.toString() ?? "",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    )),
-                                    DataCell(Text(e.datumOd != null
-                                        ? "${e.datumOd?.day}.${e.datumOd?.month}.${e.datumOd?.year}."
-                                        : "")),
-                                    DataCell(
-                                        Text(e.lokacija?.toString() ?? "")),
-                                    DataCell(
-                                        Text(e.organizator?.toString() ?? "")),
-                                    DataCell(Text(e.status?.toString() ?? "")),
-                                    DataCell(IconButton(
-                                        icon: const Icon(Icons.edit),
-                                        color: Color.fromRGBO(44, 152, 240, 1),
-                                        splashRadius: 20,
-                                        hoverColor:
-                                            Color.fromRGBO(224, 224, 224, 1),
-                                        onPressed: () {
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  DogadjajiDetailsScreen(
-                                                dogadjajId: e.dogadjajId,
-                                                refresh: getDogadjaji,
-                                              ),
-                                            ),
-                                          );
-                                        })),
-                                    DataCell(IconButton(
-                                      icon: const Icon(Icons.delete),
-                                      color: Color.fromRGBO(44, 152, 240, 1),
-                                      splashRadius: 20,
-                                      hoverColor:
-                                          Color.fromRGBO(224, 224, 224, 1),
-                                      onPressed: () {
-                                        showDialog<String>(
-                                          context: context,
-                                          builder: (BuildContext context) =>
-                                              AlertDialog(
-                                            title:
-                                                const Text('Potvrdite akciju'),
-                                            content: Text(
-                                                'Da li stvarno želite obrisati događaj ${e.naziv}?'),
-                                            actions: <Widget>[
-                                              TextButton(
-                                                onPressed: () {
-                                                  Navigator.pop(
-                                                      context, 'Odustani');
-                                                },
-                                                child: const Text('Odustani'),
-                                              ),
-                                              TextButton(
-                                                onPressed: () {
-                                                  Navigator.pop(
-                                                      context, 'Potvrdi');
-                                                  _dogadjajProvider
-                                                      .delete(e.dogadjajId!)
-                                                      .then((value) =>
-                                                          _handleDeleteSuccess(
-                                                              context))
-                                                      .onError(
-                                                        (error, stackTrace) =>
-                                                            handleException(error
-                                                                as Exception),
-                                                      );
-                                                },
-                                                child: const Text('Potvrdi'),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      },
-                                    )),
-
-                                    // DataCell(Text(formatNumber(e.cijena) ?? "")),
-                                    /* DataCell(e.naslovna!=""?Container(
-                          width: 100,
-                          height: 100,
-                          child: imageFromBase64String(e.naslovna!):Text(""),
-                        ))*/
-                                  ]))
-                          .toList() ??
-                      [])));
-    });
-  }
-
-  /*Widget _buildDataListView() {
-    return LayoutBuilder(builder: (context, constraints) {
-      return SingleChildScrollView(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: ConstrainedBox(
             constraints: BoxConstraints(
               minWidth: constraints.maxWidth,
-            ),DataTable(
-          columns: [
-            DataColumn(
-              label: Expanded(
-                child: Text(
-                  'Naziv',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
+              maxWidth: constraints.maxWidth,
             ),
-            DataColumn(
-              label: Expanded(
-                child: Text(
-                  'Datum',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+            child: PaginatedDataTable(
+              header: const Text('Događaji'),
+              columns: [
+                DataColumn(
+                  label: Text(
+                    'Naziv',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
-              ),
+                DataColumn(
+                  label: Text(
+                    'Datum',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                DataColumn(
+                  label: Text(
+                    'Lokacija',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                DataColumn(
+                  label: Text(
+                    'Organizator',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                DataColumn(
+                  label: Text(
+                    'Status',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                DataColumn(
+                  label: Text(
+                    'Uredi',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                DataColumn(
+                  label: Text(
+                    'Obriši',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+              source: _MyDataSource(
+                  result?.result ?? [], editDogadjaj, deleteDogadjaj),
+              rowsPerPage: 5,
             ),
-            DataColumn(
-              label: Expanded(
-                child: Text(
-                  'Lokacija',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-            DataColumn(
-              label: Expanded(
-                child: Text(
-                  'Organizator',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-            DataColumn(
-              label: Expanded(
-                child: Text(
-                  'Status',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-            DataColumn(
-              label: Expanded(
-                child: Text(
-                  'Uredi',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-            DataColumn(
-              label: Expanded(
-                child: Text(
-                  'Obriši',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-            /* DataColumn(
-              label: Expanded(
-                child: Text(
-                  'Slika',
-                  style: TextStyle(fontStyle: FontStyle.italic),
-                ),
-              ),
-            ),*/
-          ],
-          rows: result?.result
-                  .map((Dogadjaj e) => DataRow(
-                          /*  onSelectChanged: (selected) => {
-                                    if (selected == true)
-                                      {
-                                        Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                DogadjajiDetailsScreen(
-                                                    dogadjaj: e),
-                                          ),
-                                        )
-                                      }
-                                  },*/
-                          cells: [
-                            DataCell(Text(
-                              e.naziv?.toString() ?? "",
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            )),
-                            DataCell(Text(e.datumOd != null
-                                ? "${e.datumOd?.day}.${e.datumOd?.month}.${e.datumOd?.year}."
-                                : "")),
-                            DataCell(Text(e.lokacija?.toString() ?? "")),
-                            DataCell(Text(e.organizator?.toString() ?? "")),
-                            DataCell(Text(e.status?.toString() ?? "")),
-                            DataCell(IconButton(
-                                icon: const Icon(Icons.edit),
-                                color: Color.fromRGBO(44, 152, 240, 1),
-                                splashRadius: 20,
-                                hoverColor: Color.fromRGBO(224, 224, 224, 1),
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          DogadjajiDetailsScreen(
-                                        dogadjajId: e.dogadjajId,
-                                        refresh: getDogadjaji,
-                                      ),
-                                    ),
-                                  );
-                                })),
-                            DataCell(IconButton(
-                              icon: const Icon(Icons.delete),
-                              color: Color.fromRGBO(44, 152, 240, 1),
-                              splashRadius: 20,
-                              hoverColor: Color.fromRGBO(224, 224, 224, 1),
-                              onPressed: () {
-                                showDialog<String>(
-                                  context: context,
-                                  builder: (BuildContext context) =>
-                                      AlertDialog(
-                                    title: const Text('Potvrdite akciju'),
-                                    content: Text(
-                                        'Da li stvarno želite obrisati događaj ${e.naziv}?'),
-                                    actions: <Widget>[
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.pop(context, 'Odustani');
-                                        },
-                                        child: const Text('Odustani'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.pop(context, 'Potvrdi');
-                                          _dogadjajProvider
-                                              .delete(e.dogadjajId!)
-                                              .then((value) =>
-                                                  _handleDeleteSuccess(context))
-                                              .onError(
-                                                (error, stackTrace) =>
-                                                    handleException(
-                                                        error as Exception),
-                                              );
-                                        },
-                                        child: const Text('Potvrdi'),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            )),
+          ),
+        );
+      },
+    );
+  }
+}
 
-                            // DataCell(Text(formatNumber(e.cijena) ?? "")),
-                            /* DataCell(e.naslovna!=""?Container(
-                          width: 100,
-                          height: 100,
-                          child: imageFromBase64String(e.naslovna!):Text(""),
-                        ))*/
-                          ]))
-                  .toList() ??
-              [])
-    ))});
-  }*/
+class _MyDataSource extends DataTableSource {
+  final List<Dogadjaj> dogadjaji;
+  final Function(int dogadjajId) onEdit;
+  final Function(Dogadjaj dogadjaj) onDelete;
+
+  _MyDataSource(this.dogadjaji, this.onEdit, this.onDelete);
+
+  @override
+  DataRow? getRow(int index) {
+    if (index >= dogadjaji.length) return null;
+    final e = dogadjaji[index];
+    return DataRow(cells: [
+      DataCell(
+          Text(e.naziv ?? "", style: TextStyle(fontWeight: FontWeight.bold))),
+      DataCell(Text(e.datumOd != null
+          ? "${e.datumOd!.day}.${e.datumOd!.month}.${e.datumOd!.year}."
+          : "")),
+      DataCell(Text(e.lokacija ?? "")),
+      DataCell(Text(e.organizator ?? "")),
+      DataCell(Text(e.status ?? "")),
+      DataCell(IconButton(
+        icon: Icon(Icons.edit),
+        color: Color.fromRGBO(44, 152, 240, 1),
+        splashRadius: 20,
+        hoverColor: Color.fromRGBO(224, 224, 224, 1),
+        onPressed: () => onEdit(e.dogadjajId!),
+      )),
+      DataCell(IconButton(
+        icon: Icon(Icons.delete),
+        color: Color.fromRGBO(44, 152, 240, 1),
+        splashRadius: 20,
+        hoverColor: Color.fromRGBO(224, 224, 224, 1),
+        onPressed: () => onDelete(e),
+      )),
+    ]);
+  }
+
+  @override
+  bool get isRowCountApproximate => false;
+
+  @override
+  int get rowCount => dogadjaji.length;
+
+  @override
+  int get selectedRowCount => 0;
 }
