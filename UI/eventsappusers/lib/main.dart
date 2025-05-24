@@ -24,7 +24,7 @@ import 'package:eventsappusers/screens/kategorije_screen.dart';
 import 'package:eventsappusers/screens/kreiraj_dogadjaj_screen.dart';
 import 'package:eventsappusers/screens/map_screen.dart';
 import 'package:eventsappusers/screens/narudzba_preview_screen.dart';
-import 'package:eventsappusers/screens/payment_information_screen.dart';
+//import 'package:eventsappusers/screens/payment_information_screen.dart';
 import 'package:eventsappusers/screens/personal_information_screen.dart';
 import 'package:eventsappusers/screens/profile_screen.dart';
 import 'package:eventsappusers/screens/register_screen.dart';
