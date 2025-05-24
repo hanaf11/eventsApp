@@ -41,21 +41,17 @@ class _NarudzbaPreviewScreenState extends State<NarudzbaPreviewScreen> {
   double _calcUkupno() {
     double ukupno = 0;
     widget.narudzba.listaKarata?.forEach((e) {
-      ukupno += (e.kolicina as int) * (e.cijena as double);
+      ukupno += (e.cijena as double);
     });
     return ukupno;
   }
 
   clickNextStep() async {
     Narudzba n = widget.narudzba;
-    n.brojKartice = null;
-    n.datumKartice = null;
-    n.cvv = null;
-    n.imePrezimeKartica = null;
     n.cijena = _ukupno;
-
+    var amount = (_ukupno * 100).toInt();
     Map<String, dynamic> paymentIntentReq = {
-      "amount": (_ukupno * 100).toInt(),
+      "amount": amount,
       "currency": "bam"
     };
 

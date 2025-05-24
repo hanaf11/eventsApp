@@ -21,10 +21,6 @@ Narudzba _$NarudzbaFromJson(Map<String, dynamic> json) => Narudzba(
       ..telefon = json['telefon'] as String?
       ..korisnikId = (json['korisnikId'] as num?)?.toInt()
       ..tip = json['tip'] as String?
-      ..brojKartice = (json['brojKartice'] as num?)?.toInt()
-      ..datumKartice = json['datumKartice'] as String?
-      ..cvv = (json['cvv'] as num?)?.toInt()
-      ..imePrezimeKartica = json['imePrezimeKartica'] as String?
       ..cijena = (json['cijena'] as num?)?.toDouble();
 
 Map<String, dynamic> _$NarudzbaToJson(Narudzba instance) => <String, dynamic>{
@@ -39,9 +35,5 @@ Map<String, dynamic> _$NarudzbaToJson(Narudzba instance) => <String, dynamic>{
       'telefon': instance.telefon,
       'korisnikId': instance.korisnikId,
       'tip': instance.tip,
-      'brojKartice': instance.brojKartice,
-      'datumKartice': instance.datumKartice,
-      'cvv': instance.cvv,
-      'imePrezimeKartica': instance.imePrezimeKartica,
       'cijena': instance.cijena,
     };

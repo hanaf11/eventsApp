@@ -17,10 +17,6 @@ class Narudzba {
   String? telefon;
   int? korisnikId;
   String? tip;
-  int? brojKartice;
-  String? datumKartice;
-  int? cvv;
-  String? imePrezimeKartica;
   double? cijena;
 
   Narudzba(this.listaKarata);
@@ -37,10 +33,6 @@ class Narudzba {
       this.telefon,
       this.korisnikId,
       this.tip,
-      this.brojKartice,
-      this.datumKartice,
-      this.cvv,
-      this.imePrezimeKartica,
       this.cijena);
   factory Narudzba.fromJson(Map<String, dynamic> json) =>
       _$NarudzbaFromJson(json);

@@ -4,7 +4,6 @@ import 'package:eventsappusers/models/dogadjaj.dart';
 import 'package:eventsappusers/models/korisnik_global.dart';
 import 'package:eventsappusers/models/narudzba.dart';
 import 'package:eventsappusers/screens/narudzba_preview_screen.dart';
-import 'package:eventsappusers/screens/payment_information_screen.dart';
 import 'package:eventsappusers/utils/style_util.dart';
 import 'package:eventsappusers/widgets/field_with_validate.dart';
 import 'package:eventsappusers/widgets/input_form_field.dart';
