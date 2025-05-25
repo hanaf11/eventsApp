@@ -1097,35 +1097,39 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
   }*/
 
   _buildTipKarti() {
-    return DataTable(
-        showCheckboxColumn: false,
-        columns: [
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'Tip karte',
-                style: TextStyle(fontWeight: FontWeight.bold),
+    return (tipKarteResult != null &&
+            tipKarteResult!.result != null &&
+            tipKarteResult!.result!.isNotEmpty)
+        ? DataTable(
+            showCheckboxColumn: false,
+            columns: [
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    'Tip karte',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
               ),
-            ),
-          ),
-          DataColumn(
-            label: Expanded(
-              child: Text(
-                'Cijena',
-                style: TextStyle(fontWeight: FontWeight.bold),
+              DataColumn(
+                label: Expanded(
+                  child: Text(
+                    'Cijena',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
               ),
-            ),
-          ),
-        ],
-        rows: tipKarteResult?.result
-                ?.map((TipKarte e) => DataRow(cells: [
-                      DataCell(Text(
-                        e.naziv ?? '',
-                      )),
-                      DataCell(Text(formatNumber(e.cijena))),
-                    ]))
-                .toList() ??
-            []);
+            ],
+            rows: tipKarteResult?.result
+                    ?.map((TipKarte e) => DataRow(cells: [
+                          DataCell(Text(
+                            e.naziv ?? '',
+                          )),
+                          DataCell(Text(formatNumber(e.cijena))),
+                        ]))
+                    .toList() ??
+                [])
+        : Container();
   }
 
   Widget _buildInputField(String name, Widget field) {

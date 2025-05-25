@@ -296,102 +296,69 @@ class _KategorijeScreenState extends State<KategorijeScreen>
   }
 
   Widget _buildDataListViewKategorije() {
-    return LayoutBuilder(builder: (context, constraints) {
-      return SingleChildScrollView(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: ConstrainedBox(
             constraints: BoxConstraints(
               minWidth: constraints.maxWidth,
+              maxWidth: constraints.maxWidth,
             ),
-            child: DataTable(
-                showCheckboxColumn: false,
-                columns: [
-                  DataColumn(
-                    label: Expanded(
-                      child: Text(
-                        'Naziv',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
+            child: PaginatedDataTable(
+              header: const Text('Kategorije'),
+              showCheckboxColumn: false,
+              columns: [
+                DataColumn(
+                  label: Text(
+                    'Naziv',
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  DataColumn(
-                    label: Expanded(
-                      child: Text(
-                        'Opis',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
+                ),
+                DataColumn(
+                  label: Text(
+                    'Opis',
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  DataColumn(
-                    label: Expanded(
-                      child: Text(
-                        'Slika',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
+                ),
+                DataColumn(
+                  label: Text(
+                    'Slika',
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  DataColumn(
-                    label: Expanded(
-                      child: Text(
-                        'Uredi',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
+                ),
+                DataColumn(
+                  label: Text(
+                    'Uredi',
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  DataColumn(
-                    label: Expanded(
-                      child: Text(
-                        'Obriši',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
+                ),
+                DataColumn(
+                  label: Text(
+                    'Obriši',
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                ],
-                rows: result?.result
-                        .map((Kategorija e) => DataRow(
-                                onSelectChanged: (selected) {
-                                  if (selected == true) {
-                                    setState(() {
-                                      _selectedKategorija = e;
-                                    });
-                                    getPodkategorije(e.kategorijaId!);
-                                  }
-                                },
-                                cells: [
-                                  DataCell(Text(
-                                    e.naziv ?? '',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  )),
-                                  DataCell(Text(
-                                    e.opis ?? '',
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                  )),
-                                  DataCell(_buildSlika(e.slika ?? '')),
-                                  DataCell(IconButton(
-                                      icon: const Icon(Icons.edit),
-                                      color: Color.fromRGBO(44, 152, 240, 1),
-                                      splashRadius: 20,
-                                      hoverColor:
-                                          Color.fromRGBO(224, 224, 224, 1),
-                                      onPressed: () {
-                                        editKategorija(e.kategorijaId!);
-                                      })),
-                                  DataCell(IconButton(
-                                      icon: const Icon(Icons.delete),
-                                      color: Color.fromRGBO(44, 152, 240, 1),
-                                      splashRadius: 20,
-                                      hoverColor:
-                                          Color.fromRGBO(224, 224, 224, 1),
-                                      onPressed: () async {
-                                        await deleteKategorija(e);
-                                      })),
-                                ]))
-                        .toList() ??
-                    []),
-          ));
-    });
+                ),
+              ],
+              source: _KategorijeDataSource(
+                result?.result ?? [],
+                editKategorija,
+                deleteKategorija,
+                buildSlika,
+                (kategorijaId) {
+                  setState(() {
+                    _selectedKategorija = result!.result!
+                        .firstWhere((k) => k.kategorijaId == kategorijaId);
+                  });
+                  getPodkategorije(kategorijaId);
+                },
+              ),
+              rowsPerPage: 5,
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildPodkategorije(Kategorija? kategorija) {
@@ -447,7 +414,7 @@ class _KategorijeScreenState extends State<KategorijeScreen>
             ));
   }
 
-  Image _buildSlika(String? img) {
+  Image buildSlika(String? img) {
     Image emptyImage = Image.asset(
       'assets/images/no_picture.jpg',
       fit: BoxFit.cover,
@@ -470,4 +437,63 @@ class _KategorijeScreenState extends State<KategorijeScreen>
       }
     }
   }
+}
+
+class _KategorijeDataSource extends DataTableSource {
+  final List<Kategorija> kategorije;
+  final Function(int kategorijaId) onEdit;
+  final Function(Kategorija kategorija) onDelete;
+  final Function(int kategorijaId) onSelect;
+  final Function(String img) buildSlika;
+
+  _KategorijeDataSource(this.kategorije, this.onEdit, this.onDelete,
+      this.buildSlika, this.onSelect);
+
+  @override
+  DataRow? getRow(int index) {
+    if (index >= kategorije.length) return null;
+    final e = kategorije[index];
+    return DataRow(
+      onSelectChanged: (selected) {
+        if (selected == true) {
+          onSelect(e.kategorijaId!);
+        }
+      },
+      cells: [
+        DataCell(Text(
+          e.naziv ?? "",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        )),
+        DataCell(Text(
+          e.opis ?? "",
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+        )),
+        DataCell(buildSlika(e.slika ?? "")),
+        DataCell(IconButton(
+          icon: Icon(Icons.edit),
+          color: Color.fromRGBO(44, 152, 240, 1),
+          splashRadius: 20,
+          hoverColor: Color.fromRGBO(224, 224, 224, 1),
+          onPressed: () => onEdit(e.kategorijaId!),
+        )),
+        DataCell(IconButton(
+          icon: Icon(Icons.delete),
+          color: Color.fromRGBO(44, 152, 240, 1),
+          splashRadius: 20,
+          hoverColor: Color.fromRGBO(224, 224, 224, 1),
+          onPressed: () => onDelete(e),
+        )),
+      ],
+    );
+  }
+
+  @override
+  bool get isRowCountApproximate => false;
+
+  @override
+  int get rowCount => kategorije.length;
+
+  @override
+  int get selectedRowCount => 0;
 }

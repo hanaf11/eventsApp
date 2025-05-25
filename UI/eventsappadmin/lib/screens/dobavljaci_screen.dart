@@ -325,7 +325,7 @@ class _DobavljaciScreenState extends State<DobavljaciScreen>
     );
   }
 
-  Widget _buildDataListViewDobavljaci() {
+  /* Widget _buildDataListViewDobavljaci() {
     return LayoutBuilder(builder: (context, constraints) {
       return SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -439,6 +439,81 @@ class _DobavljaciScreenState extends State<DobavljaciScreen>
                     []),
           ));
     });
+  }*/
+
+  Widget _buildDataListViewDobavljaci() {
+    return LayoutBuilder(builder: (context, constraints) {
+      return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: ConstrainedBox(
+              constraints: BoxConstraints(
+                  minWidth: constraints.maxWidth,
+                  maxWidth: constraints.maxWidth),
+              child: PaginatedDataTable(
+                header: Text("Dobavljači"),
+                showCheckboxColumn: false,
+                columns: [
+                  DataColumn(
+                    label: Expanded(
+                      child: Text(
+                        'Naziv',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Expanded(
+                      child: Text(
+                        'Telefon',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Expanded(
+                      child: Text(
+                        'Email',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Expanded(
+                      child: Text(
+                        'Aktivan',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Expanded(
+                      child: Text(
+                        'Uredi',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Expanded(
+                      child: Text(
+                        'Deaktiviraj',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ],
+                source: DobavljaciDataSource(
+                    dobavljaci: result?.result ?? [],
+                    onEdit: editDobavljac,
+                    onDeactivate: deactivateDobavljac,
+                    onSelect: (e) {
+                      setState(() {
+                        _selectedDobavljac = e;
+                      });
+                    }),
+                rowsPerPage: 5,
+              )));
+    });
   }
 
   Widget _buildPodkategorije(Kategorija? kategorija) {
@@ -513,4 +588,66 @@ class _DobavljaciScreenState extends State<DobavljaciScreen>
       }
     }
   }
+}
+
+class DobavljaciDataSource extends DataTableSource {
+  final List<Dobavljac> dobavljaci;
+  final Function(int dobavljacId) onEdit;
+  final Function(Dobavljac e) onDeactivate;
+  final void Function(Dobavljac? e) onSelect;
+  Dobavljac? selectedDobavljac;
+
+  DobavljaciDataSource({
+    required this.dobavljaci,
+    required this.onEdit,
+    required this.onDeactivate,
+    required this.onSelect,
+    this.selectedDobavljac,
+  });
+
+  @override
+  DataRow? getRow(int index) {
+    if (index >= dobavljaci.length) return null;
+    final e = dobavljaci[index];
+    return DataRow.byIndex(
+      index: index,
+      selected: selectedDobavljac == e,
+      onSelectChanged: (selected) {
+        onSelect(selected == true ? e : null);
+      },
+      cells: [
+        DataCell(
+            Text(e.naziv ?? '', style: TextStyle(fontWeight: FontWeight.bold))),
+        DataCell(Text(e.telefon ?? '',
+            overflow: TextOverflow.ellipsis, maxLines: 1)),
+        DataCell(
+            Text(e.email ?? '', overflow: TextOverflow.ellipsis, maxLines: 1)),
+        DataCell(Text(e.status.toString(),
+            overflow: TextOverflow.ellipsis, maxLines: 1)),
+        DataCell(IconButton(
+          icon: const Icon(Icons.edit),
+          color: Color.fromRGBO(44, 152, 240, 1),
+          splashRadius: 20,
+          hoverColor: Color.fromRGBO(224, 224, 224, 1),
+          onPressed: () => onEdit(e.dobavljacId!),
+        )),
+        DataCell(IconButton(
+          icon: const Icon(Icons.disabled_by_default_outlined),
+          color: Color.fromRGBO(44, 152, 240, 1),
+          splashRadius: 20,
+          hoverColor: Color.fromRGBO(224, 224, 224, 1),
+          onPressed: () async => await onDeactivate(e),
+        )),
+      ],
+    );
+  }
+
+  @override
+  bool get isRowCountApproximate => false;
+
+  @override
+  int get rowCount => dobavljaci.length;
+
+  @override
+  int get selectedRowCount => selectedDobavljac == null ? 0 : 1;
 }
