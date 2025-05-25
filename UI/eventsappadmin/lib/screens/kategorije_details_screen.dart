@@ -260,10 +260,10 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
 
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: widget.selectedKategorija == null
-          ? Text('Dodaj kategoriju')
-          : Text("Uredi kategoriju"),
-      content: Container(
+      title: Text(widget.selectedKategorija == null
+          ? 'Dodaj kategoriju'
+          : "Uredi kategoriju"),
+      content: SizedBox(
         width: MediaQuery.of(context).size.width * 0.8,
         height: 400,
         child: Padding(
@@ -272,124 +272,123 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
             child: FormBuilder(
               key: _formKey,
               initialValue: _initialValue,
-              child: IntrinsicHeight(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Container(
-                        height: 120,
-                        child: Column(
-                          children: [
-                            InputField(
-                              name: "Naziv:",
-                              field: FormBuilderTextField(
-                                name: 'Naziv',
-                                validator: FormBuilderValidators.compose([
-                                  FormBuilderValidators.required(
-                                      errorText: 'Naziv je obavezan')
-                                ]),
-                              ),
-                            ),
-                            InputField(
-                              name: "Opis:",
-                              field: FormBuilderTextField(
-                                name: 'Opis',
-                              ),
-                            ),
-                          ],
-                        )),
-                    SizedBox(height: 20),
-                    Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 120,
+                    child: Column(
                       children: [
-                        Text(
-                          "Slika: ",
-                          style: TextStyle(
-                            color: Color.fromRGBO(34, 33, 33, 1),
-                            fontWeight: FontWeight.bold,
+                        InputField(
+                          name: "Naziv:",
+                          field: FormBuilderTextField(
+                            name: 'Naziv',
+                            validator: FormBuilderValidators.compose([
+                              FormBuilderValidators.required(
+                                  errorText: 'Naziv je obavezan'),
+                            ]),
                           ),
                         ),
-                        Spacer(),
-                        FormBuilderField(
-                            name: "Slika",
-                            builder: (FormFieldState<dynamic> field) {
-                              return SizedBox(
-                                  width: 120,
-                                  child: InputDecorator(
-                                    decoration: InputDecoration(
-                                        errorText: _slikaError,
-                                        border: InputBorder.none),
-                                    child: InkWell(
-                                      onTap: () async {
-                                        var imageObj = await getImage();
-                                        setState(() {
-                                          slika = imageObj;
-                                          widget.base64Image =
-                                              imageObj.base64Image;
-                                          _slikaError = null;
-                                          _formKey.currentState?.fields['Slika']
-                                              ?.validate();
-                                        });
-                                        widget.imageChanged!(imageObj);
-                                      },
-                                      child: Text(
-                                        "+ Promijeni sliku",
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          letterSpacing: 0.3,
-                                          color:
-                                              Color.fromRGBO(54, 112, 232, 1),
-                                        ),
-                                      ),
-                                    ),
-                                  ));
-                            }),
+                        InputField(
+                          name: "Opis:",
+                          field: FormBuilderTextField(
+                            name: 'Opis',
+                          ),
+                        ),
                       ],
                     ),
-                    SizedBox(height: 10),
-                    Container(
-                      height: 270,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        border: Border.all(width: 1, color: Colors.grey),
-                        borderRadius: BorderRadius.circular(20),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      const Text(
+                        "Slika:",
+                        style: TextStyle(
+                          color: Color.fromRGBO(34, 33, 33, 1),
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: slika.image,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Podkategorije:",
-                            textAlign: TextAlign.left,
-                            style: TextStyle(
-                              color: Color.fromRGBO(34, 33, 33, 1),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          InkWell(
-                            onTap: () {
-                              showPodkategorijaDialog(null);
-                            },
-                            child: Text(
-                              "+ Dodaj podkategoriju",
-                              style: TextStyle(
-                                fontSize: 15,
-                                letterSpacing: 0.3,
-                                color: Color.fromRGBO(54, 112, 232, 1),
+                      const Spacer(),
+                      FormBuilderField(
+                        name: "Slika",
+                        validator: (_) => slika.base64Image == null
+                            ? 'Slika je obavezna'
+                            : null,
+                        builder: (field) {
+                          return SizedBox(
+                            width: 120,
+                            child: InputDecorator(
+                              decoration: InputDecoration(
+                                errorText: field.errorText,
+                                border: InputBorder.none,
+                              ),
+                              child: InkWell(
+                                onTap: () async {
+                                  var imageObj = await getImage();
+                                  setState(() {
+                                    slika = imageObj;
+                                    widget.base64Image = imageObj.base64Image;
+                                    _formKey.currentState?.fields['Slika']
+                                        ?.validate();
+                                  });
+                                  widget.imageChanged!(imageObj);
+                                },
+                                child: const Text(
+                                  "+ Promijeni sliku",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    letterSpacing: 0.3,
+                                    color: Color.fromRGBO(54, 112, 232, 1),
+                                  ),
+                                ),
                               ),
                             ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    height: 270,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      border: Border.all(width: 1, color: Colors.grey),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: slika.image,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "Podkategorije:",
+                        style: TextStyle(
+                          color: Color.fromRGBO(34, 33, 33, 1),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () => showPodkategorijaDialog(null),
+                        child: const Text(
+                          "+ Dodaj podkategoriju",
+                          style: TextStyle(
+                            fontSize: 15,
+                            letterSpacing: 0.3,
+                            color: Color.fromRGBO(54, 112, 232, 1),
                           ),
-                        ]),
-                    if (widget.podkategorijeList != null &&
-                        widget.podkategorijeList!.isNotEmpty)
-                      _buildDataListViewPodkategorije()
-                  ],
-                ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (widget.podkategorijeList != null &&
+                      widget.podkategorijeList!.isNotEmpty)
+                    _buildDataListViewPodkategorije(),
+                ],
               ),
             ),
           ),
@@ -423,76 +422,53 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
                 }
               }
             },
-            child: Text("Sačuvaj"),
+            child: const Text("Sačuvaj"),
           ),
         ),
         TextButton(
-          onPressed: () => {Navigator.pop(context, 'Zatvori')},
+          onPressed: () => Navigator.pop(context, 'Zatvori'),
           child: const Text('Zatvori'),
-          //style: buttonSecondary
         ),
       ],
     );
   }
 
-  Expanded _buildDataListViewPodkategorije() {
-    return Expanded(
-        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      DataTable(
-          showCheckboxColumn: false,
+  Widget _buildDataListViewPodkategorije() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.79, // Full-width table
+        child: PaginatedDataTable(
+          header: const Text('Podkategorije'),
           columns: [
             DataColumn(
-              label: Expanded(
-                child: Text(
-                  'Naziv',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+              label: Text(
+                'Naziv',
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
             DataColumn(
-              label: Expanded(
-                child: Text(
-                  'Uredi',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+              label: Text(
+                'Uredi',
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
             DataColumn(
-              label: Expanded(
-                child: Text(
-                  'Obriši',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+              label: Text(
+                'Obriši',
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
           ],
-          rows: widget.podkategorijeList
-                  ?.map((Podkategorija e) => DataRow(cells: [
-                        DataCell(Text(
-                          e.naziv ?? '',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        )),
-                        DataCell(IconButton(
-                            icon: const Icon(Icons.edit),
-                            color: Color.fromRGBO(44, 152, 240, 1),
-                            splashRadius: 20,
-                            hoverColor: Color.fromRGBO(224, 224, 224, 1),
-                            onPressed: () {
-                              showPodkategorijaDialog(e);
-                            })),
-                        DataCell(IconButton(
-                          icon: const Icon(Icons.delete),
-                          color: Color.fromRGBO(44, 152, 240, 1),
-                          splashRadius: 20,
-                          hoverColor: Color.fromRGBO(224, 224, 224, 1),
-                          onPressed: () {
-                            deletePodkategorija(e);
-                          },
-                        )),
-                      ]))
-                  .toList() ??
-              []),
-    ]));
+          source: _PodkategorijeDataSource(
+            widget.podkategorijeList ?? [],
+            showPodkategorijaDialog,
+            deletePodkategorija,
+          ),
+          rowsPerPage: 5,
+        ),
+      ),
+    );
   }
 
   Future<ImageObj> getImage() async {
@@ -514,4 +490,47 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
       return slika;
     }
   }
+}
+
+class _PodkategorijeDataSource extends DataTableSource {
+  final List<Podkategorija> podkategorije;
+  final Function(Podkategorija podkategorija) onEdit;
+  final Function(Podkategorija podkategorija) onDelete;
+
+  _PodkategorijeDataSource(this.podkategorije, this.onEdit, this.onDelete);
+
+  @override
+  DataRow? getRow(int index) {
+    if (index >= podkategorije.length) return null;
+    final e = podkategorije[index];
+    return DataRow(cells: [
+      DataCell(Text(
+        e.naziv ?? '',
+        style: TextStyle(fontWeight: FontWeight.bold),
+      )),
+      DataCell(IconButton(
+        icon: const Icon(Icons.edit),
+        color: Color.fromRGBO(44, 152, 240, 1),
+        splashRadius: 20,
+        hoverColor: Color.fromRGBO(224, 224, 224, 1),
+        onPressed: () => onEdit(e),
+      )),
+      DataCell(IconButton(
+        icon: const Icon(Icons.delete),
+        color: Color.fromRGBO(44, 152, 240, 1),
+        splashRadius: 20,
+        hoverColor: Color.fromRGBO(224, 224, 224, 1),
+        onPressed: () => onDelete(e),
+      )),
+    ]);
+  }
+
+  @override
+  bool get isRowCountApproximate => false;
+
+  @override
+  int get rowCount => podkategorije.length;
+
+  @override
+  int get selectedRowCount => 0;
 }

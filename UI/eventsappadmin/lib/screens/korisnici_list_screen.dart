@@ -119,147 +119,72 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
   }
 
   Widget _buildDataListView() {
-    return LayoutBuilder(builder: (context, constraints) {
-      return SingleChildScrollView(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minWidth: constraints.maxWidth,
-            ),
-            child: DataTable(
+            constraints: BoxConstraints(minWidth: constraints.maxWidth),
+            child: SizedBox(
+              width: constraints.maxWidth,
+              child: PaginatedDataTable(
+                header: Text("Korisnici"),
                 columns: [
                   DataColumn(
-                    label: Expanded(
-                      child: Text(
-                        'Korisničko ime',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
+                      label: Expanded(
+                          child: Text('Korisničko ime',
+                              style: TextStyle(fontWeight: FontWeight.bold)))),
                   DataColumn(
-                    label: Expanded(
-                      child: Text(
-                        'Član od',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
+                      label: Expanded(
+                          child: Text('Član od',
+                              style: TextStyle(fontWeight: FontWeight.bold)))),
                   DataColumn(
-                    label: Expanded(
-                      child: Text(
-                        'Detalji',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
+                      label: Expanded(
+                          child: Text('Detalji',
+                              style: TextStyle(fontWeight: FontWeight.bold)))),
                   DataColumn(
-                    label: Expanded(
-                      child: Text(
-                        'Obriši',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
+                      label: Expanded(
+                          child: Text('Obriši',
+                              style: TextStyle(fontWeight: FontWeight.bold)))),
                 ],
-                rows: result?.result
-                        .map((Korisnik e) => DataRow(cells: [
-                              DataCell(Text(
-                                e.korisnickoIme.toString(),
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              )),
-                              DataCell(Text(
-                                  "${e.created.day}.${e.created.month}.${e.created.year}.")),
-                              /*DataCell(ElevatedButton(
-                                  child: Padding(
-                                      padding: EdgeInsets.all(5),
-                                      child: Text("Detalji")),
-                                  style: ButtonStyle(
-                                      shape: MaterialStateProperty.all<
-                                              RoundedRectangleBorder>(
-                                          RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                  ))),
-                                  onPressed: () {
-                                    setState(() {
-                                      isLoading = true;
-                                    });
-
-                                    _korisnikProvider
-                                        .getById(e.korisnikId)
-                                        .then((value) {
-                                      setState(() {
-                                        isLoading = false;
-                                        korisnik = value;
-                                      });
-                                      _buildKorisnikDetails(korisnik);
-                                    });
-                                  })),*/
-                              DataCell(IconButton(
-                                  icon: const Icon(Icons.remove_red_eye),
-                                  color: Color.fromRGBO(44, 152, 240, 1),
-                                  splashRadius: 20,
-                                  hoverColor: Color.fromRGBO(224, 224, 224, 1),
-                                  onPressed: () {
-                                    /*  setState(() {
-                                      isLoading = true;
-                                    });
-
-                                    _korisnikProvider
-                                        .getById(e.korisnikId)
-                                        .then((value) {
-                                      setState(() {
-                                        isLoading = false;
-                                        korisnik = value;
-                                      });
-                                      _buildKorisnikDetails(korisnik);
-                                    });*/
-                                    _buildKorisnikDetails(e!.korisnikId);
-                                  })),
-                              DataCell(IconButton(
-                                icon: const Icon(Icons.delete),
-                                color: Color.fromRGBO(44, 152, 240, 1),
-                                splashRadius: 20,
-                                hoverColor: Color.fromRGBO(224, 224, 224, 1),
-                                onPressed: () {
-                                  showDialog<String>(
-                                    context: context,
-                                    builder: (BuildContext context) =>
-                                        AlertDialog(
-                                      title: const Text('Potvrdite akciju'),
-                                      content: Text(
-                                          'Da li stvarno želite obrisati korisnika ${e.korisnickoIme}?'),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          onPressed: () => Navigator.pop(
-                                              context, 'Odustani'),
-                                          child: const Text('Odustani'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context, 'Potvrdi');
-                                            _korisnikProvider
-                                                .delete(e.korisnikId)
-                                                .then((value) => search());
-                                          },
-                                          child: const Text('Potvrdi'),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              )),
-
-                              // DataCell(Text(formatNumber(e.cijena) ?? "")),
-                              /* DataCell(e.naslovna!=""?Container(
-                          width: 100,
-                          height: 100,
-                          child: imageFromBase64String(e.naslovna!):Text(""),
-                        ))*/
-                            ]))
-                        .toList() ??
-                    []),
-          ));
-    });
+                source: KorisnikDataSource(
+                  korisnici: result?.result ?? [],
+                  onDetailsPressed: (int korisnikId) {
+                    _buildKorisnikDetails(korisnikId);
+                  },
+                  onDeletePressed: (int korisnikId, String korisnickoIme) {
+                    showDialog<String>(
+                      context: context,
+                      builder: (BuildContext context) => AlertDialog(
+                        title: const Text('Potvrdite akciju'),
+                        content: Text(
+                            'Da li stvarno želite obrisati korisnika $korisnickoIme?'),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, 'Odustani'),
+                            child: const Text('Odustani'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context, 'Potvrdi');
+                              _korisnikProvider
+                                  .delete(korisnikId)
+                                  .then((value) => search());
+                            },
+                            child: const Text('Potvrdi'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+                rowsPerPage: 5,
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   _buildKorisnikDetails(int korisnikId) {
@@ -461,4 +386,51 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
               ],
             ));*/
   }
+}
+
+class KorisnikDataSource extends DataTableSource {
+  final List<Korisnik> korisnici;
+  final void Function(int korisnikId) onDetailsPressed;
+  final void Function(int korisnikId, String korisnickoIme) onDeletePressed;
+
+  KorisnikDataSource({
+    required this.korisnici,
+    required this.onDetailsPressed,
+    required this.onDeletePressed,
+  });
+
+  @override
+  DataRow? getRow(int index) {
+    if (index >= korisnici.length) return null;
+    final e = korisnici[index];
+
+    return DataRow(cells: [
+      DataCell(Text(e.korisnickoIme.toString(),
+          style: TextStyle(fontWeight: FontWeight.bold))),
+      DataCell(Text("${e.created.day}.${e.created.month}.${e.created.year}.")),
+      DataCell(IconButton(
+        icon: const Icon(Icons.remove_red_eye),
+        color: Color.fromRGBO(44, 152, 240, 1),
+        splashRadius: 20,
+        hoverColor: Color.fromRGBO(224, 224, 224, 1),
+        onPressed: () => onDetailsPressed(e.korisnikId),
+      )),
+      DataCell(IconButton(
+        icon: const Icon(Icons.delete),
+        color: Color.fromRGBO(44, 152, 240, 1),
+        splashRadius: 20,
+        hoverColor: Color.fromRGBO(224, 224, 224, 1),
+        onPressed: () => onDeletePressed(e.korisnikId, e.korisnickoIme),
+      )),
+    ]);
+  }
+
+  @override
+  bool get isRowCountApproximate => false;
+
+  @override
+  int get rowCount => korisnici.length;
+
+  @override
+  int get selectedRowCount => 0;
 }
