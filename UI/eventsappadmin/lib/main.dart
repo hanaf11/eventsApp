@@ -230,9 +230,10 @@ class LoginPage extends StatelessWidget {
                       TextField(
                         decoration: InputDecoration(
                           labelText: "Password",
-                          prefixIcon: Icon(Icons.password),
+                          prefixIcon: Icon(Icons.password)
                         ),
                         controller: _passwordController,
+                        obscureText:true
                       ),
                       SizedBox(height: 10),
                       ElevatedButton(
