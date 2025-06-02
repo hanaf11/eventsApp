@@ -17,7 +17,6 @@ namespace eventsApp.Controllers
         {
         }
 
-        [AllowAnonymous]
         public override Task<PagedResult<Podkategorije>> Get([FromQuery] PodkategorijeSearchObject? search = null)
         {
             return base.Get(search);

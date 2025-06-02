@@ -138,13 +138,15 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
   }
 
   search() async {
-    var data = await _dogadjajProvider.get(filter: {
+    var filter = {
       'FTS': _ftsController.text,
       'Kategorija': _dropdownValue,
       'Lokacija': _lokacijaController.text,
       'DatumOd': _datumOd,
       'DatumDo': _datumDo
-    });
+    };
+    print("filter je ${filter}");
+    var data = await _dogadjajProvider.get(filter: filter);
 
     setState(() {
       result = data;
