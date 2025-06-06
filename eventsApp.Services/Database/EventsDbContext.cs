@@ -47,6 +47,8 @@ public partial class EventsDbContext : DbContext
 
     public virtual DbSet<Uloge> Uloges { get; set; }
 
+    public virtual DbSet<TrainedModel> TrainedModels { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Data Source=localhost, 1434; Initial Catalog=eventsDb; User=sa; Password=QWEasd123!; TrustServerCertificate=True");
@@ -372,6 +374,18 @@ public partial class EventsDbContext : DbContext
             entity.Property(e => e.Naziv).HasMaxLength(50);
             entity.Property(e => e.Opis).HasMaxLength(200);
         });
+
+        modelBuilder.Entity<TrainedModel>(entity =>
+        {
+            entity.HasKey(e => e.TrainedModelId);
+
+            entity.ToTable("TrainedModel");
+
+            entity.Property(e => e.TrainedModelId).HasColumnName("TrainedModelID");
+            entity.Property(e => e.ModelData).IsRequired();
+            entity.Property(e => e.Created).HasColumnType("datetime");
+        });
+
 
         OnModelCreatingPartial(modelBuilder);
     }

@@ -17,14 +17,13 @@ namespace eventsApp.Services
 
         protected Timer _timer;
 
-        protected EventsDbContext _context;
+       // protected EventsDbContext _context;
 
         public DeactivateEventsService(ILogger<DeactivateEventsService> logger, IServiceProvider serviceProvider)
         {
             _logger = logger;
             _serviceProvider = serviceProvider;
             _logger.LogInformation("DeactivateEventsService instantiated.");
-            HideEventsFirstTime();
             ScheduleDailyTask();
             
         }
@@ -53,18 +52,6 @@ namespace eventsApp.Services
                     _logger.LogError($"Error hiding active events: {ex.Message}", ex);
                 }
             }, null, (long)initialDelay, TimeSpan.FromDays(1).Milliseconds);
-        }
-
-        private async void HideEventsFirstTime()
-        {
-            try
-            {
-                await HideActiveEvents();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error during initial hiding of active events: {ex.Message}", ex);
-            }
         }
 
         public async Task HideActiveEvents()

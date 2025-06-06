@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using eventsApp.Services.Database;
 
@@ -11,9 +12,11 @@ using eventsApp.Services.Database;
 namespace eventsApp.Services.Migrations
 {
     [DbContext(typeof(EventsDbContext))]
-    partial class EventsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250604122005_TrainedModel")]
+    partial class TrainedModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -647,13 +650,12 @@ namespace eventsApp.Services.Migrations
                 {
                     b.Property<int>("TrainedModelId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("TrainedModelID");
+                        .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TrainedModelId"));
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime2");
 
                     b.Property<byte[]>("ModelData")
                         .IsRequired()
@@ -661,7 +663,7 @@ namespace eventsApp.Services.Migrations
 
                     b.HasKey("TrainedModelId");
 
-                    b.ToTable("TrainedModel", (string)null);
+                    b.ToTable("TrainedModels");
                 });
 
             modelBuilder.Entity("eventsApp.Services.Database.Uloge", b =>
