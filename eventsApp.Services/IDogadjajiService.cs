@@ -31,6 +31,7 @@ namespace eventsApp.Services
 
         public Task<DogadjajiReportResponse> GetReportData(DogadjajiReportSearchObject? search);
 
+        public Task<List<DogadjajiListResponse>> GetMostPopularEvents();
         //  List<Model.Dogadjaji> Recommend(int id);
     }
 }

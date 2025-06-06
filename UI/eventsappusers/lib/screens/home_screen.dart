@@ -4,6 +4,7 @@ import 'package:eventsappusers/models/korisnik_global.dart';
 import 'package:eventsappusers/providers/dogadjaj_provider.dart';
 import 'package:eventsappusers/providers/kategorije_provider.dart';
 import 'package:eventsappusers/providers/korisnik_provider.dart';
+import 'package:eventsappusers/providers/recommender_provider.dart';
 import 'package:eventsappusers/utils/category_color_util.dart';
 import 'package:eventsappusers/utils/util.dart';
 import 'package:eventsappusers/widgets/input_field.dart';
@@ -31,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late KorisnikProvider _korisnikProvider;
   late KategorijeProvider _kategorijeProvider;
   late DogadjajProvider _dogadjajProvider;
+  late RecommenderProvider _recommenderProvider;
   List<Dogadjaj>? _pratiteList;
   List<Dogadjaj>? _recommendedList;
   List<Dogadjaj>? _nearYouList;
@@ -55,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _korisnikProvider = context.read<KorisnikProvider>();
     _dogadjajProvider = context.read<DogadjajProvider>();
     _kategorijeProvider = context.read<KategorijeProvider>();
+    _recommenderProvider = context.read<RecommenderProvider>();
     loadKategorije();
     loadData();
   }
@@ -120,7 +123,6 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _pratiteList = value;
         pratiteLoaded = true;
-        recommendedLoaded = true;
       });
       handleLoading();
     });
@@ -134,6 +136,16 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _newList = value.result;
         newLoaded = true;
+      });
+      handleLoading();
+    });
+
+    await _recommenderProvider
+        .recommend(KorisnikGlobal.korisnikId ?? 0)
+        .then((value) {
+      setState(() {
+        _recommendedList = value;
+        recommendedLoaded = true;
       });
       handleLoading();
     });

@@ -39,6 +39,7 @@ builder.Services.AddTransient<HiddenEventState>();
 builder.Services.AddTransient<DraftEventState>();
 
 builder.Services.AddSingleton<DeactivateEventsService>();
+builder.Services.AddScoped<IRecommenderSystemService, RecommenderSystemServiceImpl>();
 
 builder.Services.AddCors(options =>
 {
@@ -108,5 +109,8 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var deactivateEventsService = scope.ServiceProvider.GetRequiredService<DeactivateEventsService>();
+    var recommenderService = scope.ServiceProvider.GetRequiredService<IRecommenderSystemService>();
+    await deactivateEventsService.HideActiveEvents();
+    await recommenderService.CreateModel();
 }
 app.Run();

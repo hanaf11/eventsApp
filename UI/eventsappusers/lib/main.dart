@@ -13,6 +13,7 @@ import 'package:eventsappusers/providers/korisnik_provider.dart';
 import 'package:eventsappusers/providers/narudzba_provider.dart';
 import 'package:eventsappusers/providers/podkategorija_provider.dart';
 import 'package:eventsappusers/providers/pracenje_provider.dart';
+import 'package:eventsappusers/providers/recommender_provider.dart';
 import 'package:eventsappusers/providers/saving_provider.dart';
 import 'package:eventsappusers/providers/tipkarte_provider.dart';
 import 'package:eventsappusers/screens/buy_ticket_screen.dart';
@@ -24,7 +25,6 @@ import 'package:eventsappusers/screens/kategorije_screen.dart';
 import 'package:eventsappusers/screens/kreiraj_dogadjaj_screen.dart';
 import 'package:eventsappusers/screens/map_screen.dart';
 import 'package:eventsappusers/screens/narudzba_preview_screen.dart';
-//import 'package:eventsappusers/screens/payment_information_screen.dart';
 import 'package:eventsappusers/screens/personal_information_screen.dart';
 import 'package:eventsappusers/screens/profile_screen.dart';
 import 'package:eventsappusers/screens/register_screen.dart';
@@ -61,6 +61,8 @@ void main() async {
     ChangeNotifierProvider<NarudzbaProvider>(create: (_) => NarudzbaProvider()),
     ChangeNotifierProvider<HistorijaPregledaProvider>(
         create: (_) => HistorijaPregledaProvider()),
+    ChangeNotifierProvider<RecommenderProvider>(
+        create: (_) => RecommenderProvider()),
   ], child: const MyApp()));
 }
 
