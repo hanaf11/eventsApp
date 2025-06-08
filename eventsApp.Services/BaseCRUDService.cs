@@ -35,7 +35,7 @@ namespace eventsApp.Services
 
         }
 
-        public virtual async Task AfterInsert(TInsert insert)
+        public virtual async Task AfterInsert(TDb entity, TInsert insert)
         {
 
         }
@@ -57,7 +57,7 @@ namespace eventsApp.Services
 
             await _context.SaveChangesAsync();
 
-            await AfterInsert(insert);
+            await AfterInsert(entity, insert);
 
             return _mapper.Map<TDetails>(entity);
         }

@@ -7,8 +7,10 @@ import 'package:eventsappadmin/utils/style_util.dart';
 import 'package:eventsappadmin/utils/util.dart';
 import 'package:eventsappadmin/widgets/master_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:provider/provider.dart';
-
+import 'package:country_picker/country_picker.dart';
 import '../models/dogadjaj.dart';
 import '../models/korisnik.dart';
 import '../models/search_result.dart';
@@ -32,6 +34,7 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
   late KorisnikProvider _korisnikProvider;
   SearchResult<Korisnik>? result;
   Korisnik? korisnik;
+  final _userFormKey = GlobalKey<FormBuilderState>();
 
   _KorisniciListScreenState(this.selected);
 
@@ -65,6 +68,258 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
     setState(() {
       result = data;
     });
+  }
+
+  handleSuccess(String msg) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              title: Text("Success"),
+              content: Text(msg),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                      search();
+                    },
+                    child: Text("OK"))
+              ],
+            ));
+  }
+
+  handleException(Exception e) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Exception'),
+        content: Text(e.toString()),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'OK'),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  addUser() {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Dodaj korisnika'),
+        content: SizedBox(
+            width: MediaQuery.of(context).size.width * 0.6,
+            height: 600,
+            child: Padding(
+                padding: const EdgeInsets.all(5),
+                child: SingleChildScrollView(
+                    child: FormBuilder(
+                        key: _userFormKey,
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                  height: 600,
+                                  child: Column(children: [
+                                    InputField(
+                                      name: "Ime:",
+                                      field: FormBuilderTextField(
+                                        name: 'ime',
+                                        style: TextStyle(fontSize: 14),
+                                        validator:
+                                            FormBuilderValidators.compose([
+                                          FormBuilderValidators.required(
+                                              errorText: 'Polje je obavezno'),
+                                        ]),
+                                      ),
+                                    ),
+                                    InputField(
+                                      name: "Prezime:",
+                                      field: FormBuilderTextField(
+                                        name: 'prezime',
+                                        style: TextStyle(fontSize: 14),
+                                        validator:
+                                            FormBuilderValidators.compose([
+                                          FormBuilderValidators.required(
+                                              errorText: 'Polje je obavezno'),
+                                        ]),
+                                      ),
+                                    ),
+                                    InputField(
+                                      name: "Email:",
+                                      field: FormBuilderTextField(
+                                        name: 'email',
+                                        style: TextStyle(fontSize: 14),
+                                        validator:
+                                            FormBuilderValidators.compose([
+                                          FormBuilderValidators.required(
+                                              errorText: 'Polje je obavezno'),
+                                          FormBuilderValidators.email(
+                                              errorText: "Email nije validan")
+                                        ]),
+                                      ),
+                                    ),
+                                    InputField(
+                                      name: "Korisničko ime:",
+                                      field: FormBuilderTextField(
+                                        name: 'korisnickoIme',
+                                        style: TextStyle(fontSize: 14),
+                                        validator:
+                                            FormBuilderValidators.compose([
+                                          FormBuilderValidators.required(
+                                              errorText: 'Polje je obavezno'),
+                                          FormBuilderValidators.match(
+                                            RegExp(r'^[a-zA-Z0-9]{3,32}$'),
+                                            errorText:
+                                                "Korisničko ime treba sadržavati između 3-32 karaktera\nSamo slova i brojevi",
+                                          )
+                                        ]),
+                                      ),
+                                    ),
+                                    InputField(
+                                      name: "Lozinka:",
+                                      field: FormBuilderTextField(
+                                        name: 'password',
+                                        style: TextStyle(fontSize: 14),
+                                        obscureText: true,
+                                        validator:
+                                            FormBuilderValidators.compose([
+                                          FormBuilderValidators.required(
+                                              errorText: 'Polje je obavezno'),
+                                          FormBuilderValidators.password(
+                                            errorText:
+                                                "Lozinka treba sadržavati između 8-32 karaktera, Minimalno jedno malo slovo \nMinimalno jedno veliko slovo, Minimalno jedan broj \nMinimalno jedan specijalni karakter",
+                                          )
+                                        ]),
+                                      ),
+                                    ),
+                                    InputField(
+                                      name: "Potvrda lozinke:",
+                                      field: FormBuilderTextField(
+                                        name: 'passwordPotvrda',
+                                        style: TextStyle(fontSize: 14),
+                                        obscureText: true,
+                                        validator:
+                                            FormBuilderValidators.compose([
+                                          FormBuilderValidators.required(
+                                              errorText: 'Polje je obavezno'),
+                                          FormBuilderValidators.password(
+                                            errorText:
+                                                "Lozinka treba sadržavati između 8-32 karaktera, minimalno jedno malo slovo \nMinimalno jedno veliko slovo, Minimalno jedan broj \nMinimalno jedan specijalni karakter",
+                                          )
+                                        ]),
+                                      ),
+                                    ),
+                                    InputField(
+                                      name: "Telefon:",
+                                      field: FormBuilderTextField(
+                                        name: 'telefon',
+                                        style: TextStyle(fontSize: 14),
+                                        validator:
+                                            FormBuilderValidators.compose([
+                                          FormBuilderValidators.required(
+                                              errorText: 'Polje je obavezno'),
+                                          FormBuilderValidators.phoneNumber(
+                                              errorText:
+                                                  "Očekivani format: +38761000000",
+                                              regex: RegExp(r'^\+\d{11,12}$')),
+                                        ]),
+                                      ),
+                                    ),
+                                    InputField(
+                                      name: "Adresa:",
+                                      field: FormBuilderTextField(
+                                        name: 'adresa',
+                                        style: TextStyle(fontSize: 14),
+                                      ),
+                                    ),
+                                    _buildCountryInput(),
+                                    _buildRoleInput()
+                                  ]))
+                            ]))))),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'Odustani'),
+            child: const Text('Odustani'),
+          ),
+          TextButton(
+            onPressed: () async {
+              if (_userFormKey.currentState?.saveAndValidate() ?? false) {
+                print("validno");
+                print(_userFormKey.currentState?.value);
+
+                Korisnik request =
+                    Korisnik.fromJson(_userFormKey.currentState!.value);
+                print("request je");
+                print(request.ime);
+                try {
+                  await _korisnikProvider.insert(request).then(
+                      (value) => handleSuccess("Uspješno dodan novi korisnik"));
+                } on Exception catch (ex) {
+                  handleException(ex);
+                }
+              }
+            },
+            child: const Text('Potvrdi'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  _buildCountryInput() {
+    return InkWell(
+        child: IgnorePointer(
+            child: SizedBox(
+                height: 50,
+                child: Column(children: [
+                  InputField(
+                      name: 'Država:',
+                      field: FormBuilderTextField(
+                        style: TextStyle(fontSize: 14),
+                        name: "drzava",
+                      )),
+                ]))),
+        onTap: () {
+          showCountryPicker(
+              context: context,
+              onSelect: (Country country) {
+                setState(() {
+                  _userFormKey.currentState?.fields['drzava']
+                      ?.didChange(country.name);
+                });
+              });
+        });
+  }
+
+  _buildRoleInput() {
+    final roles = {
+      1: 'Administrator',
+      2: 'Manager',
+    };
+
+    return InputField(
+      name: 'Uloga:',
+      field: FormBuilderDropdown<int>(
+        name: 'uloga',
+        decoration: InputDecoration(
+          border: OutlineInputBorder(),
+        ),
+        validator: FormBuilderValidators.compose([
+          FormBuilderValidators.required(errorText: 'Uloga je obavezna'),
+        ]),
+        items: roles.entries
+            .map(
+              (entry) => DropdownMenuItem(
+                value: entry.key,
+                child: Text(entry.value, style: TextStyle(fontSize: 12)),
+              ),
+            )
+            .toList(),
+      ),
+    );
   }
 
   @override
@@ -112,6 +367,24 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
                     search();
                   }),
             ),
+            IconButton(
+              icon: const Icon(Icons.add),
+              tooltip: 'Dodaj novog korisnika',
+              onPressed: () {
+                addUser();
+              },
+            ),
+
+            /* InputField(
+              name: "",
+              field: IconButton(
+                icon: const Icon(Icons.add),
+                tooltip: 'Dodaj novog korisnika',
+                onPressed: () {
+                  addUser();
+                },
+              ),
+            ),*/
           ],
         ),
       ),
@@ -407,20 +680,21 @@ class KorisnikDataSource extends DataTableSource {
     return DataRow(cells: [
       DataCell(Text(e.korisnickoIme.toString(),
           style: TextStyle(fontWeight: FontWeight.bold))),
-      DataCell(Text("${e.created.day}.${e.created.month}.${e.created.year}.")),
+      DataCell(
+          Text("${e.created?.day}.${e.created?.month}.${e.created?.year}.")),
       DataCell(IconButton(
         icon: const Icon(Icons.remove_red_eye),
         color: Color.fromRGBO(44, 152, 240, 1),
         splashRadius: 20,
         hoverColor: Color.fromRGBO(224, 224, 224, 1),
-        onPressed: () => onDetailsPressed(e.korisnikId),
+        onPressed: () => onDetailsPressed(e.korisnikId!),
       )),
       DataCell(IconButton(
         icon: const Icon(Icons.delete),
         color: Color.fromRGBO(44, 152, 240, 1),
         splashRadius: 20,
         hoverColor: Color.fromRGBO(224, 224, 224, 1),
-        onPressed: () => onDeletePressed(e.korisnikId, e.korisnickoIme),
+        onPressed: () => onDeletePressed(e.korisnikId!, e.korisnickoIme!),
       )),
     ]);
   }

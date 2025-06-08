@@ -7,13 +7,13 @@ part of 'dogadjaj.dart';
 // **************************************************************************
 
 Dogadjaj _$DogadjajFromJson(Map<String, dynamic> json) => Dogadjaj(
-      json['dogadjajId'] as int?,
+      (json['dogadjajId'] as num?)?.toInt(),
       json['naziv'] as String?,
       json['program'] as String?,
       json['opis'] as String?,
       json['naslovna'] as String?,
-      json['kategorijaId'] as int?,
-      json['podkategorijaId'] as int?,
+      (json['kategorijaId'] as num?)?.toInt(),
+      (json['podkategorijaId'] as num?)?.toInt(),
       json['datumOd'] == null
           ? null
           : DateTime.parse(json['datumOd'] as String),
@@ -21,7 +21,7 @@ Dogadjaj _$DogadjajFromJson(Map<String, dynamic> json) => Dogadjaj(
           ? null
           : DateTime.parse(json['datumDo'] as String),
       json['lokacija'] as String?,
-      json['dobavljacId'] as int?,
+      (json['dobavljacId'] as num?)?.toInt(),
       json['organizator'] as String?,
       json['website'] as String?,
       (json['galerija'] as List<dynamic>?)

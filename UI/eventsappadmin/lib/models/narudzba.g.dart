@@ -7,8 +7,8 @@ part of 'narudzba.dart';
 // **************************************************************************
 
 Narudzba _$NarudzbaFromJson(Map<String, dynamic> json) => Narudzba(
-      narudzbaId: json['narudzbaId'] as int?,
-      korisnikId: json['korisnikId'] as int?,
+      narudzbaId: (json['narudzbaId'] as num?)?.toInt(),
+      korisnikId: (json['korisnikId'] as num?)?.toInt(),
       brojNarudzbe: json['brojNarudzbe'] as String?,
       datum: json['datum'] == null
           ? null
@@ -20,7 +20,7 @@ Narudzba _$NarudzbaFromJson(Map<String, dynamic> json) => Narudzba(
       prezime: json['prezime'] as String?,
       telefon: json['telefon'] as String?,
       adresa: json['adresa'] as String?,
-      postanskiBroj: json['postanskiBroj'] as int?,
+      postanskiBroj: (json['postanskiBroj'] as num?)?.toInt(),
       grad: json['grad'] as String?,
       drzava: json['drzava'] as String?,
       tip: json['tip'] as String?,

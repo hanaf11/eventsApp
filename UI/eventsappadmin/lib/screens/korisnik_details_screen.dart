@@ -421,7 +421,7 @@ class _KorisnikDetailsScreenState extends State<KorisnikDetailsScreen> {
                                                   width: 5,
                                                 ),
                                                 Text(
-                                                    "${korisnik?.created.day}.${korisnik?.created.month}.${korisnik?.created.year}.",
+                                                    "${korisnik?.created?.day}.${korisnik?.created?.month}.${korisnik?.created?.year}.",
                                                     style: TextStyle(
                                                         fontWeight:
                                                             FontWeight.w300,

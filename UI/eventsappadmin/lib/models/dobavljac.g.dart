@@ -7,7 +7,7 @@ part of 'dobavljac.dart';
 // **************************************************************************
 
 Dobavljac _$DobavljacFromJson(Map<String, dynamic> json) => Dobavljac(
-      json['dobavljacId'] as int?,
+      (json['dobavljacId'] as num?)?.toInt(),
       json['naziv'] as String?,
       json['adresa'] as String?,
       json['telefon'] as String?,

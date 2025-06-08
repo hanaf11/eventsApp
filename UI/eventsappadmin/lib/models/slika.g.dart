@@ -7,7 +7,7 @@ part of 'slika.dart';
 // **************************************************************************
 
 Slika _$SlikaFromJson(Map<String, dynamic> json) => Slika(
-      json['slikaId'] as int?,
+      (json['slikaId'] as num?)?.toInt(),
       json['slika'] as String?,
     );
 

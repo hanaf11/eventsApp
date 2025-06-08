@@ -32,5 +32,7 @@ namespace eventsApp.Model.Requests
 
         [Required(ErrorMessage = "Potvrda lozinke je obavezna")]
         public string PasswordPotvrda { get; set; }
+
+        public int? Uloga { get; set; }
     }
 }
