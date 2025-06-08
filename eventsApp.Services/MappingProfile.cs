@@ -51,6 +51,8 @@ namespace eventsApp.Services
            .ForMember(model => model.KorisnickoIme, source => source.MapFrom(src => src.Korisnik.KorisnickoIme));*/
             CreateMap<Database.NarudzbaStavke, Model.StavkeNarudzbe>()
              .ForMember(model => model.TipKarte, source => source.MapFrom(src => src.TipKarte.Naziv));
+            CreateMap<Model.KorisniciUloge, Database.KorisniciUloge>();
+            CreateMap<Database.KorisniciUloge, Model.KorisniciUloge>();
         }
     }
 }

@@ -20,14 +20,16 @@ namespace eventsApp.Services
         protected readonly IKomentariService _komentariService;
         protected readonly IPracenjeService _pracenjeService;
         protected readonly INarudzbaService _narudzbaService;
+        protected readonly IKorisnikUlogaService _korisnikUlogaService;
 
-        public KorisniciServiceImpl(EventsDbContext context, IMapper mapper, ILogger<KorisniciServiceImpl> logger, INotificationService notificationService, IKomentariService komentariService, IPracenjeService pracenjeService, INarudzbaService narudzbaService, IHistorijaPregledaService historijaPregledaService) : base(context, mapper)
+        public KorisniciServiceImpl(EventsDbContext context, IMapper mapper, ILogger<KorisniciServiceImpl> logger, INotificationService notificationService, IKomentariService komentariService, IPracenjeService pracenjeService, INarudzbaService narudzbaService, IHistorijaPregledaService historijaPregledaService, IKorisnikUlogaService korisnikUlogaService) : base(context, mapper)
         {
-           _logger = logger;
+            _logger = logger;
             _notificationService = notificationService;
             _komentariService = komentariService;
             _pracenjeService = pracenjeService;
             _narudzbaService = narudzbaService;
+            _korisnikUlogaService = korisnikUlogaService;
         }
 
         public override async Task BeforeInsert(Database.Korisnici entity, KorisniciInsertRequest insert)
@@ -67,9 +69,10 @@ namespace eventsApp.Services
 
         }*/
 
-        public override async Task AfterInsert(KorisniciInsertRequest insert)
+        public override async Task AfterInsert(Korisnici entity, KorisniciInsertRequest insert)
         {
-            _notificationService.SendRegisteredMail(insert.Email,insert.Ime);
+           await _korisnikUlogaService.Insert(new Model.KorisniciUloge() { KorisnikId=entity.KorisnikId, UlogaId = insert.Uloga ?? 3, DatumIzmjene=DateTime.Now}) ;
+            _notificationService.SendRegisteredMail(entity.Email,entity.Ime);
         }
 
         public static string GenerateSalt()

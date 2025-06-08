@@ -7,10 +7,10 @@ part of 'tipkarte.dart';
 // **************************************************************************
 
 TipKarte _$TipKarteFromJson(Map<String, dynamic> json) => TipKarte(
-      json['dogadjajId'] as int?,
+      (json['dogadjajId'] as num?)?.toInt(),
       json['naziv'] as String?,
       (json['cijena'] as num?)?.toDouble(),
-      json['stanje'] as int?,
+      (json['stanje'] as num?)?.toInt(),
       json['numerisanjeSjedista'] as bool?,
     );
 

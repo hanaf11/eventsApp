@@ -8,9 +8,9 @@ part of 'podkategorija.dart';
 
 Podkategorija _$PodkategorijaFromJson(Map<String, dynamic> json) =>
     Podkategorija(
-      json['podkategorijaId'] as int,
+      (json['podkategorijaId'] as num).toInt(),
       json['naziv'] as String,
-      json['kategorijaId'] as int,
+      (json['kategorijaId'] as num).toInt(),
     );
 
 Map<String, dynamic> _$PodkategorijaToJson(Podkategorija instance) =>

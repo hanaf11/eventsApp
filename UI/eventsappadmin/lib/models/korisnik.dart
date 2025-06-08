@@ -7,9 +7,9 @@ part 'korisnik.g.dart';
 
 @JsonSerializable()
 class Korisnik {
-  int korisnikId;
-  String korisnickoIme;
-  DateTime created;
+  int? korisnikId;
+  String? korisnickoIme;
+  DateTime? created;
   String? ime;
   String? prezime;
   String? email;
@@ -18,6 +18,9 @@ class Korisnik {
   String? adresa;
   String? drzava;
   String? slika;
+  int? uloga;
+  String? password;
+  String? passwordPotvrda;
   List<Narudzba>? narudzbes;
 
   Korisnik(
@@ -32,6 +35,9 @@ class Korisnik {
       this.adresa,
       this.drzava,
       this.slika,
+      this.uloga,
+      this.password,
+      this.passwordPotvrda,
       this.narudzbes);
 
   factory Korisnik.fromJson(Map<String, dynamic> json) =>
