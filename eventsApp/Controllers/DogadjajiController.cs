@@ -3,6 +3,7 @@ using eventsApp.Model.Messages;
 using eventsApp.Model.Requests;
 using eventsApp.Model.SearchObjects;
 using eventsApp.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,6 +17,8 @@ namespace eventsApp.Controllers
         {
         }
 
+
+        [Authorize(Roles = "Admin,Manager")]
         [HttpPut("{id}/activate")]
         public virtual async Task<Model.Dogadjaji> Activate(int id)
         {
@@ -23,6 +26,7 @@ namespace eventsApp.Controllers
         }
 
 
+        [Authorize(Roles = "Admin,Manager")]
         [HttpPut("{id}/hide")]
         public virtual async Task<Model.Dogadjaji> Hide(int id)
         {
@@ -30,17 +34,21 @@ namespace eventsApp.Controllers
         }
 
 
+        [Authorize(Roles = "Admin,Manager")]
         [HttpPut("{id}/verify")]
         public virtual async Task<Model.Dogadjaji> Verify(int id)
         {
             return await (_service as IDogadjajiService).Verify(id);
         }
 
+
+        [Authorize(Roles = "Admin,Manager")]
         [HttpPut("{id}/send-ticket-request")]
         public virtual async Task<Model.Dogadjaji> SendRequestForTickets(int id, [FromBody] List<KarteRequest> request)
         {
              return await (_service as IDogadjajiService).SendRequestForTickets(id,request);
         }
+
 
         [HttpGet("{id}/allowedActions")]
         public virtual async Task<List<string>> AllowedActions(int id)
@@ -54,12 +62,16 @@ namespace eventsApp.Controllers
             return await (_service as IDogadjajiService).GetEventsFromFollowingCategories(korisnikId);
         }
 
+
+        [Authorize(Roles = "Admin,Manager")]
         [HttpGet("find-verified")]
         public async Task<Model.PagedResult<DogadjajiListResponse>> FindVerified([FromQuery] BaseSearchObject? search = null)
         {
             return await (_service as IDogadjajiService).FindVerified(search);
         }
 
+
+        
         [HttpPost("send-tickets")]
         public async Task<HttpResponseMessage> LoadTickets([FromBody]KarteDobavljacResponseList karteList)
         {
@@ -72,11 +84,6 @@ namespace eventsApp.Controllers
             return await (_service as IDogadjajiService).GetReportData(search);
         }
 
-        /* [HttpGet("{id}/recommend")]
-         public virtual List<Model.Dogadjaji> Recommend(int id)
-         {
-             return  (_service as IDogadjajiService).Recommend(id);
-         }*/
 
     }
 }

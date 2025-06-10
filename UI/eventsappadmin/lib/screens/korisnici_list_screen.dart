@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:eventsappadmin/models/korisnik_global.dart';
 import 'package:eventsappadmin/providers/dogadjaj_provider.dart';
 import 'package:eventsappadmin/screens/dogadjaj_details_screen.dart';
 import 'package:eventsappadmin/screens/korisnik_details_screen.dart';
@@ -105,168 +106,175 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
   }
 
   addUser() {
-    showDialog<String>(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: const Text('Dodaj korisnika'),
-        content: SizedBox(
-            width: MediaQuery.of(context).size.width * 0.6,
-            height: 600,
-            child: Padding(
-                padding: const EdgeInsets.all(5),
-                child: SingleChildScrollView(
-                    child: FormBuilder(
-                        key: _userFormKey,
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                  height: 600,
-                                  child: Column(children: [
-                                    InputField(
-                                      name: "Ime:",
-                                      field: FormBuilderTextField(
-                                        name: 'ime',
-                                        style: TextStyle(fontSize: 14),
-                                        validator:
-                                            FormBuilderValidators.compose([
-                                          FormBuilderValidators.required(
-                                              errorText: 'Polje je obavezno'),
-                                        ]),
+    bool canAccess = KorisnikGlobal.uloge?.contains("Admin") ?? false;
+    if (canAccess) {
+      showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('Dodaj korisnika'),
+          content: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.6,
+              height: 600,
+              child: Padding(
+                  padding: const EdgeInsets.all(5),
+                  child: SingleChildScrollView(
+                      child: FormBuilder(
+                          key: _userFormKey,
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                    height: 600,
+                                    child: Column(children: [
+                                      InputField(
+                                        name: "Ime:",
+                                        field: FormBuilderTextField(
+                                          name: 'ime',
+                                          style: TextStyle(fontSize: 14),
+                                          validator:
+                                              FormBuilderValidators.compose([
+                                            FormBuilderValidators.required(
+                                                errorText: 'Polje je obavezno'),
+                                          ]),
+                                        ),
                                       ),
-                                    ),
-                                    InputField(
-                                      name: "Prezime:",
-                                      field: FormBuilderTextField(
-                                        name: 'prezime',
-                                        style: TextStyle(fontSize: 14),
-                                        validator:
-                                            FormBuilderValidators.compose([
-                                          FormBuilderValidators.required(
-                                              errorText: 'Polje je obavezno'),
-                                        ]),
+                                      InputField(
+                                        name: "Prezime:",
+                                        field: FormBuilderTextField(
+                                          name: 'prezime',
+                                          style: TextStyle(fontSize: 14),
+                                          validator:
+                                              FormBuilderValidators.compose([
+                                            FormBuilderValidators.required(
+                                                errorText: 'Polje je obavezno'),
+                                          ]),
+                                        ),
                                       ),
-                                    ),
-                                    InputField(
-                                      name: "Email:",
-                                      field: FormBuilderTextField(
-                                        name: 'email',
-                                        style: TextStyle(fontSize: 14),
-                                        validator:
-                                            FormBuilderValidators.compose([
-                                          FormBuilderValidators.required(
-                                              errorText: 'Polje je obavezno'),
-                                          FormBuilderValidators.email(
-                                              errorText: "Email nije validan")
-                                        ]),
+                                      InputField(
+                                        name: "Email:",
+                                        field: FormBuilderTextField(
+                                          name: 'email',
+                                          style: TextStyle(fontSize: 14),
+                                          validator:
+                                              FormBuilderValidators.compose([
+                                            FormBuilderValidators.required(
+                                                errorText: 'Polje je obavezno'),
+                                            FormBuilderValidators.email(
+                                                errorText: "Email nije validan")
+                                          ]),
+                                        ),
                                       ),
-                                    ),
-                                    InputField(
-                                      name: "Korisničko ime:",
-                                      field: FormBuilderTextField(
-                                        name: 'korisnickoIme',
-                                        style: TextStyle(fontSize: 14),
-                                        validator:
-                                            FormBuilderValidators.compose([
-                                          FormBuilderValidators.required(
-                                              errorText: 'Polje je obavezno'),
-                                          FormBuilderValidators.match(
-                                            RegExp(r'^[a-zA-Z0-9]{3,32}$'),
-                                            errorText:
-                                                "Korisničko ime treba sadržavati između 3-32 karaktera\nSamo slova i brojevi",
-                                          )
-                                        ]),
-                                      ),
-                                    ),
-                                    InputField(
-                                      name: "Lozinka:",
-                                      field: FormBuilderTextField(
-                                        name: 'password',
-                                        style: TextStyle(fontSize: 14),
-                                        obscureText: true,
-                                        validator:
-                                            FormBuilderValidators.compose([
-                                          FormBuilderValidators.required(
-                                              errorText: 'Polje je obavezno'),
-                                          FormBuilderValidators.password(
-                                            errorText:
-                                                "Lozinka treba sadržavati između 8-32 karaktera, Minimalno jedno malo slovo \nMinimalno jedno veliko slovo, Minimalno jedan broj \nMinimalno jedan specijalni karakter",
-                                          )
-                                        ]),
-                                      ),
-                                    ),
-                                    InputField(
-                                      name: "Potvrda lozinke:",
-                                      field: FormBuilderTextField(
-                                        name: 'passwordPotvrda',
-                                        style: TextStyle(fontSize: 14),
-                                        obscureText: true,
-                                        validator:
-                                            FormBuilderValidators.compose([
-                                          FormBuilderValidators.required(
-                                              errorText: 'Polje je obavezno'),
-                                          FormBuilderValidators.password(
-                                            errorText:
-                                                "Lozinka treba sadržavati između 8-32 karaktera, minimalno jedno malo slovo \nMinimalno jedno veliko slovo, Minimalno jedan broj \nMinimalno jedan specijalni karakter",
-                                          )
-                                        ]),
-                                      ),
-                                    ),
-                                    InputField(
-                                      name: "Telefon:",
-                                      field: FormBuilderTextField(
-                                        name: 'telefon',
-                                        style: TextStyle(fontSize: 14),
-                                        validator:
-                                            FormBuilderValidators.compose([
-                                          FormBuilderValidators.required(
-                                              errorText: 'Polje je obavezno'),
-                                          FormBuilderValidators.phoneNumber(
+                                      InputField(
+                                        name: "Korisničko ime:",
+                                        field: FormBuilderTextField(
+                                          name: 'korisnickoIme',
+                                          style: TextStyle(fontSize: 14),
+                                          validator:
+                                              FormBuilderValidators.compose([
+                                            FormBuilderValidators.required(
+                                                errorText: 'Polje je obavezno'),
+                                            FormBuilderValidators.match(
+                                              RegExp(r'^[a-zA-Z0-9]{3,32}$'),
                                               errorText:
-                                                  "Očekivani format: +38761000000",
-                                              regex: RegExp(r'^\+\d{11,12}$')),
-                                        ]),
+                                                  "Korisničko ime treba sadržavati između 3-32 karaktera\nSamo slova i brojevi",
+                                            )
+                                          ]),
+                                        ),
                                       ),
-                                    ),
-                                    InputField(
-                                      name: "Adresa:",
-                                      field: FormBuilderTextField(
-                                        name: 'adresa',
-                                        style: TextStyle(fontSize: 14),
+                                      InputField(
+                                        name: "Lozinka:",
+                                        field: FormBuilderTextField(
+                                          name: 'password',
+                                          style: TextStyle(fontSize: 14),
+                                          obscureText: true,
+                                          validator:
+                                              FormBuilderValidators.compose([
+                                            FormBuilderValidators.required(
+                                                errorText: 'Polje je obavezno'),
+                                            FormBuilderValidators.password(
+                                              errorText:
+                                                  "Lozinka treba sadržavati između 8-32 karaktera, Minimalno jedno malo slovo \nMinimalno jedno veliko slovo, Minimalno jedan broj \nMinimalno jedan specijalni karakter",
+                                            )
+                                          ]),
+                                        ),
                                       ),
-                                    ),
-                                    _buildCountryInput(),
-                                    _buildRoleInput()
-                                  ]))
-                            ]))))),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.pop(context, 'Odustani'),
-            child: const Text('Odustani'),
-          ),
-          TextButton(
-            onPressed: () async {
-              if (_userFormKey.currentState?.saveAndValidate() ?? false) {
-                print("validno");
-                print(_userFormKey.currentState?.value);
+                                      InputField(
+                                        name: "Potvrda lozinke:",
+                                        field: FormBuilderTextField(
+                                          name: 'passwordPotvrda',
+                                          style: TextStyle(fontSize: 14),
+                                          obscureText: true,
+                                          validator:
+                                              FormBuilderValidators.compose([
+                                            FormBuilderValidators.required(
+                                                errorText: 'Polje je obavezno'),
+                                            FormBuilderValidators.password(
+                                              errorText:
+                                                  "Lozinka treba sadržavati između 8-32 karaktera, minimalno jedno malo slovo \nMinimalno jedno veliko slovo, Minimalno jedan broj \nMinimalno jedan specijalni karakter",
+                                            )
+                                          ]),
+                                        ),
+                                      ),
+                                      InputField(
+                                        name: "Telefon:",
+                                        field: FormBuilderTextField(
+                                          name: 'telefon',
+                                          style: TextStyle(fontSize: 14),
+                                          validator:
+                                              FormBuilderValidators.compose([
+                                            FormBuilderValidators.required(
+                                                errorText: 'Polje je obavezno'),
+                                            FormBuilderValidators.phoneNumber(
+                                                errorText:
+                                                    "Očekivani format: +38761000000",
+                                                regex:
+                                                    RegExp(r'^\+\d{11,12}$')),
+                                          ]),
+                                        ),
+                                      ),
+                                      InputField(
+                                        name: "Adresa:",
+                                        field: FormBuilderTextField(
+                                          name: 'adresa',
+                                          style: TextStyle(fontSize: 14),
+                                        ),
+                                      ),
+                                      _buildCountryInput(),
+                                      _buildRoleInput()
+                                    ]))
+                              ]))))),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'Odustani'),
+              child: const Text('Odustani'),
+            ),
+            TextButton(
+              onPressed: () async {
+                if (_userFormKey.currentState?.saveAndValidate() ?? false) {
+                  print("validno");
+                  print(_userFormKey.currentState?.value);
 
-                Korisnik request =
-                    Korisnik.fromJson(_userFormKey.currentState!.value);
-                print("request je");
-                print(request.ime);
-                try {
-                  await _korisnikProvider.insert(request).then(
-                      (value) => handleSuccess("Uspješno dodan novi korisnik"));
-                } on Exception catch (ex) {
-                  handleException(ex);
+                  Korisnik request =
+                      Korisnik.fromJson(_userFormKey.currentState!.value);
+                  print("request je");
+                  print(request.ime);
+                  try {
+                    await _korisnikProvider.insert(request).then((value) =>
+                        handleSuccess("Uspješno dodan novi korisnik"));
+                  } on Exception catch (ex) {
+                    handleException(ex);
+                  }
                 }
-              }
-            },
-            child: const Text('Potvrdi'),
-          ),
-        ],
-      ),
-    );
+              },
+              child: const Text('Potvrdi'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      handleException(
+          Exception("Morate imati ulogu Admin da biste dodali korisnika!"));
+    }
   }
 
   _buildCountryInput() {
@@ -296,7 +304,7 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
 
   _buildRoleInput() {
     final roles = {
-      1: 'Administrator',
+      1: 'Admin',
       2: 'Manager',
     };
 
@@ -426,29 +434,36 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
                     _buildKorisnikDetails(korisnikId);
                   },
                   onDeletePressed: (int korisnikId, String korisnickoIme) {
-                    showDialog<String>(
-                      context: context,
-                      builder: (BuildContext context) => AlertDialog(
-                        title: const Text('Potvrdite akciju'),
-                        content: Text(
-                            'Da li stvarno želite obrisati korisnika $korisnickoIme?'),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, 'Odustani'),
-                            child: const Text('Odustani'),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context, 'Potvrdi');
-                              _korisnikProvider
-                                  .delete(korisnikId)
-                                  .then((value) => search());
-                            },
-                            child: const Text('Potvrdi'),
-                          ),
-                        ],
-                      ),
-                    );
+                    bool canAccess =
+                        KorisnikGlobal.uloge?.contains("Admin") ?? false;
+                    if (canAccess) {
+                      showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: const Text('Potvrdite akciju'),
+                          content: Text(
+                              'Da li stvarno želite obrisati korisnika $korisnickoIme?'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () =>
+                                  Navigator.pop(context, 'Odustani'),
+                              child: const Text('Odustani'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context, 'Potvrdi');
+                                _korisnikProvider
+                                    .delete(korisnikId)
+                                    .then((value) => search());
+                              },
+                              child: const Text('Potvrdi'),
+                            ),
+                          ],
+                        ),
+                      );
+                    } else
+                      handleException(Exception(
+                          "Morate imati ulogu Admin da biste obrisali korisnika!"));
                   },
                 ),
                 rowsPerPage: 5,

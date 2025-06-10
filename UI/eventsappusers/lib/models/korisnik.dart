@@ -20,6 +20,7 @@ class Korisnik {
   String? slika;
   String? password;
   String? passwordPotvrda;
+  List<String>? uloge;
 
   Korisnik(
       this.korisnikId,
@@ -34,7 +35,8 @@ class Korisnik {
       this.drzava,
       this.slika,
       this.password,
-      this.passwordPotvrda);
+      this.passwordPotvrda,
+      this.uloge);
 
   factory Korisnik.fromJson(Map<String, dynamic> json) =>
       _$KorisnikFromJson(json);
