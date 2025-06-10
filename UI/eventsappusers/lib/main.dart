@@ -106,6 +106,12 @@ class LoginPage extends StatelessWidget {
       };
 
       Korisnik data = await _korisnikprovider.login(credentials);
+      bool canAccess = (data.uloge != null && data.uloge!.contains("Admin") ||
+          data.uloge!.contains("User"));
+      if (!canAccess) {
+        throw Exception(
+            "Access denied: You must have a role Admin or User to log in.");
+      }
       KorisnikGlobal(data);
 
       Navigator.of(context).push(

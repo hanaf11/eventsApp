@@ -32,6 +32,8 @@ namespace eventsApp.Model
 
         public virtual ICollection<KorisniciUloge> KorisniciUloges { get; } = new List<KorisniciUloge>();
 
+        public List<string>? Uloge { get; set; }
+
         public virtual ICollection<Pracenje> Pracenjes { get; } = new List<Pracenje>();
 
         public virtual ICollection<Narudzbe> Narudzbes { get; } = new List<Narudzbe>();

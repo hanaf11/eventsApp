@@ -134,7 +134,9 @@ namespace eventsApp.Services
                 throw new Model.UserException("Lozinka nije ispravna");
             }
 
-            return _mapper.Map<Model.Korisnici>(entity);
+            Model.Korisnici response= _mapper.Map<Model.Korisnici>(entity);
+            response.Uloge = entity.KorisniciUloges.Select(ku => ku.Uloga.Naziv).ToList();
+            return response;
         }
 
         public async Task<Model.KorisniciReportResponse> GetReportData(KorisniciReportSearchObject? search)

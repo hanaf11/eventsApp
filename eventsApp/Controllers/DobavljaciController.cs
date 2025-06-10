@@ -1,6 +1,7 @@
 ﻿using eventsApp.Model;
 using eventsApp.Model.Requests;
 using eventsApp.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +15,7 @@ namespace eventsApp.Controllers
         {
         }
 
+        [Authorize(Roles = "Admin,Manager")]
         [HttpPut("{id}/change-status")]
         public virtual async Task<Model.Dobavljaci> ChangeStatus(int id, [FromBody] bool status)
         {

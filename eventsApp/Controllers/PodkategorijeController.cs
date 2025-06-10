@@ -22,7 +22,8 @@ namespace eventsApp.Controllers
             return base.Get(search);
         }
 
-        [Authorize(Roles = "Administrator")]
+
+        [Authorize(Roles = "Admin,Manager")]
         public override Task<Podkategorije> Insert([FromBody] PodkategorijeCreateRequest insert)
         {
             return base.Insert(insert);

@@ -228,13 +228,11 @@ class LoginPage extends StatelessWidget {
                       ),
                       SizedBox(height: 8),
                       TextField(
-                        decoration: InputDecoration(
-                          labelText: "Password",
-                          prefixIcon: Icon(Icons.password)
-                        ),
-                        controller: _passwordController,
-                        obscureText:true
-                      ),
+                          decoration: InputDecoration(
+                              labelText: "Password",
+                              prefixIcon: Icon(Icons.password)),
+                          controller: _passwordController,
+                          obscureText: true),
                       SizedBox(height: 10),
                       ElevatedButton(
                         //style: buttonPrimary,
@@ -255,6 +253,14 @@ class LoginPage extends StatelessWidget {
                             };
                             Korisnik data =
                                 await _korisnikprovider.login(credentials);
+                            bool canAccess = (data.uloge != null &&
+                                    data.uloge!.contains("Admin") ||
+                                data.uloge!.contains("Manager"));
+                            if (!canAccess) {
+                              throw Exception(
+                                  "Access denied: You must have a role Admin or Manager to log in.");
+                            }
+
                             KorisnikGlobal(data);
 
                             Navigator.of(context).push(
