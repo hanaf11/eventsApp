@@ -54,7 +54,7 @@ namespace eventsApp.Services.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Ime = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Prezime = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Telefon = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     KorisnickoIme = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     LozinkaHash = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
@@ -475,8 +475,7 @@ namespace eventsApp.Services.Migrations
                 name: "CS_Email",
                 table: "Korisnici",
                 column: "Email",
-                unique: true,
-                filter: "[Email] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "CS_KorisnickoIme",
