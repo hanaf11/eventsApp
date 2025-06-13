@@ -90,6 +90,8 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
   int? selectedKategorija;
   bool kategorijeLoaded = false;
   bool dobavljaciLoaded = false;
+  bool showTipoviError = false;
+  String? showErrorText;
 
   @override
   void initState() {
@@ -163,7 +165,8 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
   }
 
   loadDobavljaci() async {
-    await _dobavljacProvider.get().then((data) => {
+    var filter = {"Active": true};
+    await _dobavljacProvider.get(filter: filter).then((data) => {
           setState(() {
             _dobavljaciList = data.result;
             _dobavljaciDropdownList = data.result.map((d) {
@@ -321,9 +324,22 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
 
     print("validnost $isForm1Valid $isForm2Valid");
     var prodajaKarata = _eventFormKey.currentState?.value['ProdajaKarata'];
+    if (prodajaKarata != null && prodajaKarata) {
+      if (tipKarteList.isEmpty) {
+        setState(() {
+          showTipoviError = true;
+        });
+        return;
+      }
 
-    if (isForm1Valid) {
-      if (prodajaKarata != null && prodajaKarata) {
+      if (isForm1Valid) {
+        /* if (prodajaKarata != null && prodajaKarata) {
+        if (tipKarteList.isEmpty) {
+          setState(() {
+            showTipoviError = true;
+          });
+          return;
+        }*/
         if (isForm2Valid) {
           sendRequest(true);
         }
@@ -413,6 +429,11 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
     });
     _updateRowIndex(index);
     print("list KARTI $tipKarteList");
+    if (tipKarteList.isEmpty) {
+      setState(() {
+        showTipoviError = true;
+      });
+    }
   }
 
   _updateRowIndex(int index) {
@@ -428,6 +449,7 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
 
     if (tipKarte.isNotEmpty && cijena.isNotEmpty) {
       setState(() {
+        showErrorText = null;
         var existingIndex =
             tipKarteList.indexWhere((element) => element['rowsIndex'] == index);
 
@@ -456,6 +478,19 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
       });
 
       print("Updated tipKarteList: $tipKarteList");
+      if (tipKarteList.isNotEmpty) {
+        setState(() {
+          showTipoviError = false;
+        });
+      }
+    } else if (tipKarte.isEmpty) {
+      setState(() {
+        showErrorText = "Naziv je obavezan";
+      });
+    } else if (cijena.isEmpty) {
+      setState(() {
+        showErrorText = "Cijena je obavezna";
+      });
     }
   }
 
@@ -570,12 +605,18 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
                                           FieldWithValidate(
                                               label: 'Opis:',
                                               field: FormBuilderTextField(
-                                                style: TextStyle(fontSize: 14),
-                                                name: "Opis",
-                                                decoration: inputField,
-                                                minLines: 5,
-                                                maxLines: 10,
-                                              )),
+                                                  style:
+                                                      TextStyle(fontSize: 14),
+                                                  name: "Opis",
+                                                  decoration: inputField,
+                                                  minLines: 5,
+                                                  maxLines: 10,
+                                                  validator:
+                                                      FormBuilderValidators
+                                                          .compose([
+                                                    FormBuilderValidators
+                                                        .required()
+                                                  ]))),
                                           FieldWithValidate(
                                               label: 'Program:',
                                               field: FormBuilderTextField(
@@ -1352,6 +1393,14 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
                 _addNewRow();
               })
         ]),
+        showTipoviError
+            ? Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  "Tipovi karata su obavezni",
+                  style: TextStyle(fontSize: 12, color: Colors.red),
+                ))
+            : Container(),
         SizedBox(
           height: 20,
         ),
@@ -1464,6 +1513,12 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
                   ),
                 ],
               ),
+              showErrorText != null
+                  ? Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(showErrorText!,
+                          style: TextStyle(color: Colors.red, fontSize: 12)))
+                  : Container(),
               Row(
                 children: [
                   Text("Uključeno numerisanje sjedišta: ",

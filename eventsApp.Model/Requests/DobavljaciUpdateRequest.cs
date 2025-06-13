@@ -23,7 +23,7 @@ namespace eventsApp.Model.Requests
         [Required]
         public string Email { get; set; } = null!;
 
-        public string? ZiroRacun { get; set; }
+        public string ZiroRacun { get; set; } = null!;
 
         public string? Napomena { get; set; }
 

@@ -311,7 +311,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               field: FormBuilderTextField(
                   style: TextStyle(fontSize: 14),
                   name: "adresa",
-                  decoration: newInput)),
+                  decoration: newInput,
+                  validator: FormBuilderValidators.compose([
+                  FormBuilderValidators.required(
+                      errorText: 'Polje je obavezno')]))),
           _buildCountryInput(),
         ]));
   }

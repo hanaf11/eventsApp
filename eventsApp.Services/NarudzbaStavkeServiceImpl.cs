@@ -101,7 +101,7 @@ namespace eventsApp.Services
         public async Task<List<Model.StavkeNarudzbe>> Get(int narudzbaId)
         {
             List<Database.NarudzbaStavke> stavke = await _context.Set<NarudzbaStavke>()
-                .Where(ns => ns.NarudzbaId == narudzbaId).Include(ns => ns.TipKarte)
+                .Where(ns => ns.NarudzbaId == narudzbaId).Include(ns => ns.TipKarte).ThenInclude(tk=>tk.Dogadjaj)
                 .ToListAsync();
 
             var result = _mapper.Map<List<Model.StavkeNarudzbe>>(stavke);

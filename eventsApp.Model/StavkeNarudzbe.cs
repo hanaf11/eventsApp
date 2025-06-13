@@ -19,5 +19,7 @@ namespace eventsApp.Model
         public decimal Cijena { get; set; }
 
         public string TipKarte { get; set; }
+
+        public string Dogadjaj { get; set; }
     }
 }

@@ -13,7 +13,7 @@ public partial class Korisnici
 
     public string? Email { get; set; }
 
-    public string? Telefon { get; set; }
+    public string Telefon { get; set; } = null!;
 
     public string KorisnickoIme { get; set; } = null!;
 
@@ -25,7 +25,7 @@ public partial class Korisnici
 
     public DateTime Created { get; set; }
 
-    public string? Adresa { get; set; }
+    public string Adresa { get; set; } = null!;
 
     public string? Drzava { get; set; }
 

@@ -14,6 +14,7 @@ StavkeNarudzbe _$StavkeNarudzbeFromJson(Map<String, dynamic> json) =>
       (json['cijena'] as num?)?.toDouble(),
       (json['kolicina'] as num?)?.toInt(),
       json['tipKarte'] as String?,
+      json['dogadjaj'] as String?,
     );
 
 Map<String, dynamic> _$StavkeNarudzbeToJson(StavkeNarudzbe instance) =>
@@ -24,4 +25,5 @@ Map<String, dynamic> _$StavkeNarudzbeToJson(StavkeNarudzbe instance) =>
       'cijena': instance.cijena,
       'kolicina': instance.kolicina,
       'tipKarte': instance.tipKarte,
+      'dogadjaj': instance.dogadjaj,
     };

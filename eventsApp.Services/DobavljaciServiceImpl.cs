@@ -36,6 +36,11 @@ namespace eventsApp.Services
                 query = query. Where(x => x.Dogadjajis.Any(y => y.Naziv.StartsWith(search.Dogadjaj)));
 
             }
+            if (search?.Active!=null && search?.Active==true)
+            {
+                query = query.Where(x => x.Status==true);
+
+            }
             return base.AddFilter(query, search);  
         }
 
