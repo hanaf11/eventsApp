@@ -11,7 +11,7 @@ public partial class Korisnici
 
     public string Prezime { get; set; } = null!;
 
-    public string? Email { get; set; }
+    public string Email { get; set; } = null!;
 
     public string Telefon { get; set; } = null!;
 
