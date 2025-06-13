@@ -29,9 +29,9 @@ class _SpremljenoScreenState extends State<SpremljenoScreen> {
   }
 
   loadData() async {
-    setState(() {
+    /* setState(() {
       isLoading = true;
-    });
+    });*/
     await _dogadjajProvider.getSaved(KorisnikGlobal.korisnikId).then((value) {
       setState(() {
         _savedList = value;

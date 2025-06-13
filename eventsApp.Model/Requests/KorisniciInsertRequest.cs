@@ -17,15 +17,17 @@ namespace eventsApp.Model.Requests
         [Required(ErrorMessage = "Email je obavezan")]
         public string Email { get; set; } = null!;
 
-        public string? Telefon { get; set; }
+        [Required(ErrorMessage = "Telefon je obavezan")]
+        public string Telefon { get; set; } = null!;
         [Required(ErrorMessage ="Korisnicko ime je obavezno")]
         public string KorisnickoIme { get; set; } = null!;
 
-        public string? Adresa { get; set; }
+
+        [Required(ErrorMessage = "Adresa je obavezna")]
+        public string Adresa { get; set; } = null!;
 
         public string? Drzava { get; set; }
 
-        //public byte[]? Slika { get; set; }
         [Required(ErrorMessage = "Lozinka je obavezna")]
         [Compare("PasswordPotvrda", ErrorMessage="Lozinke nisu iste")]
         public string Password { get; set; }

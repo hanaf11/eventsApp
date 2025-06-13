@@ -27,13 +27,13 @@ public partial class Narudzbe
 
     public string Telefon { get; set; } = null!;
 
-    public string? Adresa { get; set; }
+    public string Adresa { get; set; } = null!;
 
     public int PostanskiBroj { get; set; }
 
     public string Grad { get; set; } = null!;
 
-    public string? Drzava { get; set; }
+    public string Drzava { get; set; } = null!;
 
     public virtual Korisnici Korisnik { get; set; } = null!;
 

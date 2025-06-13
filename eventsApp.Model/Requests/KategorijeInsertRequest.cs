@@ -14,6 +14,6 @@ namespace eventsApp.Model.Requests
 
         public string? Opis { get; set; }
 
-        public byte[] Slika { get; set; }
+        public byte[] Slika { get; set; } = null!;
     }
 }

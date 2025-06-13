@@ -105,6 +105,7 @@ class _DobavljacDetailsScreenState extends State<DobavljacDetailsScreen> {
                 TextButton(
                     onPressed: () {
                       Navigator.pop(context);
+                      Navigator.pop(context);
                       widget.refresh();
                     },
                     child: Text("OK"))
@@ -123,115 +124,123 @@ class _DobavljacDetailsScreenState extends State<DobavljacDetailsScreen> {
           ? Text("Dodaj dobavljača")
           : Text('Uredi dobavljača'),
       content: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.8,
-        height: 400,
-        child: Padding(
-          padding: const EdgeInsets.all(5),
-          child: SingleChildScrollView(
-              child: FormBuilder(
-                  key: _formKey,
-                  initialValue: _initialValue,
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min, // Shrink-wrap column
-                      children: [
-                        SizedBox(
-                            height: 400,
-                            child: Column(children: [
-                              InputField(
-                                name: "Naziv:",
-                                field: FormBuilderTextField(
-                                  name: 'Naziv',
-                                  validator: FormBuilderValidators.compose([
-                                    FormBuilderValidators.required(
-                                        errorText: 'Naziv je obavezan')
-                                  ]),
-                                ),
-                              ),
-                              InputField(
-                                name: "Adresa:",
-                                field: FormBuilderTextField(
-                                  name: 'Adresa',
-                                  validator: FormBuilderValidators.compose([
-                                    FormBuilderValidators.required(
-                                        errorText: 'Adresa je obavezna')
-                                  ]),
-                                ),
-                              ),
-                              InputField(
-                                name: "Telefon:",
-                                field: FormBuilderTextField(
-                                  name: 'Telefon',
-                                  validator: FormBuilderValidators.compose([
+          width: MediaQuery.of(context).size.width * 0.8,
+          height: 450,
+          child: Padding(
+              padding: const EdgeInsets.all(5),
+              child: SingleChildScrollView(
+                  child: FormBuilder(
+                      key: _formKey,
+                      initialValue: _initialValue,
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min, // Shrink-wrap column
+                          children: [
+                            SizedBox(
+                                height: 450,
+                                child: Column(children: [
+                                  InputField(
+                                    name: "Naziv:",
+                                    field: FormBuilderTextField(
+                                      name: 'Naziv',
+                                      validator: FormBuilderValidators.compose([
+                                        FormBuilderValidators.required(
+                                            errorText: 'Naziv je obavezan')
+                                      ]),
+                                    ),
+                                  ),
+                                  InputField(
+                                    name: "Adresa:",
+                                    field: FormBuilderTextField(
+                                      name: 'Adresa',
+                                      validator: FormBuilderValidators.compose([
+                                        FormBuilderValidators.required(
+                                            errorText: 'Adresa je obavezna')
+                                      ]),
+                                    ),
+                                  ),
+                                  InputField(
+                                    name: "Telefon:",
+                                    field: FormBuilderTextField(
+                                      name: 'Telefon',
+                                      /* validator: FormBuilderValidators.compose([
                                     FormBuilderValidators.required(
                                         errorText: 'Telefon je obavezan'),
                                     FormBuilderValidators.numeric(
                                         errorText: 'Dozvoljeni samo brojevi')
-                                  ]),
-                                ),
-                              ),
-                              InputField(
-                                name: "Fax:",
-                                field: FormBuilderTextField(
-                                  name: 'Fax',
-                                  validator: FormBuilderValidators.compose([
-                                    FormBuilderValidators.numeric(
-                                        errorText: 'Dozvoljeni samo brojevi')
-                                  ]),
-                                ),
-                              ),
-                              InputField(
-                                name: "Web:",
-                                field: FormBuilderTextField(
-                                  name: 'Web',
-                                  validator: FormBuilderValidators.compose([
-                                    FormBuilderValidators.url(
-                                        errorText: 'Url nije validan')
-                                  ]),
-                                ),
-                              ),
-                              InputField(
-                                name: "Email:",
-                                field: FormBuilderTextField(
-                                  name: 'Email',
-                                  validator: FormBuilderValidators.compose([
-                                    FormBuilderValidators.email(
-                                        errorText: 'Email nije validan')
-                                  ]),
-                                ),
-                              ),
-                              InputField(
-                                name: "Žiro račun:",
-                                field: FormBuilderTextField(
-                                  name: 'ZiroRacun',
-                                  validator: FormBuilderValidators.compose([
-                                    FormBuilderValidators.numeric(
-                                        errorText: 'Dozvoljeni samo brojevi')
-                                  ]),
-                                ),
-                              ),
-                              InputField(
-                                name: "Napomena:",
-                                field: FormBuilderTextField(
-                                  name: 'Napomena',
-                                ),
-                              ),
-                            ])),
-                        SizedBox(height: 20),
-                        Text(
-                          "Događaji:",
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                            color: Color.fromRGBO(34, 33, 33, 1),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        (_dogadjajList != null && _dogadjajList!.isNotEmpty)
-                            ? _buildDataListViewDogadjaji()
-                            : Text("Dobavljač nema događaja"),
-                      ]))),
-        ),
-      ),
+                                  ]),*/
+                                      validator: FormBuilderValidators.compose([
+                                        FormBuilderValidators.required(
+                                            errorText: 'Polje je obavezno'),
+                                        FormBuilderValidators.phoneNumber(
+                                            errorText:
+                                                "Očekivani format: +38761000000",
+                                            regex: RegExp(r'^\+\d{11,12}$')),
+                                      ]),
+                                    ),
+                                  ),
+                                  InputField(
+                                    name: "Fax:",
+                                    field: FormBuilderTextField(
+                                      name: 'Fax',
+                                    ),
+                                  ),
+                                  InputField(
+                                    name: "Web:",
+                                    field: FormBuilderTextField(name: 'Web'),
+                                  ),
+                                  InputField(
+                                    name: "Email:",
+                                    field: FormBuilderTextField(
+                                      name: 'Email',
+                                      validator: FormBuilderValidators.compose([
+                                        FormBuilderValidators.required(
+                                            errorText: 'Polje je obavezno'),
+                                        FormBuilderValidators.email(
+                                            errorText: 'Email nije validan')
+                                      ]),
+                                    ),
+                                  ),
+                                  InputField(
+                                      name: "Žiro račun:",
+                                      field: FormBuilderTextField(
+                                          name: 'ZiroRacun',
+                                          validator:
+                                              FormBuilderValidators.compose([
+                                            FormBuilderValidators.required(
+                                                errorText: 'Polje je obavezno'),
+                                            FormBuilderValidators.match(
+                                              RegExp(r'^\d{16}$'),
+                                              errorText:
+                                                  'Očekivano je 16 cifara',
+                                              checkNullOrEmpty: false,
+                                            ),
+                                          ]))),
+                                  InputField(
+                                    name: "Napomena:",
+                                    field: FormBuilderTextField(
+                                      name: 'Napomena',
+                                    ),
+                                  ),
+                                ])),
+                            SizedBox(height: 20),
+                            widget.selectedDobavljac == null
+                                ? Container()
+                                : Text(
+                                    "Događaji:",
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(
+                                      color: Color.fromRGBO(34, 33, 33, 1),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                            widget.selectedDobavljac == null
+                                ? Container()
+                                : (_dogadjajList != null &&
+                                        _dogadjajList!.isNotEmpty)
+                                    ? _buildDataListViewDogadjaji()
+                                    : Text("Dobavljač nema događaja"),
+                          ]))))),
       actions: <Widget>[
         Padding(
           padding: const EdgeInsets.all(10),

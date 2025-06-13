@@ -30,6 +30,7 @@ builder.Services.AddTransient<INarudzbaService, NarudzbaServiceImpl>();
 builder.Services.AddTransient<INarudzbaStavkeService, NarudzbaStavkeServiceImpl>();
 builder.Services.AddTransient<IHistorijaPregledaService, HistorijaPregledaServiceImpl>();
 builder.Services.AddTransient<IKorisnikUlogaService, KorisnikUlogaServiceImpl>();
+builder.Services.AddTransient<IUlogaService, UlogaServiceImpl>();
 
 builder.Services.AddTransient<BaseState>();
 builder.Services.AddTransient<ActiveEventState>();

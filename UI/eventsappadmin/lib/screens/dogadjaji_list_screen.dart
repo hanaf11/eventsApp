@@ -208,6 +208,40 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
     );
   }
 
+  /*deleteDogadjaj(Dogadjaj e) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Potvrdite akciju'),
+        content: Text('Da li stvarno želite obrisati događaj ${e.naziv}?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context, 'Odustani');
+            },
+            child: const Text('Odustani'),
+          ),
+          TextButton(
+            onPressed: () {
+              print("uslo u delete");
+              try {
+                // Navigator.pop(context, 'Potvrdi');
+                _dogadjajProvider.delete(e.dogadjajId!);
+                _handleDeleteSuccess(context);
+              } catch (error) {
+                print("Error occurred: $error");
+                handleException(error as Exception);
+              } /*finally {
+                Navigator.pop(context, 'Potvrdi');
+              }*/
+            },
+            child: const Text('Potvrdi'),
+          ),
+        ],
+      ),
+    );
+  }*/
+
   deleteDogadjaj(Dogadjaj e) {
     showDialog<String>(
       context: context,
@@ -223,13 +257,17 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
           ),
           TextButton(
             onPressed: () {
-              Navigator.pop(context, 'Potvrdi');
-              _dogadjajProvider
-                  .delete(e.dogadjajId!)
-                  .then((value) => _handleDeleteSuccess(context))
-                  .onError(
-                    (error, stackTrace) => handleException(error as Exception),
-                  );
+              //  Navigator.pop(context, 'Potvrdi');
+              _dogadjajProvider.delete(e.dogadjajId!).then((value) {
+                Navigator.pop(context, 'Potvrdi');
+                _handleDeleteSuccess(context);
+              }).onError(
+                (error, stackTrace) {
+                  print("error koji se desio $error");
+                  Navigator.pop(context, 'Potvrdi');
+                  handleException(error as Exception);
+                },
+              );
             },
             child: const Text('Potvrdi'),
           ),

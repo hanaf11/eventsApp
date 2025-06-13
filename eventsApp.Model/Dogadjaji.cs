@@ -34,7 +34,7 @@ namespace eventsApp.Model
 
         public int KategorijaId { get; set; }
 
-        public int PodkategorijaId { get; set; }
+        public int? PodkategorijaId { get; set; }
 
         public string Status { get; set; }
 

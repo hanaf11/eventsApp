@@ -120,6 +120,8 @@ class _NarudzbaDetailsScreenState extends State<NarudzbaDetailsScreen> {
                             _buildLicniPodaci(),
                             const SizedBox(height: 20),
                             Text("Stavke narudžbe", style: h2),
+                            Text(_stavke[0].dogadjaj ?? '',
+                                style: _myTextStyle),
                             Divider(
                               color: const Color.fromARGB(255, 145, 145, 145),
                               thickness: 0.7,

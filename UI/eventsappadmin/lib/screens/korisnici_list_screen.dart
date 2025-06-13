@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:eventsappadmin/models/korisnik_global.dart';
+import 'package:eventsappadmin/models/uloga.dart';
 import 'package:eventsappadmin/providers/dogadjaj_provider.dart';
+import 'package:eventsappadmin/providers/uloga_provider.dart';
 import 'package:eventsappadmin/screens/dogadjaj_details_screen.dart';
 import 'package:eventsappadmin/screens/korisnik_details_screen.dart';
 import 'package:eventsappadmin/utils/style_util.dart';
@@ -33,9 +35,13 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
   bool isLoading = true;
   final TextEditingController _usernameController = new TextEditingController();
   late KorisnikProvider _korisnikProvider;
+  late UlogaProvider _ulogaProvider;
   SearchResult<Korisnik>? result;
+  List<Uloga>? _ulogeList;
   Korisnik? korisnik;
   final _userFormKey = GlobalKey<FormBuilderState>();
+  bool isKorisniciLoading = true;
+  bool isUlogeLoading = true;
 
   _KorisniciListScreenState(this.selected);
 
@@ -43,7 +49,9 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
   void initState() {
     super.initState();
     _korisnikProvider = context.read<KorisnikProvider>();
+    _ulogaProvider = context.read<UlogaProvider>();
     getKorisnici();
+    getUloge();
   }
 
   @override
@@ -57,8 +65,26 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
     var data = await _korisnikProvider.get();
     setState(() {
       result = data;
-      isLoading = false;
+      isKorisniciLoading = false;
     });
+    handleLoading();
+  }
+
+  getUloge() async {
+    var data = await _ulogaProvider.get();
+    setState(() {
+      _ulogeList = data.result;
+      isUlogeLoading = false;
+    });
+    handleLoading();
+  }
+
+  handleLoading() {
+    if (isKorisniciLoading == false && isUlogeLoading == false) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   search() async {
@@ -69,6 +95,27 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
     setState(() {
       result = data;
     });
+  }
+
+  void _handleDeleteSuccess(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Delete Successful"),
+          content: Text("Korisnik je uspješno obrisan"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                search();
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   handleSuccess(String msg) {
@@ -114,7 +161,7 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
           title: const Text('Dodaj korisnika'),
           content: SizedBox(
               width: MediaQuery.of(context).size.width * 0.6,
-              height: 600,
+              height: 800,
               child: Padding(
                   padding: const EdgeInsets.all(5),
                   child: SingleChildScrollView(
@@ -124,7 +171,7 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 SizedBox(
-                                    height: 600,
+                                    height: 800,
                                     child: Column(children: [
                                       InputField(
                                         name: "Ime:",
@@ -237,6 +284,11 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
                                         field: FormBuilderTextField(
                                           name: 'adresa',
                                           style: TextStyle(fontSize: 14),
+                                          validator:
+                                              FormBuilderValidators.compose([
+                                            FormBuilderValidators.required(
+                                                errorText: 'Polje je obavezno'),
+                                          ]),
                                         ),
                                       ),
                                       _buildCountryInput(),
@@ -303,11 +355,6 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
   }
 
   _buildRoleInput() {
-    final roles = {
-      1: 'Admin',
-      2: 'Manager',
-    };
-
     return InputField(
       name: 'Uloga:',
       field: FormBuilderDropdown<int>(
@@ -318,14 +365,16 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
         validator: FormBuilderValidators.compose([
           FormBuilderValidators.required(errorText: 'Uloga je obavezna'),
         ]),
-        items: roles.entries
-            .map(
-              (entry) => DropdownMenuItem(
-                value: entry.key,
-                child: Text(entry.value, style: TextStyle(fontSize: 12)),
-              ),
-            )
-            .toList(),
+        items: _ulogeList
+                ?.map(
+                  (entry) => DropdownMenuItem(
+                    value: entry.ulogaId,
+                    child:
+                        Text(entry.naziv ?? '', style: TextStyle(fontSize: 12)),
+                  ),
+                )
+                .toList() ??
+            [],
       ),
     );
   }
@@ -451,11 +500,24 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
                             ),
                             TextButton(
                               onPressed: () {
+                                _korisnikProvider
+                                    .delete(korisnikId)
+                                    .then((value) {
+                                  Navigator.pop(context, 'Potvrdi');
+                                  _handleDeleteSuccess(context);
+                                }).onError(
+                                  (error, stackTrace) {
+                                    Navigator.pop(context, 'Potvrdi');
+                                    handleException(error as Exception);
+                                  },
+                                );
+                              },
+                              /* onPressed: () {
                                 Navigator.pop(context, 'Potvrdi');
                                 _korisnikProvider
                                     .delete(korisnikId)
                                     .then((value) => search());
-                              },
+                              },*/
                               child: const Text('Potvrdi'),
                             ),
                           ],

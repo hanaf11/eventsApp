@@ -289,10 +289,12 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
       await _podkategorijaProvider
           .get(filter: {'kategorijaId': dogadjaj!.kategorijaId}).then((val) {
         setState(() {
-          selectedPodkategorija = dogadjaj?.podkategorijaId;
+          selectedPodkategorija =
+              dogadjaj?.podkategorijaId == 0 ? null : dogadjaj?.podkategorijaId;
           podkategorijeResult = val;
           podkategorijeLoaded = true;
         });
+        print("evo promijenjeno na $selectedPodkategorija");
       });
       var slikeResult =
           await _galerijaProvider.get(filter: {'dogadjajId': dogadjajId});
@@ -574,6 +576,9 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
   }
 
   Widget _buildForm() {
+    print("Podkategorije list: ${podkategorijeResult?.result}");
+
+    print("initial value $selectedPodkategorija");
     return Padding(
         padding: const EdgeInsets.all(20),
         child: SingleChildScrollView(
@@ -786,6 +791,9 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
                             ),
                           )
                         ])),
+                    SizedBox(
+                      height: 30,
+                    ),
                     Row(
                       children: [
                         _buildInputField(
@@ -799,6 +807,10 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
                             FormBuilderTextField(
                               name: 'Opis',
                               maxLines: 5,
+                              validator: FormBuilderValidators.compose([
+                                FormBuilderValidators.required(
+                                    errorText: 'Polje je obavezno')
+                              ]),
                             ))
                       ],
                     ),

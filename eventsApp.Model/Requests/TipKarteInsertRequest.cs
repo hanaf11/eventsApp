@@ -10,7 +10,7 @@ namespace eventsApp.Model.Requests
     public class TipKarteInsertRequest
     {
         [Required]
-        public string Naziv { get; set; }
+        public string Naziv { get; set; } = null!;
         [Required]
         public decimal Cijena { get; set; }
         [Required]

@@ -39,8 +39,6 @@ namespace eventsApp.Model.Requests
 
         public string? Organizator { get; set; }
 
-        // public List<SlikeInsertRequest>? Galerija { get; set; }
-
         public List<byte[]>? Galerija { get; set; }
 
       //  public bool? ProdajaKarata  { get; set; }

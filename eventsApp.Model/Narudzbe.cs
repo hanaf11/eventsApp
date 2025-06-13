@@ -25,13 +25,13 @@ namespace eventsApp.Model
 
         public string Telefon { get; set; } = null!;
 
-        public string? Adresa { get; set; }
+        public string Adresa { get; set; } = null!;
 
         public int PostanskiBroj { get; set; }
 
         public string Grad { get; set; } = null!;
 
-        public string? Drzava { get; set; }
+        public string Drzava { get; set; } = null!;
 
         public string Tip { get; set; } = null!;
         public string KorisnickoIme { get; set; } = null!;

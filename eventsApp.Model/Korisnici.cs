@@ -14,9 +14,9 @@ namespace eventsApp.Model
 
         public string Prezime { get; set; } = null!;
 
-        public string? Email { get; set; }
+        public string? Email { get; set; } 
 
-        public string? Telefon { get; set; }
+        public string Telefon { get; set; } = null!;
 
         public string KorisnickoIme { get; set; } = null!;
 
@@ -24,11 +24,11 @@ namespace eventsApp.Model
 
         public DateTime Created { get; set; }
 
-        public string? Adresa { get; set; }
+        public string Adresa { get; set; } = null!;
 
         public string? Drzava { get; set; }
 
-        public byte[] Slika { get; set; }
+        public byte[]? Slika { get; set; }
 
         public virtual ICollection<KorisniciUloge> KorisniciUloges { get; } = new List<KorisniciUloge>();
 

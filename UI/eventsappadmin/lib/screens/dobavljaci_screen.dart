@@ -113,8 +113,38 @@ class _DobavljaciScreenState extends State<DobavljaciScreen>
       handleException(e);
       throw e;
     }
+    showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              title: const Text('Potvrdite akciju'),
+              content: Text(
+                  'Da li stvarno želite deaktivirati dobavljača ${d.naziv}?'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.pop(context, 'Odustani'),
+                  child: const Text('Odustani'),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    await _dobavljacProvider
+                        .changeStatus(d.dobavljacId!, false)
+                        .then((value) {
+                      Navigator.pop(context);
+                      handleDobavljacSuccess(
+                          null, "Uspješno ste deaktivirali dobavljača");
+                    });
+                  },
+                  child: const Text('Potvrdi'),
+                ),
+              ],
+            ));
+    /*  if (d.status == false) {
+      Exception e = Exception("Dobavljač je već deaktiviran");
+      handleException(e);
+      throw e;
+    }
     await _dobavljacProvider.changeStatus(d.dobavljacId!, false).then((value) =>
-        handleDobavljacSuccess(null, "Uspješno ste deaktivirali dobavljača"));
+        handleDobavljacSuccess(null, "Uspješno ste deaktivirali dobavljača"));*/
   }
 
   getPodkategorije(int kategorijaId) async {

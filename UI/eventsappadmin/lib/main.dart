@@ -9,6 +9,7 @@ import 'package:eventsappadmin/providers/narudzba_provider.dart';
 import 'package:eventsappadmin/providers/podkategorija_provider.dart';
 import 'package:eventsappadmin/providers/stavke_narudzbe_provider.dart';
 import 'package:eventsappadmin/providers/tipkarte_provider.dart';
+import 'package:eventsappadmin/providers/uloga_provider.dart';
 import 'package:eventsappadmin/utils/style_util.dart';
 import 'package:eventsappadmin/utils/util.dart';
 import 'package:provider/provider.dart';
@@ -28,6 +29,7 @@ void main() {
       ChangeNotifierProvider(create: (_) => TipkarteProvider()),
       ChangeNotifierProvider(create: (_) => NarudzbaProvider()),
       ChangeNotifierProvider(create: (_) => StavkeNarudzbeProvider()),
+      ChangeNotifierProvider(create: (_) => UlogaProvider()),
     ],
     child: const MyApp(),
   ));

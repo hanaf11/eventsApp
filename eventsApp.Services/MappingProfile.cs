@@ -47,12 +47,17 @@ namespace eventsApp.Services
             .ForMember(model => model.KorisnickoIme, source => source.MapFrom(src => src.Korisnik.KorisnickoIme));
             CreateMap<Model.ValidTipKarte, Database.NarudzbaStavke>();
             CreateMap<Database.Karte, Model.Karta>();
-           /* CreateMap<Database.Narudzbe, Model.NarudzbaDetails>()
-           .ForMember(model => model.KorisnickoIme, source => source.MapFrom(src => src.Korisnik.KorisnickoIme));*/
+            /* CreateMap<Database.Narudzbe, Model.NarudzbaDetails>()
+            .ForMember(model => model.KorisnickoIme, source => source.MapFrom(src => src.Korisnik.KorisnickoIme));*/
+            /* CreateMap<Database.NarudzbaStavke, Model.StavkeNarudzbe>()
+              .ForMember(model => model.TipKarte, source => source.MapFrom(src => src.TipKarte.Naziv));*/
             CreateMap<Database.NarudzbaStavke, Model.StavkeNarudzbe>()
-             .ForMember(model => model.TipKarte, source => source.MapFrom(src => src.TipKarte.Naziv));
+     .ForMember(model => model.TipKarte, source => source.MapFrom(src => src.TipKarte.Naziv))
+     .ForMember(model => model.Dogadjaj, source => source.MapFrom(src => src.TipKarte.Dogadjaj.Naziv));
+
             CreateMap<Model.KorisniciUloge, Database.KorisniciUloge>();
             CreateMap<Database.KorisniciUloge, Model.KorisniciUloge>();
+            CreateMap<Database.Uloge, Model.Uloge>();
         }
     }
 }

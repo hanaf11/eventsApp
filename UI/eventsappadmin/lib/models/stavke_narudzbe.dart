@@ -10,9 +10,10 @@ class StavkeNarudzbe {
   double? cijena;
   int? kolicina;
   String? tipKarte;
+  String? dogadjaj;
 
   StavkeNarudzbe(this.narudzbaStavkaId, this.narudzbaId, this.tipKarteId,
-      this.cijena, this.kolicina, this.tipKarte);
+      this.cijena, this.kolicina, this.tipKarte, this.dogadjaj);
 
   factory StavkeNarudzbe.fromJson(Map<String, dynamic> json) =>
       _$StavkeNarudzbeFromJson(json);

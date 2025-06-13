@@ -304,7 +304,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 style: TextStyle(fontSize: 14),
                 name: "telefon",
                 decoration: newInput,
-                validator: FormBuilderValidators.compose([
+                   validator: FormBuilderValidators.compose([
                   FormBuilderValidators.required(
                       errorText: 'Polje je obavezno'),
                   FormBuilderValidators.phoneNumber(
@@ -317,7 +317,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
               field: FormBuilderTextField(
                   style: TextStyle(fontSize: 14),
                   name: "adresa",
-                  decoration: newInput)),
+                  decoration: newInput,
+                   validator: FormBuilderValidators.compose([
+                  FormBuilderValidators.required(
+                      errorText: 'Polje je obavezno')
+                ]),)),
           _buildCountryInput(),
         ]));
   }

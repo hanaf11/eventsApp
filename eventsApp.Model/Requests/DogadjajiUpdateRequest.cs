@@ -11,19 +11,19 @@ namespace eventsApp.Model.Requests
 
         public string Naziv { get; set; } = null!;
 
-        public DateTime? DatumOd { get; set; }
+        public DateTime DatumOd { get; set; }
 
-        public DateTime? DatumDo { get; set; }
+        public DateTime DatumDo { get; set; }
 
         public string? Program { get; set; }
 
-        public byte[]? Naslovna { get; set; } = null!;
+        public byte[] Naslovna { get; set; } = null!;
 
-        public string? Opis { get; set; } = null!;
+        public string Opis { get; set; } = null!;
 
         public string? Website { get; set; }
 
-        public string? Lokacija { get; set; } = null!;
+        public string Lokacija { get; set; } = null!;
 
         public byte[]? LokacijaSlika { get; set; }
 
