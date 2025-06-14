@@ -1,9 +1,17 @@
+import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
 import 'package:eventsappadmin/models/narudzbe_report_response.dart';
 import 'package:eventsappadmin/providers/narudzba_provider.dart';
 import 'package:eventsappadmin/widgets/master_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:graphic/graphic.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
 import 'package:provider/provider.dart';
 
 final _monthDayFormat = DateFormat('MM-dd');
@@ -22,6 +30,10 @@ class _NarudzbeIzvjestajScreenState extends State<NarudzbeIzvjestajScreen> {
   late NarudzbaProvider _narudzbaProvider;
   NarudzbeReportResponse? result;
   bool isLoading = true;
+  final GlobalKey _numOfOrdersKey = GlobalKey();
+  final GlobalKey _revenueKey = GlobalKey();
+  final GlobalKey _numOfSoldTicketsKey = GlobalKey();
+  final GlobalKey _mostSoldEventsKey = GlobalKey();
   _NarudzbeIzvjestajScreenState();
 
   @override
@@ -44,6 +56,85 @@ class _NarudzbeIzvjestajScreenState extends State<NarudzbeIzvjestajScreen> {
     });
   }
 
+  Future<Uint8List> _captureWidgetAsImage(GlobalKey key) async {
+    // find the RenderRepaintBoundary
+    RenderRepaintBoundary boundary =
+        key.currentContext!.findRenderObject() as RenderRepaintBoundary;
+
+    ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+    ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    return byteData!.buffer.asUint8List();
+  }
+
+  Future<void> exportPdf() async {
+    print("export kliknut");
+    try {
+      final pdf = pw.Document();
+
+      var keysList = [];
+      var chartImagesList = [];
+      if (result?.numOfOrders != null) keysList.add(_numOfOrdersKey);
+      if (result?.revenue != null) keysList.add(_revenueKey);
+      if (result?.numOfSoldTickets != null) keysList.add(_numOfSoldTicketsKey);
+      if (result?.mostSoldEvents != null) keysList.add(_mostSoldEventsKey);
+
+      for (var key in keysList) {
+        var imageBytes = await _captureWidgetAsImage(key);
+        var pwImage = pw.MemoryImage(imageBytes);
+        chartImagesList.add(pwImage);
+      }
+
+      pdf.addPage(
+        pw.MultiPage(
+          build: (context) {
+            List<pw.Widget> widgets = [];
+
+            // Add the header
+            widgets.add(
+              pw.Center(
+                  child: pw.Text(
+                "Narudzbe izvjestaj",
+                style: pw.TextStyle(
+                    fontSize: 16,
+                    fontWeight: pw.FontWeight.bold,
+                    color: PdfColor(0.5, 0.5, 0.5)),
+              )),
+            );
+            widgets.add(
+                pw.SizedBox(height: 20)); // Space between header and content
+
+            // Add the charts
+            for (var chart in chartImagesList) {
+              widgets.add(pw.Center(child: pw.Image(chart)));
+              widgets
+                  .add(pw.SizedBox(height: 20)); // Add spacing between charts
+            }
+
+            return widgets;
+          },
+        ),
+      );
+
+      // Save or share the PDF
+      final outputDir = await getDownloadsDirectory();
+      if (outputDir == null) {
+        throw Exception("Error: Downloads directory could not be found");
+      }
+
+      var dateNow = DateTime.now();
+      final outputPath =
+          "${outputDir.path}\\NarudzbeReport-${dateNow.day}${dateNow.month}${dateNow.year}.pdf";
+
+      final pdfFile = File(outputPath);
+      await pdfFile.writeAsBytes(await pdf.save());
+      print("PDF saved to: $outputPath");
+    }
+    // Optionally open the file or inform the user
+    catch (e) {
+      print("Error while exporting PDF: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MasterScreenWidget(
@@ -60,28 +151,51 @@ class _NarudzbeIzvjestajScreenState extends State<NarudzbeIzvjestajScreen> {
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                          const Text("Narudžbe izvještaj",
-                              textAlign: TextAlign.start,
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 91, 91, 91),
-                              )),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text("Narudžbe izvještaj",
+                                    textAlign: TextAlign.start,
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromARGB(255, 91, 91, 91),
+                                    )),
+                                IconButton(
+                                    onPressed: exportPdf,
+                                    tooltip: "Download pdf",
+                                    icon: Icon(
+                                      Icons.download,
+                                      color: Colors.grey,
+                                    ))
+                              ]),
                           SizedBox(
                             height: 20,
                           ),
-                          result?.numOfOrders != null
-                              ? _buildNumOfOrders()
-                              : Container(),
-                          result?.revenue != null
-                              ? _buildRevenue()
-                              : Container(),
-                          result?.numOfSoldTickets != null
-                              ? _buildNumOfSoldTickets()
-                              : Container(),
-                          result?.mostSoldEvents != null
-                              ? _buildMostSoldEvents()
-                              : Container(),
+                          Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                result?.numOfOrders != null
+                                    ? RepaintBoundary(
+                                        key: _numOfOrdersKey,
+                                        child: _buildNumOfOrders())
+                                    : Container(),
+                                result?.revenue != null
+                                    ? RepaintBoundary(
+                                        key: _revenueKey,
+                                        child: _buildRevenue())
+                                    : Container(),
+                                result?.numOfSoldTickets != null
+                                    ? RepaintBoundary(
+                                        key: _numOfSoldTicketsKey,
+                                        child: _buildNumOfSoldTickets())
+                                    : Container(),
+                                result?.mostSoldEvents != null
+                                    ? RepaintBoundary(
+                                        key: _mostSoldEventsKey,
+                                        child: _buildMostSoldEvents())
+                                    : Container(),
+                              ])
                         ])))));
   }
 
