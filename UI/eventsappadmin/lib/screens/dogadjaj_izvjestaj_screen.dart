@@ -35,7 +35,7 @@ class _DogadjajIzvjestajScreenState extends State<DogadjajIzvjestajScreen> {
     {'genre': 'Shooter', 'sold': 350},
     {'genre': 'Other', 'sold': 150},
   ];
-  //final GlobalKey _dogadjajiCaptureKey = GlobalKey();
+
   final GlobalKey _eventsByStatusKey = GlobalKey();
   final GlobalKey _eventsByCategoryKey = GlobalKey();
   final GlobalKey _top3EventsKey = GlobalKey();
