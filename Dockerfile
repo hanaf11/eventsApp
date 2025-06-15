@@ -11,6 +11,8 @@ COPY . .
 
 FROM build AS publish
 RUN dotnet publish "eventsApp/eventsApp.csproj" -c Release -o /app
+COPY eventsApp.DB/seedDb.sql /app/eventsApp.DB/seedDb.sql
+
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .

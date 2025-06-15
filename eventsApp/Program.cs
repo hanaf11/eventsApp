@@ -110,9 +110,12 @@ app.MapControllers();
 
 using (var scope = app.Services.CreateScope())
 {
+    var dataContext = scope.ServiceProvider.GetRequiredService<EventsDbContext>();
+    dataContext.Database.Migrate();
+    
     var deactivateEventsService = scope.ServiceProvider.GetRequiredService<DeactivateEventsService>();
     var recommenderService = scope.ServiceProvider.GetRequiredService<IRecommenderSystemService>();
     await deactivateEventsService.HideActiveEvents();
-    await recommenderService.CreateModel();
+  //  await recommenderService.CreateModel();
 }
 app.Run();

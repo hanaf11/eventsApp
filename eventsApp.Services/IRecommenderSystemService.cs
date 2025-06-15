@@ -1,4 +1,5 @@
 ﻿using eventsApp.Model;
+using Microsoft.ML;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,6 @@ namespace eventsApp.Services
     public interface IRecommenderSystemService
     {
         Task<List<DogadjajiListResponse>> Recommend(int userId);
-        Task CreateModel();
+        Task<ITransformer> CreateModel();
     }
 }
