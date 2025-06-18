@@ -1,17 +1,22 @@
-version: '1'
+version: '1.3'
 services:
-#mssql docker
   eventsapp-sql:
     image: mcr.microsoft.com/mssql/server:2017-latest-ubuntu
     restart: unless-stopped
     environment:
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=QWElkj132!
-      - MSSQL_PID=Developer
+      - SA_PASSWORD=${SA_PASSWORD}
+      - MSSQL_PID=${MSSQL_PID}
     ports:
       - 1401:1433
     expose:
       - 1433
+    healthcheck:
+      test: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "QWElkj132!" -Q "SELECT 1" || exit 1
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
     networks:
       - eventsappnet
 
@@ -20,8 +25,9 @@ services:
     build:
       context: .
     environment:
-      - ConnectionStrings:DefaultConnection=Server=eventsapp-sql,1433;Database=eventsDbProd;User=sa;Password=QWElkj132!;ConnectRetryCount=0;TrustServerCertificate=True
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=${DEFAULT_CONNECTION}
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - RABBITMQ_CONNECTIONSTRING=${RABBITMQ_CONNECTIONSTRING}
     ports:
       - 7294:7294
     networks:
@@ -29,8 +35,45 @@ services:
     links:
       - eventsapp-sql
     depends_on:
-      - eventsapp-sql
-      
+      eventsapp-sql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  eventsapp-subscriber:
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: eventsApp.Subscriber/Dockerfile
+    environment:
+      - RABBITMQ_CONNECTIONSTRING=${RABBITMQ_CONNECTIONSTRING}
+      - MAIL=${MAIL}
+      - MAIL_PASS=${MAIL_PASS}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - eventsappnet
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    networks:
+      - eventsappnet
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
 networks:
   eventsappnet:
     driver: bridge      

@@ -87,10 +87,12 @@ class _HomeScreenState extends State<HomeScreen> {
       return const LatLng(0, 0);
     }*/
     LatLng latLong = await getLatLong(lokacija);
+    print("latlong koje dobijemo poslije await ${latLong}");
     setState(() {
       initialCenter = latLong;
       centerLoaded = true;
     });
+    print("poslije loadanje");
     if (centerLoaded) loadNearYou();
   }
 
@@ -152,6 +154,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   loadNearYou() async {
+    print(
+      "uslo u load near you ${initialCenter?.latitude} ${initialCenter?.longitude}",
+    );
     var filterReq = {
       'Status': 'ACTIVE',
       'KategorijaIncluded': true,
@@ -159,13 +164,14 @@ class _HomeScreenState extends State<HomeScreen> {
       'Longitude': initialCenter?.longitude,
       'OrderBy': '-created',
     };
+
     await _dogadjajProvider.get(filter: filterReq).then((value) {
       print("dogadjaji: $value");
       setState(() {
         _nearYouList = value.result;
         nearYouLoaded = true;
+        handleLoading();
       });
-      handleLoading();
     });
   }
 

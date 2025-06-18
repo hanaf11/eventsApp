@@ -13,8 +13,8 @@ namespace eventsApp.Services.DogadjajiStateMachine
     public class InitialEventState:BaseState
     {
         protected readonly ITipKarteService _tipKarteService;
-        protected readonly GalerijaServiceImpl _gallery;
-        public InitialEventState(IServiceProvider serviceProvider,Database.EventsDbContext context, IMapper mapper, GalerijaServiceImpl gallery, ITipKarteService tipKarteService) : base(serviceProvider, context, mapper)
+        protected readonly IGalerijaService _gallery;
+        public InitialEventState(IServiceProvider serviceProvider,Database.EventsDbContext context, IMapper mapper, IGalerijaService gallery, ITipKarteService tipKarteService) : base(serviceProvider, context, mapper)
         {
             _gallery = gallery;
             _tipKarteService = tipKarteService;

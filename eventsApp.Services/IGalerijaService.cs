@@ -8,5 +8,7 @@ namespace eventsApp.Services
     {
         Task<Model.Slike> Delete(int id);
         Task<bool> DeleteByDogadjaj(int dogadjajId);
+        Task InsertGallery(int dogadjajId, List<byte[]> request);
+        Task UpdateGallery(int dogadjajId, List<SlikeInsertRequest> request);
     }
 }

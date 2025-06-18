@@ -55,13 +55,18 @@ namespace eventsApp.Services
             }, null, (long)initialDelay, TimeSpan.FromDays(1).Milliseconds);
         }
 
-        public async Task CreateModel()
+        public async Task<ITransformer> CreateModel()
         {
             _logger.LogInformation("Model creation started...");
 
             var mlContext = new MLContext();
 
-            var interactions = await GetData(); 
+            var interactions = await GetData();
+
+            if (!interactions.Any()) {
+                _logger.LogWarning("No interaction data available. Skipping model training.");
+                return null;
+            }
 
             var trainData = mlContext.Data.LoadFromEnumerable(interactions);
             var trainTestSplit = mlContext.Data.TrainTestSplit(trainData, testFraction: 0.2);
@@ -104,6 +109,7 @@ namespace eventsApp.Services
             _logger.LogInformation("Save model started...");
             await SaveModelToDatabase(mlContext, trainData.Schema, model);
             _logger.LogInformation("Save model ended.");
+            return model;
         }
 
         public async Task SaveModelToDatabase(MLContext mlContext, DataViewSchema schema, ITransformer model)
@@ -186,6 +192,12 @@ namespace eventsApp.Services
 
             var model = await LoadModel(mlContext);
 
+            if (model == null)
+            {
+                model = await CreateModel();
+                if(model==null) return await _dogadjajiService.GetMostPopularEvents();
+            }
+
             var recommendedEventsEntities = await RecommendEvents(mlContext, model, userId);
 
             return _mapper.Map<List<DogadjajiListResponse>>(recommendedEventsEntities);
@@ -194,7 +206,7 @@ namespace eventsApp.Services
         private async Task<ITransformer> LoadModel(MLContext mlContext)
         {
             var modelEntity= await _context.TrainedModels.OrderByDescending(m => m.Created).FirstOrDefaultAsync();
-            if (modelEntity == null || modelEntity.ModelData==null) throw new Exception("Error recommending events: Trained model not found");
+            if (modelEntity == null || modelEntity.ModelData == null) return null;
 
             using var memoryStream = new MemoryStream(modelEntity.ModelData);
 
