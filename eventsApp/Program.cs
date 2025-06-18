@@ -12,6 +12,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddSingleton<IRabbitMqPublisher>(provider =>
+{
+    /* var configuration = provider.GetRequiredService<IConfiguration>();
+     var hostName = configuration.GetValue<string>("RabbitMQ:HostName") ?? "localhost";*/
+    var hostName = Environment.GetEnvironmentVariable("RABBITMQ_CONNECTIONSTRING") ?? builder.Configuration["RabbitMQ:ConnectionString"];
+    return new RabbitMqPublisherService(hostName);
+});
+
 builder.Services.AddTransient<IDobavljaciService, DobavljaciServiceImpl>();
 builder.Services.AddTransient<IKorisniciService, KorisniciServiceImpl>();
 //builder.Services.AddTransient<IService<eventsApp.Model.Kategorije, BaseSearchObject>, BaseService<eventsApp.Model.Kategorije, eventsApp.Services.Database.Kategorije, BaseSearchObject>>();

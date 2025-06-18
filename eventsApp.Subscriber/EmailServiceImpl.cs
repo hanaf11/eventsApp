@@ -7,25 +7,38 @@ using System.Text;
 
 namespace MailingService
 {
-    public class EmailServiceImpl
+    public static class EmailServiceImpl
     {
 
-        private readonly static string _mail = Environment.GetEnvironmentVariable("MAIL") ?? "eventsapprs2@gmail.com";
-        private readonly static string _pass = Environment.GetEnvironmentVariable("MAIL_PASS") ?? "sveq qgnq fkwg sufm";
-        private readonly static SmtpClient client = new SmtpClient("smtp.gmail.com", 587)
-        {
-            EnableSsl = true,
-            //DeliveryMethod = System.Net.Mail.SmtpDeliveryMethod.Network,
-            UseDefaultCredentials = false,
-            Credentials = new NetworkCredential(_mail, _pass),
-            Timeout = 30000
-        };
+        private readonly static string _mail;
+        private readonly static string _pass;
+        private static readonly SmtpClient client;
         private static readonly Queue<Func<Task>> eventInFollowingCategoryQueue = new Queue<Func<Task>>();
         private static bool eventInFollowingCategoryIsProcessing = false;
 
-        public EmailServiceImpl()
+        static EmailServiceImpl()
         {
+            _mail = Environment.GetEnvironmentVariable("MAIL") ?? string.Empty;
+            _pass = Environment.GetEnvironmentVariable("MAIL_PASS") ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(_mail))
+            {
+                throw new InvalidOperationException("Email configuration is missing. Please set the 'MAIL' environment variable.");
+            }
+
+            if (string.IsNullOrWhiteSpace(_pass))
+            {
+                throw new InvalidOperationException("Email password configuration is missing. Please set the 'MAIL_PASS' environment variable.");
+            }
+
+            client = new SmtpClient("smtp.gmail.com", 587)
+            {
+                EnableSsl = true,
+                UseDefaultCredentials = false,
+                Credentials = new NetworkCredential(_mail, _pass),
+                Timeout = 30000
+            };
         }
+
 
         public static async Task SendEventInFollowingCategoryEmail(NotifySubscribers notification)
         {

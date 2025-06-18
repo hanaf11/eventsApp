@@ -27,6 +27,7 @@ services:
     environment:
       - ConnectionStrings__DefaultConnection=${DEFAULT_CONNECTION}
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - RABBITMQ_CONNECTIONSTRING=${RABBITMQ_CONNECTIONSTRING}
     ports:
       - 7294:7294
     networks:
@@ -38,6 +39,21 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+
+  eventsapp-subscriber:
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: eventsApp.Subscriber/Dockerfile
+    environment:
+      - RABBITMQ_CONNECTIONSTRING=${RABBITMQ_CONNECTIONSTRING}
+      - MAIL=${MAIL}
+      - MAIL_PASS=${MAIL_PASS}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - eventsappnet
 
   rabbitmq:
     image: rabbitmq:3-management

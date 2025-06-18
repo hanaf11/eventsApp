@@ -1,12 +1,6 @@
-﻿// See https://aka.ms/new-console-template for more information
-using EasyNetQ;
-using eventsApp.Model;
+﻿using EasyNetQ;
 using eventsApp.Model.Messages;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
 using System.Text;
-using System.Net.Mail;
-using System.Net;
 using MailingService;
 
 public class EmailService
@@ -14,27 +8,51 @@ public class EmailService
     private static readonly Queue<Func<Task>> eventInFollowingCategoryQueue = new Queue<Func<Task>>();
     private static bool eventInFollowingCategoryIsProcessing = false;
 
-
     public static async Task Main(string[] args)
     {
+        var hostName = Environment.GetEnvironmentVariable("RABBITMQ_CONNECTIONSTRING") ?? "host=localhost";
 
-        using (var bus = RabbitHutch.CreateBus("host=localhost"))
+        using (var bus = RabbitHutch.CreateBus(hostName))
         {
-            // bus.PubSub.Subscribe<DogadjajActivated>("seminarski", HandleTextMessage;
+            // Set up cancellation token for graceful shutdown
+            var cts = new CancellationTokenSource();
+            Console.CancelKeyPress += (sender, e) =>
+            {
+                e.Cancel = true;
+                cts.Cancel();
+            };
+
+            Console.WriteLine("Subscribing to RabbitMQ messages...");
+
+            // User registration subscription
             await bus.PubSub.SubscribeAsync<UserRegisteredModel>("user_registered", async msg =>
             {
-                Console.WriteLine($"New user registered");
-                await EmailServiceImpl.SendUserRegisteredEmail(msg);
+                Console.WriteLine("New user registered.");
+                try
+                {
+                    await EmailServiceImpl.SendUserRegisteredEmail(msg);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error processing user_registered message: {ex.Message}");
+                }
             });
 
+            // Order subscription
             await bus.PubSub.SubscribeAsync<OrderModel>("order", async msg =>
             {
-                Console.WriteLine($"New order was made");
-                await EmailServiceImpl.SendOrderEmail(msg);
+                Console.WriteLine("New order was made.");
+                try
+                {
+                    await EmailServiceImpl.SendOrderEmail(msg);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error processing order message: {ex.Message}");
+                }
             });
 
-
-
+            // Event activation subscription
             await bus.PubSub.SubscribeAsync<NotifySubscribers>("event_activated", async msg =>
             {
                 Console.WriteLine($"Event activated: {msg.Dogadjaj.Naziv} from category: {msg.Dogadjaj.Kategorija.Naziv}");
@@ -55,20 +73,29 @@ public class EmailService
                 if (!eventInFollowingCategoryIsProcessing)
                 {
                     eventInFollowingCategoryIsProcessing = true;
-                    while (eventInFollowingCategoryQueue.Count > 0)
-                    {
-                        var nextMessage = eventInFollowingCategoryQueue.Dequeue();
-                        await nextMessage();
-                    }
-                    eventInFollowingCategoryIsProcessing = false;
+                    _ = Task.Run(ProcessEventQueue);
                 }
             });
 
-
-            Console.WriteLine("Listening for messages. Hit <return> to quit.");
-            Console.ReadLine();
+            Console.WriteLine("Listening for messages. Press Ctrl+C to quit.");
+            try
+            {
+                await Task.Delay(Timeout.Infinite, cts.Token);
+            }
+            catch (TaskCanceledException)
+            {
+                Console.WriteLine("Shutting down gracefully...");
+            }
         }
     }
+
+    private static async Task ProcessEventQueue()
+    {
+        while (eventInFollowingCategoryQueue.Count > 0)
+        {
+            var nextMessage = eventInFollowingCategoryQueue.Dequeue();
+            await nextMessage();
+        }
+        eventInFollowingCategoryIsProcessing = false;
+    }
 }
-
-
