@@ -1,4 +1,5 @@
 ﻿using eventsApp.Model;
+using eventsApp.Model.Messages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,5 +15,7 @@ namespace eventsApp.Services
         public void SendRegisteredMail(string mail, string ime);
 
         public void SendOrderMail(Model.Dogadjaji dogadjaj, Model.Narudzbe narudzba, List<ValidTipKarte> listaKarata, List<Model.Karta> karte);
+
+        public void SendTicketsRequest(KarteDobavljacRequest request);
     }
 }

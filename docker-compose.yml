@@ -1,4 +1,4 @@
-version: '1.3'
+version: '1.4'
 services:
   eventsapp-sql:
     image: mcr.microsoft.com/mssql/server:2017-latest-ubuntu
@@ -49,6 +49,27 @@ services:
       - RABBITMQ_CONNECTIONSTRING=${RABBITMQ_CONNECTIONSTRING}
       - MAIL=${MAIL}
       - MAIL_PASS=${MAIL_PASS}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - eventsappnet
+
+  dobavljac-ulaznica:
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: eventsApp.DobavljacUlaznica/Dockerfile
+    environment:
+      - RABBITMQ_CONNECTIONSTRING=${RABBITMQ_CONNECTIONSTRING}
+      - KARTE_API_URL=${KARTE_API_URL}
+      - DOBAVLJAC_USERNAME=${DOBAVLJAC_USERNAME}
+      - DOBAVLJAC_PASSWORD=${DOBAVLJAC_PASSWORD}
+    stdin_open: true
+    tty: true
+    container_name: dobavljac-ulaznica
+    links:
+      - eventsapp-api
     depends_on:
       rabbitmq:
         condition: service_healthy

@@ -9,32 +9,76 @@ using System.Text;
 public class Program
 {
     private static readonly HttpClient client = new HttpClient(); // HttpClient should be a class-level instance
+    private static string RabbitMqConnectionString = string.Empty;
+    private static string KarteApiUrl = string.Empty;
+    private static string DobavljacUsername = string.Empty;
+    private static string DobavljacPassword = string.Empty;
 
     public static async Task Main(string[] args)
     {
-        using (var bus = RabbitHutch.CreateBus("host=localhost"))
+        InitializeEnvironmentVariables();
+
+        using (var bus = RabbitHutch.CreateBus(RabbitMqConnectionString))
         {
-            // bus.PubSub.Subscribe<DogadjajActivated>("seminarski", HandleTextMessage;
-            await bus.PubSub.SubscribeAsync<KarteDobavljacRequest>("dobavljac", HandleKarteDobavljacRequest);
-
-            Console.WriteLine("Listening for messages. Hit <return> to quit.");
-            //  Console.ReadLine();
-            while (true)
+            var cts = new CancellationTokenSource();
+            Console.CancelKeyPress += (sender, e) =>
             {
-                // Check for user input
-                if (Console.KeyAvailable)
-                {
-                    var key = Console.ReadKey(true).Key; // Read the key without displaying it
+                e.Cancel = true;
+                cts.Cancel();
+            };
 
-                    if (key == ConsoleKey.Q)
-                    {
-                        Console.WriteLine("Exiting...");
-                        break; // Exit the loop if 'Q' is pressed
-                    }
-                }
+            Console.WriteLine("Subscribing to RabbitMQ messages...");
 
-                // Await a short delay to prevent busy waiting
-                await Task.Delay(100); // Adjust delay as needed
+            // bus.PubSub.Subscribe<DogadjajActivated>("seminarski", HandleTextMessage;
+            try
+            {
+                await bus.PubSub.SubscribeAsync<KarteDobavljacRequest>("dobavljac", HandleKarteDobavljacRequest);
+            }
+            catch (TaskCanceledException ex)
+            {
+                Console.WriteLine("Task was canceled: " + ex.Message);
+            }
+            catch (EasyNetQException ex)
+            {
+                Console.WriteLine("EasyNetQ Error: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Unhandled Error: " + ex.Message);
+            }
+
+
+            /* Console.WriteLine("Listening for messages. Hit <return> to quit.");
+             //  Console.ReadLine();
+             while (true)
+             {
+                 // Check for user input
+                 if (Console.KeyAvailable)
+                 {
+                     var key = Console.ReadKey(true).Key; // Read the key without displaying it
+
+                     if (key == ConsoleKey.Q)
+                     {
+                         Console.WriteLine("Exiting...");
+                         break; // Exit the loop if 'Q' is pressed
+                     }
+                 }
+
+                 // Await a short delay to prevent busy waiting
+                 await Task.Delay(100); // Adjust delay as needed
+
+
+             }*/
+
+
+            Console.WriteLine("Listening for messages. Press Ctrl+C to quit.");
+            try
+            {
+                await Task.Delay(Timeout.Infinite, cts.Token);
+            }
+            catch (TaskCanceledException)
+            {
+                Console.WriteLine("Shutting down gracefully...");
             }
         }
     }
@@ -81,21 +125,20 @@ public class Program
             client.Timeout =TimeSpan.FromSeconds(120);
         try
             {
-                string apiUrl = "http://localhost:7294/Dogadjaji/send-tickets";
+               // string apiUrl = "http://localhost:7294/Dogadjaji/send-tickets";
 
-                string jsonContent = JsonConvert.SerializeObject(response);
+            string jsonContent = JsonConvert.SerializeObject(response);
             Console.WriteLine(jsonContent);
 
             var karteList = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-                 string username = "admin";
-                 string password = "admin";  
-                 var byteArray = Encoding.ASCII.GetBytes($"{username}:{password}");
+
+            var byteArray = Encoding.ASCII.GetBytes($"{DobavljacUsername}:{DobavljacPassword}");
                  client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
 
             var bodyContent = await karteList.ReadAsStringAsync();
 
-            HttpResponseMessage result = await client.PostAsync(apiUrl, karteList);
+            HttpResponseMessage result = await client.PostAsync(KarteApiUrl, karteList);
 
             if (result.IsSuccessStatusCode)
                 {
@@ -111,6 +154,19 @@ public class Program
                 Console.WriteLine($"Desila se greška prilikom slanja odgovora: {ex.Message}");
             }
         }
+
+    private static void InitializeEnvironmentVariables()
+    {
+        RabbitMqConnectionString = Environment.GetEnvironmentVariable("RABBITMQ_CONNECTIONSTRING") ?? "host=localhost";
+        KarteApiUrl = Environment.GetEnvironmentVariable("KARTE_API_URL") ?? string.Empty;
+        DobavljacUsername = Environment.GetEnvironmentVariable("DOBAVLJAC_USERNAME") ?? string.Empty;
+        DobavljacPassword = Environment.GetEnvironmentVariable("DOBAVLJAC_PASSWORD") ?? string.Empty;
+
+        if (string.IsNullOrWhiteSpace(KarteApiUrl))
+            throw new InvalidOperationException("The 'KARTE_API_URL' environment variable is missing or empty.");
+        if (string.IsNullOrWhiteSpace(DobavljacUsername) || string.IsNullOrWhiteSpace(DobavljacPassword))
+            throw new InvalidOperationException("API credentials are missing. Please set 'DOBAVLJAC_USERNAME' and 'DOBAVLJAC_PASSWORD' environment variables.");
+    }
 
     private static int countTickets(List<KarteRequest> karteRequest)
     {
