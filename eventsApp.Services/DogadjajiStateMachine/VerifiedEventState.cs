@@ -63,9 +63,8 @@ namespace eventsApp.Services.DogadjajiStateMachine
             var set = _context.Set<Database.Dogadjaji>();
             var entity = await set.FindAsync(id);
 
-            using var bus = RabbitHutch.CreateBus("host=localhost");
-            KarteDobavljacRequest message = new KarteDobavljacRequest { Dogadjaj = entity.Naziv, Datum = entity.DatumOd, Lokacija = entity.Lokacija, KarteZahtjev = request };
-            bus.PubSub.Publish(message);
+             KarteDobavljacRequest message = new KarteDobavljacRequest { Dogadjaj = entity.Naziv, Datum = entity.DatumOd, Lokacija = entity.Lokacija, KarteZahtjev = request };
+            _notificationService.SendTicketsRequest(message);
 
             entity.Status = "ON_HOLD";
             entity.Created = DateTime.Now;

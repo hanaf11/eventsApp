@@ -50,5 +50,10 @@ namespace eventsApp.Services
             OrderModel message = new OrderModel(dogadjaj, narudzba, karte, listaKarata);
             _rabbitMqPublisher.Publish(message);
         }
+
+        public void SendTicketsRequest(KarteDobavljacRequest request)
+        {
+            _rabbitMqPublisher.Publish(request);
+        }
     }
 }
