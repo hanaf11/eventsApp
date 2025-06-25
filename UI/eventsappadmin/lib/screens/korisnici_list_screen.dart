@@ -238,10 +238,6 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
                                               FormBuilderValidators.compose([
                                             FormBuilderValidators.required(
                                                 errorText: 'Polje je obavezno'),
-                                            FormBuilderValidators.password(
-                                              errorText:
-                                                  "Lozinka treba sadržavati između 8-32 karaktera, Minimalno jedno malo slovo \nMinimalno jedno veliko slovo, Minimalno jedan broj \nMinimalno jedan specijalni karakter",
-                                            )
                                           ]),
                                         ),
                                       ),
@@ -255,10 +251,6 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
                                               FormBuilderValidators.compose([
                                             FormBuilderValidators.required(
                                                 errorText: 'Polje je obavezno'),
-                                            FormBuilderValidators.password(
-                                              errorText:
-                                                  "Lozinka treba sadržavati između 8-32 karaktera, minimalno jedno malo slovo \nMinimalno jedno veliko slovo, Minimalno jedan broj \nMinimalno jedan specijalni karakter",
-                                            )
                                           ]),
                                         ),
                                       ),

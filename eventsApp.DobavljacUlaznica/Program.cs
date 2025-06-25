@@ -96,28 +96,15 @@ public class Program
         {
             Console.WriteLine($"Tip karte: {karta.Naziv}   -   Cijena: {karta.Cijena}   -   Količina: {karta.Kolicina}");
         }
-        Console.WriteLine("\nDa li možete potvrditi slanje traženih ulaznica? (Y/N)");
-        string answer = Console.ReadLine()?.ToUpper();
 
-        if (answer == "Y")
-        {
-            Console.WriteLine("Ulaznice su potvrđene za slanje.");
+  
+            Console.WriteLine("Generisanje ulaznica");
             int count = countTickets(msg.KarteZahtjev);
             List<KartaDobavljacResponse> karteList = generateTickets(msg.KarteZahtjev);
             Dictionary<string, int> stanje = handleStanje(msg.KarteZahtjev);
             KarteDobavljacResponseList response = new KarteDobavljacResponseList() { Dogadjaj = msg.Dogadjaj, Datum = msg.Datum, Lokacija = msg.Lokacija, Count = count, KarteList = karteList, Stanje=stanje };
             await SendResponseToEventsAppApi(response);
-        }
-        else if (answer == "N")
-        {
-            Console.WriteLine("Slanje ulaznica je odbijeno.");
-            KarteDobavljacResponseList response = new KarteDobavljacResponseList() { Dogadjaj = msg.Dogadjaj, Datum = msg.Datum, Lokacija = msg.Lokacija, Count = 0, KarteList=null, Stanje=null };
-            await SendResponseToEventsAppApi(response);
-        }
-        else
-        {
-            Console.WriteLine("Nevažeći unos. Pokušajte ponovo.");
-        }
+       
     }
 
         private static async Task SendResponseToEventsAppApi(KarteDobavljacResponseList response)
