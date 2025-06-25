@@ -275,10 +275,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 validator: FormBuilderValidators.compose([
                   FormBuilderValidators.required(
-                      errorText: 'Polje je obavezno'),
-                  FormBuilderValidators.password(
-                      errorText:
-                          "Lozinka treba sadržavati između 8-32 karaktera\nMinimalno jedno malo slovo \nMinimalno jedno veliko slovo \nMinimalno jedan broj \nMinimalno jedan specijalni karakter")
+                      errorText: 'Polje je obavezno')
                 ]),
               )),
           FieldWithValidate(
@@ -292,10 +289,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 validator: FormBuilderValidators.compose([
                   FormBuilderValidators.required(
-                      errorText: 'Polje je obavezno'),
-                  FormBuilderValidators.password(
-                      errorText:
-                          "Lozinka treba sadržavati između 8-32 karaktera\nMinimalno jedno malo slovo \nMinimalno jedno veliko slovo \nMinimalno jedan broj \nMinimalno jedan specijalni karakter")
+                      errorText: 'Polje je obavezno')
                 ]),
               )),
           FieldWithValidate(
