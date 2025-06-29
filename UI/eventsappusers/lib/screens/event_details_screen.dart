@@ -52,7 +52,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
   late SavingProvider _savingProvider;
   late GalerijaProvider _galerijaProvider;
   late Dogadjaj _dogadjaj;
-  late Podkategorija _podkategorija;
+   Podkategorija? _podkategorija;
   TextEditingController _komentarController = new TextEditingController();
   late List<Komentar>? _komentariList;
   late List<Slika>? _galerija;
@@ -108,15 +108,19 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
         dogadjajLoaded = true;
       });
 
+      print("podkategorija ${_dogadjaj.podkategorijaId}");
+      if(_dogadjaj.podkategorijaId!=null){
       _podkategorijaProvider
           .getById(_dogadjaj.podkategorijaId)
           .then((podkategorijaValue) {
         setState(() {
           _podkategorija = podkategorijaValue;
           podkategorijaLoaded = true;
-          print("evo ga podkategorija ${_podkategorija.naziv}");
+          print("evo ga podkategorija ${_podkategorija?.naziv}");
         });
         handleLoading();
+          });
+      } else {podkategorijaLoaded=true; handleLoading();}
 
         _komentariProvider
             .get(filter: {'dogadjajId': widget.dogadjajId}).then((value) {
@@ -149,7 +153,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
       }).catchError((e) {
         handleException(e);
       });
-    });
+    
   }
 
   Future<void> showKomentariDialog() async {
@@ -238,6 +242,8 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print("loaded $podkategorijaLoaded");
+    print("podkat $_podkategorija" );
     return MasterScreen(
         selectedIndex: -1,
         showBackButton: true,
@@ -304,8 +310,9 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                                 SizedBox(
                                   width: 5,
                                 ),
+                                if( podkategorijaLoaded== true && _podkategorija!=null) 
                                 PodkategorijaTile(
-                                    text: _podkategorija.naziv,
+                                    text: _podkategorija?.naziv ?? "",
                                     isSelected: false,
                                     onSelect: (isSelected) =>
                                         {_handleSelection(-1)})
