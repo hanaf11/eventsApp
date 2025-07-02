@@ -465,7 +465,7 @@ class _KategorijeDataSource extends DataTableSource {
           style: TextStyle(fontWeight: FontWeight.bold),
         )),
         DataCell(Text(
-          e.opis ?? "",
+          _truncateOpis(e.opis ?? ""),
           overflow: TextOverflow.ellipsis,
           maxLines: 1,
         )),
@@ -487,6 +487,11 @@ class _KategorijeDataSource extends DataTableSource {
       ],
     );
   }
+
+  String _truncateOpis(String opis) {
+  if (opis.length <= 100) return opis;
+  return '${opis.substring(0, 100)}...';
+}
 
   @override
   bool get isRowCountApproximate => false;

@@ -205,6 +205,16 @@ namespace eventsApp.Services
 
         }
 
+        public override bool RequiresSoftDelete(Database.Korisnici entity)
+        {
+            return true;
+        }
+
+        public override void ApplySoftDelete(Database.Korisnici entity)
+        {
+            entity.Status = false;
+        }
+
 
     }
 }

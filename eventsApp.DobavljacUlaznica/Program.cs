@@ -99,11 +99,15 @@ public class Program
 
   
             Console.WriteLine("Generisanje ulaznica");
+        try
+        {
             int count = countTickets(msg.KarteZahtjev);
             List<KartaDobavljacResponse> karteList = generateTickets(msg.KarteZahtjev);
             Dictionary<string, int> stanje = handleStanje(msg.KarteZahtjev);
-            KarteDobavljacResponseList response = new KarteDobavljacResponseList() { Dogadjaj = msg.Dogadjaj, Datum = msg.Datum, Lokacija = msg.Lokacija, Count = count, KarteList = karteList, Stanje=stanje };
+            KarteDobavljacResponseList response = new KarteDobavljacResponseList() { Dogadjaj = msg.Dogadjaj, Datum = msg.Datum, Lokacija = msg.Lokacija, Count = count, KarteList = karteList, Stanje = stanje };
             await SendResponseToEventsAppApi(response);
+        }
+        catch (Exception e) { Console.WriteLine($"Exception: {e}"); }
        
     }
 

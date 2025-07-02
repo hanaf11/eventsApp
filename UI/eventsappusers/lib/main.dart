@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:eventsappusers/models/korisnik.dart';
 import 'package:eventsappusers/models/korisnik_global.dart';
@@ -16,30 +15,15 @@ import 'package:eventsappusers/providers/pracenje_provider.dart';
 import 'package:eventsappusers/providers/recommender_provider.dart';
 import 'package:eventsappusers/providers/saving_provider.dart';
 import 'package:eventsappusers/providers/tipkarte_provider.dart';
-import 'package:eventsappusers/screens/buy_ticket_screen.dart';
-import 'package:eventsappusers/screens/edit_profile_screen.dart';
-import 'package:eventsappusers/screens/event_details_screen.dart';
 import 'package:eventsappusers/screens/home_screen.dart';
-import 'package:eventsappusers/screens/kategorije_details_screen.dart';
-import 'package:eventsappusers/screens/kategorije_screen.dart';
-import 'package:eventsappusers/screens/kreiraj_dogadjaj_screen.dart';
-import 'package:eventsappusers/screens/map_screen.dart';
-import 'package:eventsappusers/screens/narudzba_preview_screen.dart';
-import 'package:eventsappusers/screens/personal_information_screen.dart';
-import 'package:eventsappusers/screens/profile_screen.dart';
 import 'package:eventsappusers/screens/register_screen.dart';
-import 'package:eventsappusers/screens/spremljeno_screen.dart';
-import 'package:eventsappusers/utils/category_color_util.dart';
-import 'package:eventsappusers/utils/util.dart';
-import 'package:eventsappusers/widgets/master_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  stripe.Stripe.publishableKey =
-      "pk_test_51RNgF8Rx32cz44yvJVHVCLtK3dBZaXPtSPQyDxx4Gma72XFrhJsfMHs20IAUgtwjtlc4hc2xV2BmnbY792BTOp7E00Tip0ZfBJ";
+  stripe.Stripe.publishableKey = const String.fromEnvironment('publishableKey', defaultValue: 'pk_test_51RNgF8Rx32cz44yvJVHVCLtK3dBZaXPtSPQyDxx4Gma72XFrhJsfMHs20IAUgtwjtlc4hc2xV2BmnbY792BTOp7E00Tip0ZfBJ');
   stripe.Stripe.merchantIdentifier = 'eventsApp';
   stripe.Stripe.urlScheme = "flutterstripe";
   await stripe.Stripe.instance.applySettings();

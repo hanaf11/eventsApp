@@ -166,7 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
     };
 
     await _dogadjajProvider.get(filter: filterReq).then((value) {
-      print("dogadjaji: $value");
+      print("dogadjaji near you: $value");
       setState(() {
         _nearYouList = value.result;
         nearYouLoaded = true;

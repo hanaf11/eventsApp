@@ -36,7 +36,7 @@ class _MapScreenState extends State<MapScreen> {
   /*TextEditingController _datumOdDateController = TextEditingController();
   TextEditingController _datumDoDateController = TextEditingController();*/
   DateTime? _datumOd = DateTime.now();
-  DateTime? _datumDo = DateTime.now().add(Duration(days: 30));
+  DateTime? _datumDo = DateTime.now().add(Duration(days: 100));
   late TextEditingController _datumOdController;
   late TextEditingController _datumDoController;
   int? _kategorijaSelected;

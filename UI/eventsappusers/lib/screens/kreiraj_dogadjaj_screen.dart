@@ -320,9 +320,10 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
             false;
     final isForm2Valid =
         _karteFormKey.currentState?.saveAndValidate(focusOnInvalid: false) ??
-            false;
+            true;
 
     print("validnost $isForm1Valid $isForm2Valid");
+      print("validnost druge ${  _karteFormKey.currentState?.saveAndValidate(focusOnInvalid: false)}");
     var prodajaKarata = _eventFormKey.currentState?.value['ProdajaKarata'];
     if (prodajaKarata != null && prodajaKarata) {
       if (tipKarteList.isEmpty) {
@@ -331,6 +332,7 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
         });
         return;
       }
+    }
 
       if (isForm1Valid) {
         /* if (prodajaKarata != null && prodajaKarata) {
@@ -340,19 +342,22 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
           });
           return;
         }*/
-        if (isForm2Valid) {
+        if (isForm2Valid && tipKarteList.isNotEmpty) {
           sendRequest(true);
         }
-      } else {
+        else {
         sendRequest(false);
       }
-    }
+      } 
+    
   }
 
   sendRequest(bool prodajaKarata) async {
+    print("uslo u objavljivanje");
     var request = {};
     var request1 = Map.from(_eventFormKey.currentState!.value);
     if (prodajaKarata) {
+      print("ukljucena prodaja");
       var request2 = Map.from(_karteFormKey.currentState!.value);
       request = {
         ...request1,
@@ -362,6 +367,7 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
       request = {...request1};
     }
 
+  print("request ${request}");
     request.forEach((key, value) {
       if (value is DateTime) {
         request[key] = value.toIso8601String(); // Convert DateTime to String
