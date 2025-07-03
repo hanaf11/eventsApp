@@ -23,7 +23,7 @@ import '../widgets/master_screen.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final VoidCallback onProfileUpdated;
-  EditProfileScreen({required this.onProfileUpdated, super.key});
+  const EditProfileScreen({required this.onProfileUpdated, super.key});
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -39,7 +39,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late KorisnikProvider _korisnikProvider;
   late Korisnik _korisnik;
   DateTime created = DateTime.now();
-  final _formKey = new GlobalKey<FormBuilderState>();
+  final _formKey = GlobalKey<FormBuilderState>();
   bool isLoading = true;
   _EditProfileScreenState();
 
@@ -50,7 +50,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     loadKorisnik();
   }
 
-  loadKorisnik() async {
+  Future<void> loadKorisnik() async {
     await _korisnikProvider.getById(KorisnikGlobal.korisnikId).then((value) {
       setState(() {
         _korisnik = value;
@@ -66,18 +66,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     if (result != null && result.files.single.path != null) {
       file = File(result.files.single.path!);
-      base64Image = base64Encode(file!.readAsBytesSync());
+      base64Image = base64Encode(file.readAsBytesSync());
       final image = Image.file(
         file,
         fit: BoxFit.cover,
       );
-      print("image: ${image}");
+      print("image: $image");
       print("baase64: $base64Image");
       onImageSelected(ImageObj(image, base64Image));
     }
   }
 
-  _saveProfilePicture() async {
+  Future<void> _saveProfilePicture() async {
     try {
       await _korisnikProvider.updateProfilePicture(
           KorisnikGlobal.korisnikId!, _profilna.base64Image);
@@ -108,7 +108,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  editKorisnik() async {
+  Future<void> editKorisnik() async {
     if (_formKey.currentState?.saveAndValidate() ?? false) {
       print(_formKey.currentState?.value);
 
@@ -246,7 +246,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ])));
   }
 
-  _buildLicniPodaci() {
+  FormBuilder _buildLicniPodaci() {
     return FormBuilder(
         key: _formKey,
         initialValue: {
@@ -319,7 +319,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ]));
   }
 
-  _buildCountryInput() {
+  InkWell _buildCountryInput() {
     return InkWell(
         child: IgnorePointer(
           child: FieldWithValidate(
@@ -342,7 +342,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         });
   }
 
-  _buildHeading(String naslov) {
+  Text _buildHeading(String naslov) {
     return Text(
         style: TextStyle(
             fontFamily: 'Montserrat',

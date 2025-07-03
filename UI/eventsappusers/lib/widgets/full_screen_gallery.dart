@@ -6,8 +6,8 @@ class FullScreenGallery extends StatefulWidget {
   final List<ImageObj>? imageList;
   final int initialIndex;
 
-  FullScreenGallery(
-      {this.imagePathList, this.imageList, required this.initialIndex});
+  const FullScreenGallery(
+      {super.key, this.imagePathList, this.imageList, required this.initialIndex});
 
   @override
   _FullScreenGalleryState createState() => _FullScreenGalleryState();

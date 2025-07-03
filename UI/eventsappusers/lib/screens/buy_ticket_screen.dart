@@ -54,7 +54,7 @@ class _BuyTicketScreenState extends State<BuyTicketScreen> {
     loadData();
   }
 
-  loadData() {
+  void loadData() {
     setState(() {
       _lokacijaSlika = imageFromBase64String(widget.dogadjaj.lokacijaSlika);
       slikaLoaded = true;
@@ -73,7 +73,7 @@ class _BuyTicketScreenState extends State<BuyTicketScreen> {
     });
   }
 
-  handleException(Exception e) {
+  void handleException(Exception e) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -89,7 +89,7 @@ class _BuyTicketScreenState extends State<BuyTicketScreen> {
     );
   }
 
-  handleLoading() {
+  void handleLoading() {
     if (slikaLoaded && karteLoaded) {
       setState(() {
         isLoading = false;
@@ -97,21 +97,21 @@ class _BuyTicketScreenState extends State<BuyTicketScreen> {
     }
   }
 
-  validateRequest() async {
-    print("selected quantities ${selectedQuantities}");
+  Future<void> validateRequest() async {
+    print("selected quantities $selectedQuantities");
     int numOfTickets = 0;
     for (var entry in selectedQuantities.entries) {
       numOfTickets += entry.value;
     }
     if (numOfTickets == 0) {
-      handleException(new Exception(
+      handleException(Exception(
           "Morate izabrati bar jednu kartu da biste nastavili kupovinu"));
       return;
     }
 
     try {
       await _narudzbaProvider.validateRequest(selectedQuantities).then((value) {
-        Narudzba narudzba = new Narudzba(value);
+        Narudzba narudzba = Narudzba(value);
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => PersonalInfoScreen(
                   narudzba: narudzba,
@@ -206,7 +206,7 @@ class _BuyTicketScreenState extends State<BuyTicketScreen> {
                   })));
   }
 
-  _buildDostupneKarte() {
+  Column _buildDostupneKarte() {
     return Column(mainAxisAlignment: MainAxisAlignment.start, children: [
       Align(
         alignment: Alignment.topLeft,

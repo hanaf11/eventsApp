@@ -20,14 +20,14 @@ import '../widgets/heading_widget.dart';
 import '../widgets/master_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({super.key});
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  TextEditingController _searchController = new TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   bool isLoading = true;
   late KorisnikProvider _korisnikProvider;
   late KategorijeProvider _kategorijeProvider;
@@ -36,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Dogadjaj>? _pratiteList;
   List<Dogadjaj>? _recommendedList;
   List<Dogadjaj>? _nearYouList;
-  List<Dogadjaj>? _searchList = null;
+  List<Dogadjaj>? _searchList;
   List<Dogadjaj>? _newList;
   bool pratiteLoaded = false;
   bool recommendedLoaded = false;
@@ -62,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
     loadData();
   }
 
-  initializeCenter(String lokacija) async {
+  Future<void> initializeCenter(String lokacija) async {
     print("lokacija $lokacija");
     /*ry {
       var locations = await locationFromAddress(lokacija);
@@ -87,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
       return const LatLng(0, 0);
     }*/
     LatLng latLong = await getLatLong(lokacija);
-    print("latlong koje dobijemo poslije await ${latLong}");
+    print("latlong koje dobijemo poslije await $latLong");
     setState(() {
       initialCenter = latLong;
       centerLoaded = true;
@@ -96,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (centerLoaded) loadNearYou();
   }
 
-  handleLoading() {
+  void handleLoading() {
     if (pratiteLoaded == true &&
         nearYouLoaded == true &&
         recommendedLoaded == true &&
@@ -108,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  loadKategorije() async {
+  Future<void> loadKategorije() async {
     var data = await _kategorijeProvider.get();
     CategoryColorManager(data.result);
     setState(() {
@@ -117,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
     handleLoading();
   }
 
-  loadData() async {
+  Future<void> loadData() async {
     await _dogadjajProvider
         .getFollowing(KorisnikGlobal.korisnikId)
         .then((value) {
@@ -153,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  loadNearYou() async {
+  Future<void> loadNearYou() async {
     print(
       "uslo u load near you ${initialCenter?.latitude} ${initialCenter?.longitude}",
     );
@@ -183,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });*/
   }*/
 
-  search() async {
+  Future<void> search() async {
     var filterReq = {
       'FTS': _searchController.text,
       'Status': 'ACTIVE',
@@ -246,7 +246,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   )));
   }
 
-  _buildSearch() {
+  Padding _buildSearch() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20),
       child: Container(
@@ -304,7 +304,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 naslov),
             SizedBox(height: 10),
             (dogadjajiList != null && dogadjajiList.isNotEmpty)
-                ? Container(
+                ? SizedBox(
                     height: 240,
                     child: ListView.builder(
                         scrollDirection: Axis.horizontal,

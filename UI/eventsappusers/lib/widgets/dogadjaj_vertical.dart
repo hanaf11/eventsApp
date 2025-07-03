@@ -72,9 +72,7 @@ class _DogadjajVerticalWidgetState extends State<DogadjajVerticalWidget> {
                           color: Color.fromRGBO(31, 48, 83, 1)),
                     )),
                 Text(
-                  dayAndMonth(widget.dogadjaj.datumOd ?? DateTime.now()) +
-                      " - " +
-                      dayAndMonth(widget.dogadjaj.datumDo ?? DateTime.now()),
+                  "${dayAndMonth(widget.dogadjaj.datumOd ?? DateTime.now())} - ${dayAndMonth(widget.dogadjaj.datumDo ?? DateTime.now())}",
                   style: TextStyle(
                       fontFamily: 'Montserrat',
                       letterSpacing: 0.3,
@@ -130,7 +128,7 @@ class _DogadjajVerticalWidgetState extends State<DogadjajVerticalWidget> {
     );
   }
 
-  navigateToEventDetails() {
+  void navigateToEventDetails() {
     Navigator.push(
       context,
       MaterialPageRoute(

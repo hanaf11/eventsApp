@@ -14,7 +14,7 @@ String formErrorMessage(dynamic jsonResponse) {
         String fieldName = entry.key;
         List<dynamic> fieldErrors = entry.value;
         //return "$fieldName: ${fieldErrors.join(', ')}";
-        return "${fieldErrors.join(', ')}";
+        return fieldErrors.join(', ');
       })
       .join('; ')
       .toString();

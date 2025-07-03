@@ -95,7 +95,7 @@ class _DostupneKarteWidgetState extends State<DostupneKarteWidget> {
                                       color: Color.fromRGBO(60, 71, 91, 1)),
                                 ),
                                 Text(
-                                  widget.cijena.toString() + "KM",
+                                  "${widget.cijena}KM",
                                   style: TextStyle(
                                       fontFamily: 'Montserrat',
                                       fontWeight: FontWeight.w800,
@@ -115,7 +115,7 @@ class _DostupneKarteWidgetState extends State<DostupneKarteWidget> {
                     )))));
   }
 
-  _buildKolicina() {
+  Row _buildKolicina() {
     return Row(
       children: [
         Padding(
@@ -125,10 +125,10 @@ class _DostupneKarteWidgetState extends State<DostupneKarteWidget> {
               width: 30,
               child: ElevatedButton(
                 style: ButtonStyle(
-                    backgroundColor: MaterialStatePropertyAll(
+                    backgroundColor: WidgetStatePropertyAll(
                       Color.fromRGBO(44, 152, 240, 1),
                     ),
-                    padding: MaterialStatePropertyAll(EdgeInsets.all(0))),
+                    padding: WidgetStatePropertyAll(EdgeInsets.all(0))),
                 onPressed: () {
                   if (kolicina - 1 >= 0) {
                     setState(() {
@@ -169,10 +169,10 @@ class _DostupneKarteWidgetState extends State<DostupneKarteWidget> {
                 width: 30,
                 child: ElevatedButton(
                   style: ButtonStyle(
-                      backgroundColor: MaterialStatePropertyAll(
+                      backgroundColor: WidgetStatePropertyAll(
                         Color.fromRGBO(44, 152, 240, 1),
                       ),
-                      padding: MaterialStatePropertyAll(EdgeInsets.all(0))),
+                      padding: WidgetStatePropertyAll(EdgeInsets.all(0))),
                   onPressed: () {
                     if (kolicina + 1 <= widget.stanje) {
                       setState(() {

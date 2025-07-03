@@ -46,7 +46,7 @@ class _NarudzbaPreviewScreenState extends State<NarudzbaPreviewScreen> {
     return ukupno;
   }
 
-  clickNextStep() async {
+  Future<void> clickNextStep() async {
     Narudzba n = widget.narudzba;
     n.cijena = _ukupno;
     var amount = (_ukupno * 100).toInt();
@@ -62,7 +62,6 @@ class _NarudzbaPreviewScreenState extends State<NarudzbaPreviewScreen> {
       String? clientSecret =
           await _narudzbaProvider.createPaymentIntent(paymentIntentReq);
       print("client secret $clientSecret");
-      if (clientSecret == null) return;
 
       await Stripe.instance.initPaymentSheet(
           paymentSheetParameters: SetupPaymentSheetParameters(
@@ -107,7 +106,7 @@ class _NarudzbaPreviewScreenState extends State<NarudzbaPreviewScreen> {
     }
   }
 
-  handleNarudzbaSuccess() {
+  void handleNarudzbaSuccess() {
     setState(() {
       isLoading = false;
     });
@@ -128,7 +127,7 @@ class _NarudzbaPreviewScreenState extends State<NarudzbaPreviewScreen> {
     );
   }
 
-  handleException(String e) {
+  void handleException(String e) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -156,7 +155,7 @@ class _NarudzbaPreviewScreenState extends State<NarudzbaPreviewScreen> {
                 : NarudzbaMasterScreen(
                     naslov: "Narudžba",
                     childHeight: _contentHeight,
-                    tabActive: 3,
+                    tabActive: 2,
                     onClickNext: clickNextStep,
                     child: LayoutBuilder(builder:
                         (BuildContext context, BoxConstraints constraints) {
@@ -213,7 +212,7 @@ class _NarudzbaPreviewScreenState extends State<NarudzbaPreviewScreen> {
                     }))));
   }
 
-  _buildLicniPodaci() {
+  Column _buildLicniPodaci() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -264,13 +263,13 @@ class _NarudzbaPreviewScreenState extends State<NarudzbaPreviewScreen> {
     );
   }
 
-  TextStyle _myTextStyle = TextStyle(
+  final TextStyle _myTextStyle = TextStyle(
       color: Color.fromRGBO(60, 71, 92, 1),
       fontSize: 15,
       fontFamily: 'Montserrat',
       letterSpacing: 0.3);
 
-  _buildHeading(String naslov) {
+  Text _buildHeading(String naslov) {
     return Text(
         style: TextStyle(
             fontFamily: 'Montserrat',
@@ -281,7 +280,7 @@ class _NarudzbaPreviewScreenState extends State<NarudzbaPreviewScreen> {
         naslov);
   }
 
-  _buildPlacanjePodaci() {
+  Column _buildPlacanjePodaci() {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       _buildHeading("Plaćanje"),
       Text(

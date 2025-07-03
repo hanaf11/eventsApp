@@ -35,7 +35,7 @@ class KomentariProvider extends BaseProvider<Komentar> {
 
       return result;
     } else {
-      throw new Exception("Unknown exception");
+      throw Exception("Unknown exception");
     }
   }
 

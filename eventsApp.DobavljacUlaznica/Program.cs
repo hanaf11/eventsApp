@@ -113,7 +113,6 @@ public class Program
 
         private static async Task SendResponseToEventsAppApi(KarteDobavljacResponseList response)
         {
-            client.Timeout =TimeSpan.FromSeconds(120);
         try
             {
                // string apiUrl = "http://localhost:7294/Dogadjaji/send-tickets";
@@ -152,6 +151,7 @@ public class Program
         KarteApiUrl = Environment.GetEnvironmentVariable("KARTE_API_URL") ?? string.Empty;
         DobavljacUsername = Environment.GetEnvironmentVariable("DOBAVLJAC_USERNAME") ?? string.Empty;
         DobavljacPassword = Environment.GetEnvironmentVariable("DOBAVLJAC_PASSWORD") ?? string.Empty;
+        client.Timeout = TimeSpan.FromSeconds(120);
 
         if (string.IsNullOrWhiteSpace(KarteApiUrl))
             throw new InvalidOperationException("The 'KARTE_API_URL' environment variable is missing or empty.");

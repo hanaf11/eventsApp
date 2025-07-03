@@ -30,7 +30,7 @@ class NarudzbaMasterScreen extends StatefulWidget {
 class _NarudzbaMasterScreenState extends State<NarudzbaMasterScreen> {
   double footerHeight = 45;
   double headerHeight = 70;
-  List selected = [false, false, false];
+  List selected = [false, false];
 
   _NarudzbaMasterScreenState();
 
@@ -62,21 +62,21 @@ class _NarudzbaMasterScreenState extends State<NarudzbaMasterScreen> {
     );
   }
 
-  _buildHeader() {
+  SizedBox _buildHeader() {
     if (widget.tabActive != null &&
         widget.tabActive! > 0 &&
-        widget.tabActive! < 4) {
+        widget.tabActive! < 3) {
       for (int i = 0; i < widget.tabActive!; i++) {
         selected[i] = true;
       }
     }
-    return Container(
+    return SizedBox(
         height: headerHeight,
         child: Column(children: [
           HeadingWidget(text: widget.naslov),
           if (widget.tabActive != null &&
               widget.tabActive! > 0 &&
-              widget.tabActive! < 4)
+              widget.tabActive! < 3)
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -102,23 +102,13 @@ class _NarudzbaMasterScreenState extends State<NarudzbaMasterScreen> {
                               : Color.fromRGBO(217, 217, 217, 1),
                           borderRadius: BorderRadius.circular(50)),
                     )),
-                Padding(
-                    padding: EdgeInsets.all(4),
-                    child: Container(
-                      height: 16,
-                      width: 16,
-                      decoration: BoxDecoration(
-                          color: selected[2] == true
-                              ? Color.fromRGBO(44, 152, 240, 1)
-                              : Color.fromRGBO(217, 217, 217, 1),
-                          borderRadius: BorderRadius.circular(50)),
-                    ))
+
               ],
             )
         ]));
   }
 
-  _buildFooter() {
+  Align _buildFooter() {
     return Align(
         alignment: Alignment.bottomCenter,
         child: Container(

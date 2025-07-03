@@ -28,17 +28,11 @@ String formatNumber(dynamic) {
 }
 
 String printDate(DateTime date) {
-  return date.day.toString() +
-      ". " +
-      date.month.toString() +
-      ". " +
-      date.year.toString() +
-      ".";
+  return "${date.day}. ${date.month}. ${date.year}.";
 }
 
 String formatDate(DateTime date) {
-  return date.day.toString() +
-      ". " +
+  return "${date.day}. " +
       months[date.month - 1] +
       " " +
       date.year.toString() +
@@ -46,7 +40,7 @@ String formatDate(DateTime date) {
 }
 
 String dayAndMonth(DateTime date) {
-  return date.day.toString() + ". " + months[date.month - 1];
+  return "${date.day}. " + months[date.month - 1];
 }
 
 String printTime(TimeOfDay time) {
@@ -65,7 +59,7 @@ ImageProvider imageProviderFromBase64String(String? base64Image) {
       return MemoryImage(
         base64Decode(base64Image),
       );
-    } on Exception catch (e) {
+    } on Exception {
       return AssetImage('assets/images/no_picture.jpg');
     }
   }
@@ -79,7 +73,7 @@ Image imageFromBase64String(String? base64Image) {
         base64Decode(base64Image),
         fit: BoxFit.cover,
       );
-    } on Exception catch (e) {
+    } on Exception {
       return Image.asset(
         'assets/images/no_picture.jpg',
         fit: BoxFit.cover,
@@ -100,7 +94,9 @@ List<ImageObj>? imageListFromBase64String(List<Slika>? galerija) {
   }
 
   List<ImageObj> imageList = [];
-  galerija.forEach((img) => imageList
-      .add(new ImageObj(imageFromBase64String(img.slika), img.slika!)));
+  for (var img in galerija) {
+    imageList
+      .add(ImageObj(imageFromBase64String(img.slika), img.slika!));
+  }
   return imageList;
 }

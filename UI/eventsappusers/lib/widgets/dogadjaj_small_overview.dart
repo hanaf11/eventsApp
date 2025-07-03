@@ -14,7 +14,7 @@ class DogadjajSmallOverview extends StatefulWidget {
   final String? naslovna;
   final String? lokacijaSlika;
 
-  DogadjajSmallOverview(
+  const DogadjajSmallOverview(
       {required this.naziv,
       required this.datumOd,
       this.tickets,
@@ -146,7 +146,7 @@ class _DogadjajSmallOverviewState extends State<DogadjajSmallOverview> {
     );
   }
 
-  _buildTicketsContainer() {
+  Column _buildTicketsContainer() {
     return Column(
       children: [
         _buildTickets(),
@@ -171,7 +171,7 @@ class _DogadjajSmallOverviewState extends State<DogadjajSmallOverview> {
     );
   }
 
-  _buildTickets() {
+  Column _buildTickets() {
     return Column(
       children: widget.tickets
               ?.map((e) => _buildTicketGroup(e))
@@ -181,7 +181,7 @@ class _DogadjajSmallOverviewState extends State<DogadjajSmallOverview> {
     );
   }
 
-  _buildTicketGroup(ticketGroup) {
+  Row _buildTicketGroup(ticketGroup) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [

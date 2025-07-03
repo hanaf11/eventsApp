@@ -35,7 +35,7 @@ class DogadjajProvider extends BaseProvider<Dogadjaj> {
 
       return result;
     } else {
-      throw new Exception("Unknown exception");
+      throw Exception("Unknown exception");
     }
   }
 
@@ -57,7 +57,7 @@ class DogadjajProvider extends BaseProvider<Dogadjaj> {
 
       return result;
     } else {
-      throw new Exception("Unknown exception");
+      throw Exception("Unknown exception");
     }
   }
 

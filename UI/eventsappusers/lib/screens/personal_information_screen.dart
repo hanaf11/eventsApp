@@ -29,11 +29,11 @@ class PersonalInfoScreen extends StatefulWidget {
 class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   double _contentHeight = 0;
   String? locationImage = "assets/images/banner.jpg";
-  final _infoFormKey = new GlobalKey<FormBuilderState>();
-  var _preuzimanjeList = ["Poštom", "E-karta"];
+  final _infoFormKey = GlobalKey<FormBuilderState>();
+  final _preuzimanjeList = ["Poštom", "E-karta"];
   _PersonalInfoScreenState();
 
-  clickNextStep() {
+  void clickNextStep() {
     bool formValid = _infoFormKey.currentState?.saveAndValidate() ?? false;
     if (formValid) {
       Narudzba n = widget.narudzba;
@@ -215,7 +215,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                 }))));
   }
 
-  _buildHeading(String naslov) {
+  Text _buildHeading(String naslov) {
     return Text(
         style: TextStyle(
             fontFamily: 'Montserrat',
@@ -226,7 +226,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
         naslov);
   }
 
-  _buildDropdownList() {
+  FieldWithValidate _buildDropdownList() {
     return FieldWithValidate(
         label: 'Odaberite način preuzimanja karata:',
         field: FormBuilderDropdown(
@@ -254,7 +254,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
             }));
   }
 
-  _buildCountryInput() {
+  InkWell _buildCountryInput() {
     return InkWell(
         child: IgnorePointer(
             child: FieldWithValidate(

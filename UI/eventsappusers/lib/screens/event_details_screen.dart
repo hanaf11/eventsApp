@@ -53,7 +53,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
   late GalerijaProvider _galerijaProvider;
   late Dogadjaj _dogadjaj;
    Podkategorija? _podkategorija;
-  TextEditingController _komentarController = new TextEditingController();
+  final TextEditingController _komentarController = TextEditingController();
   late List<Komentar>? _komentariList;
   late List<Slika>? _galerija;
   late List<ImageObj>? imageList;
@@ -71,7 +71,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
     loadData();
   }
 
-  handleLoading() {
+  void handleLoading() {
     if (dogadjajLoaded == true &&
         podkategorijaLoaded == true &&
         komentariLoaded == true &&
@@ -100,7 +100,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
             ));
   }
 
-  loadData() {
+  void loadData() {
     _dogadjajProvider.getById(widget.dogadjajId).then((value) {
       setState(() {
         _dogadjaj = value;
@@ -123,7 +123,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
       } else {podkategorijaLoaded=true; handleLoading();}
 
         _komentariProvider
-            .get(filter: {'dogadjajId': widget.dogadjajId}).then((value) {
+            .get(filter: {'dogadjajId': widget.dogadjajId, 'korisnikIncluded':true}).then((value) {
           setState(() {
             _komentariList = value.result;
             komentariLoaded = true;
@@ -202,7 +202,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
     );
   }
 
-  handleException(Exception e) {
+  void handleException(Exception e) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -220,7 +220,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
 
   void _handleSelection(int index) {}
 
-  _savedClicked() async {
+  Future<void> _savedClicked() async {
     bool? value;
     var request = {
       "DogadjajId": widget.dogadjajId,
@@ -242,8 +242,6 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print("loaded $podkategorijaLoaded");
-    print("podkat $_podkategorija" );
     return MasterScreen(
         selectedIndex: -1,
         showBackButton: true,
@@ -332,11 +330,9 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                                   width: 5,
                                 ),
                                 Text(
-                                  formatDate(
-                                          _dogadjaj.datumOd ?? DateTime.now()) +
-                                      " - " +
-                                      formatDate(
-                                          _dogadjaj.datumDo ?? DateTime.now()),
+                                  "${formatDate(
+                                          _dogadjaj.datumOd ?? DateTime.now())} - ${formatDate(
+                                          _dogadjaj.datumDo ?? DateTime.now())}",
                                   style: TextStyle(
                                       color: Color.fromRGBO(60, 71, 92, 1),
                                       fontSize: 14,
@@ -405,7 +401,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                             if (_dogadjaj.program != null)
                               Align(
                                   alignment: Alignment.topLeft,
-                                  child: Text(_dogadjaj.program ?? '',
+                                  child: Text(_dogadjaj.program ?? 'Nema informacija',
                                       style: paragaph)),
                             SizedBox(
                               height: 20,
@@ -462,7 +458,6 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                                       );
                                     }
                                   },
-                                  child: Text("Kupi kartu"),
                                   style: ElevatedButton.styleFrom(
                                       foregroundColor: Colors.white,
                                       shadowColor: Colors.grey,
@@ -475,6 +470,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                                           color: Colors.white,
                                           fontFamily: 'Montserrat',
                                           fontWeight: FontWeight.bold)),
+                                  child: Text("Kupi kartu"),
                                 )),
                             SizedBox(
                               height: 30,
@@ -482,17 +478,20 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                           ],
                         )),
                   ]),
-                  Positioned(
-                      top: 16.0,
-                      left: 0,
-                      child: IconButton(
-                        icon: Icon(Icons.arrow_back),
-                        color: Color.fromRGBO(60, 71, 92, 1),
-                        onPressed: () {
-                          print("kliknuto pop");
-                          Navigator.pop(context, true);
-                        },
-                      )),
+  Positioned(
+  top: 0,
+  left: 0,
+  child: SafeArea(
+    child: Padding(
+      padding: EdgeInsets.only(left: 8.0, top: 8.0),
+      child: IconButton(
+        icon: Icon(Icons.arrow_back),
+        color: Color.fromRGBO(60, 71, 92, 1),
+        onPressed: () {
+          print("kliknuto pop");
+          Navigator.pop(context, true);
+        },
+      ),)))
                 ]),
         ));
   }
@@ -522,8 +521,9 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
           )
         ],
       );
-    } else
+    } else {
       return Container();
+    }
   }
 
   Widget _buildProgramSlika() {
@@ -539,7 +539,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
             ),
           );
         },
-        child: Container(
+        child: SizedBox(
             width: MediaQuery.of(context).size.width,
             child: Hero(
                 tag: tag, child: SizedBox(height: 170, child: programSlika))));
@@ -572,6 +572,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
 
     return Column(
       children: _komentariList!.map((comment) {
+        print("komentar ${comment.korisnik?.ime} ${comment.korisnik?.korisnickoIme} ${comment.korisnikId}");
         return CommentWidget(
           username: comment.korisnik?.korisnickoIme ?? 'Unknown user',
           text: comment.komentar ?? 'No text',
@@ -580,11 +581,11 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
     );
   }
 
-  _buildKategorija() {
+  Text _buildKategorija() {
     Color categoryColor =
-        CategoryColorManager().getColorForCategory(_dogadjaj!.kategorijaId!);
+        CategoryColorManager().getColorForCategory(_dogadjaj.kategorijaId!);
     return Text(
-      _dogadjaj!.kategorija!.naziv ?? '',
+      _dogadjaj.kategorija!.naziv ?? '',
       style: TextStyle(
           color: categoryColor,
           fontFamily: 'Montserrat',
@@ -612,7 +613,7 @@ Widget _buildMap(String? lokacija) {
           output = locations[0].toString();
           center = _extractLatitudeLongitude(output);
 
-          return Container(
+          return SizedBox(
               height: 300,
               width: MediaQuery.of(context).size.width,
               child: FlutterMap(

@@ -1,6 +1,4 @@
-import 'dart:ffi';
 
-import 'package:eventsappusers/models/kategorija.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'korisnik.g.dart';

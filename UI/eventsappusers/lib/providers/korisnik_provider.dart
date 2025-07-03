@@ -25,7 +25,7 @@ class KorisnikProvider extends BaseProvider<Korisnik> {
     var queryString = BaseProvider.getQueryString(credentials);
     url = "$url?$queryString";
     var uri = Uri.parse(url);
-    print("moj uri ${uri}");
+    print("moj uri $uri");
     var headers = BaseProvider.createHeaders();
 
     var response = await http.get(uri, headers: headers);
@@ -34,7 +34,7 @@ class KorisnikProvider extends BaseProvider<Korisnik> {
       var data = jsonDecode(response.body);
       return fromJson(data);
     } else {
-      throw new Exception("Unknown exception");
+      throw Exception("Unknown exception");
     }
   }
 
@@ -51,7 +51,7 @@ class KorisnikProvider extends BaseProvider<Korisnik> {
       var data = jsonDecode(response.body);
       return fromJson(data);
     } else {
-      throw new Exception("Unknown exception");
+      throw Exception("Unknown exception");
     }
   }
 

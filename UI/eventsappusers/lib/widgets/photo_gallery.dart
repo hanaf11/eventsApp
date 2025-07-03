@@ -9,8 +9,8 @@ class PhotoGallery extends StatelessWidget {
   final bool? delete;
   final Function(int)? onDelete;
 
-  PhotoGallery(
-      {this.imageList, this.imagePathList, this.delete, this.onDelete});
+  const PhotoGallery(
+      {super.key, this.imageList, this.imagePathList, this.delete, this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class PhotoGallery extends StatelessWidget {
             : null;
 
     return length != null && list != null
-        ? Container(
+        ? SizedBox(
             height: delete != null && delete == true ? 120 : 70,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,

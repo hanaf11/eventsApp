@@ -42,12 +42,12 @@ abstract class BaseProvider<T> with ChangeNotifier {
 
       return result;
     } else {
-      throw new Exception("Unknown exception");
+      throw Exception("Unknown exception");
     }
   }
 
   Future<T> getById(id) async {
-    var url = "$_baseUrl$_endpoint/${id}";
+    var url = "$_baseUrl$_endpoint/$id";
     var uri = Uri.parse(url);
     var headers = createHeaders();
 
@@ -60,7 +60,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
 
       return result;
     } else {
-      throw new Exception("Unknown exception");
+      throw Exception("Unknown exception");
     }
   }
 
@@ -76,7 +76,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
       var data = jsonDecode(response.body);
       return fromJson(data);
     } else {
-      throw new Exception("Unknown exception");
+      throw Exception("Unknown exception");
     }
   }
 
@@ -92,7 +92,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
       var data = jsonDecode(response.body);
       return fromJson(data);
     } else {
-      throw new Exception("Unknown exception");
+      throw Exception("Unknown exception");
     }
   }
 
@@ -107,7 +107,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
       var data = jsonDecode(response.body);
       return fromJson(data);
     } else {
-      throw new Exception("Unknown exception");
+      throw Exception("Unknown exception");
     }
   }
 
@@ -133,7 +133,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
     }
     print(response.body);
     print("status code ${response.statusCode}, ${response.bodyBytes}");
-    throw new Exception("Something bad happened. Please try again");
+    throw Exception("Something bad happened. Please try again");
   }
 
   static Map<String, String> createHeaders({bool? isRegistration}) {

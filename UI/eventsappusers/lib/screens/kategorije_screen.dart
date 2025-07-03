@@ -32,7 +32,7 @@ class _KategorijeScreenState extends State<KategorijeScreen> {
     getKategorije();
   }
 
-  getKategorije() async {
+  Future<void> getKategorije() async {
     var kategorijeResult = await _kategorijeProvider.get();
     setState(() {
       _kategorijeList = kategorijeResult.result;
@@ -80,7 +80,6 @@ class _KategorijeScreenState extends State<KategorijeScreen> {
       ),
     );
 
-    ;
   }
 
   Widget _buildTile(Kategorija e) {

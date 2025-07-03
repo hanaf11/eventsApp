@@ -16,7 +16,7 @@ class EventsMapFilter extends StatefulWidget {
   final Function(DateTime?, String) onDateSelected;
 
   const EventsMapFilter(
-      {Key? key,
+      {super.key,
       required this.searchController,
       this.kategorijaSelected,
       required this.kategorijeList,
@@ -26,8 +26,7 @@ class EventsMapFilter extends StatefulWidget {
       required this.datumDoController,
       this.datumOd,
       this.datumDo,
-      required this.onDateSelected})
-      : super(key: key);
+      required this.onDateSelected});
 
   @override
   _EventsMapFilterState createState() => _EventsMapFilterState();
@@ -176,7 +175,7 @@ class _EventsMapFilterState extends State<EventsMapFilter>
     );
   }
 
-  _buildKategorija() {
+  Column _buildKategorija() {
     return Column(children: [
       SizedBox(height: 5),
       InputField(

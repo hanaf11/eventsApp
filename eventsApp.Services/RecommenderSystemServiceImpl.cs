@@ -237,7 +237,7 @@ namespace eventsApp.Services
 
             return predictionList
                 .OrderByDescending(p => p.Item2)
-                .Take(5)
+                .Take(3)
                 .Select(p => p.Item1)
                 .ToList();
         }

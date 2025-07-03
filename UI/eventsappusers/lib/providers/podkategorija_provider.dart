@@ -8,7 +8,7 @@ import 'package:http/http.dart';
 import '../models/podkategorija.dart';
 
 class PodkategorijaProvider extends BaseProvider<Podkategorija> {
-  PodkategorijaProvider() : super("Podkategorije") {}
+  PodkategorijaProvider() : super("Podkategorije");
 
   @override
   Podkategorija fromJson(data) {

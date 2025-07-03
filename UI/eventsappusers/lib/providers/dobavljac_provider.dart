@@ -1,7 +1,5 @@
-import 'dart:convert';
 import 'package:eventsappusers/models/dobavljac.dart';
 import 'package:eventsappusers/providers/base_provider.dart';
-import 'package:http/http.dart' as http;
 
 class DobavljacProvider extends BaseProvider<Dobavljac> {
   static String? _baseUrl;

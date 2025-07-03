@@ -74,8 +74,8 @@ class LoginPage extends StatelessWidget {
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  login(BuildContext context) async {
-    KorisnikProvider _korisnikprovider = new KorisnikProvider();
+  Future<void> login(BuildContext context) async {
+    KorisnikProvider korisnikprovider = KorisnikProvider();
 
     var username = usernameController.text;
     var password = passwordController.text;
@@ -89,7 +89,7 @@ class LoginPage extends StatelessWidget {
         'password': AuthProvider.password
       };
 
-      Korisnik data = await _korisnikprovider.login(credentials);
+      Korisnik data = await korisnikprovider.login(credentials);
       bool canAccess = (data.uloge != null && data.uloge!.contains("Admin") ||
           data.uloge!.contains("User"));
       if (!canAccess) {

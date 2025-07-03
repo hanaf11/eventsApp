@@ -10,7 +10,7 @@ class InputWidget extends StatefulWidget {
   final String? label;
   final bool? readOnly;
 
-  InputWidget(
+  const InputWidget(
       {super.key,
       required this.controller,
       this.placeholder,
@@ -88,7 +88,7 @@ class _InputWidgetState extends State<InputWidget> {
         ;
   }
 
-  _getType() {
+  TextInputType? _getType() {
     if (widget.type != null) {
       switch (widget.type) {
         case 'number':

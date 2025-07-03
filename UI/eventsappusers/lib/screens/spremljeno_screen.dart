@@ -9,7 +9,7 @@ import '../widgets/heading_widget.dart';
 import '../widgets/master_screen.dart';
 
 class SpremljenoScreen extends StatefulWidget {
-  SpremljenoScreen({super.key});
+  const SpremljenoScreen({super.key});
 
   @override
   State<SpremljenoScreen> createState() => _SpremljenoScreenState();
@@ -28,7 +28,7 @@ class _SpremljenoScreenState extends State<SpremljenoScreen> {
     loadData();
   }
 
-  loadData() async {
+  Future<void> loadData() async {
     /* setState(() {
       isLoading = true;
     });*/
@@ -60,7 +60,7 @@ class _SpremljenoScreenState extends State<SpremljenoScreen> {
                   )));
   }
 
-  _buildDogadjajiTiles() {
+  Expanded _buildDogadjajiTiles() {
     return Expanded(
         child: (_savedList != null && _savedList!.isNotEmpty)
             ? ListView.builder(

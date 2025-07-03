@@ -25,7 +25,7 @@ class SavingProvider with ChangeNotifier {
     var uri = Uri.parse(url);
     var headers = BaseProvider.createHeaders();
 
-    print("this is my uri: ${uri}");
+    print("this is my uri: $uri");
 
     var response = await http.get(uri, headers: headers);
 
@@ -33,7 +33,7 @@ class SavingProvider with ChangeNotifier {
       var data = jsonDecode(response.body);
       return data;
     } else {
-      throw new Exception("Unknown exception");
+      throw Exception("Unknown exception");
     }
   }
 
@@ -50,7 +50,7 @@ class SavingProvider with ChangeNotifier {
       notifyListeners();
       return data;
     } else {
-      throw new Exception("Unknown exception");
+      throw Exception("Unknown exception");
     }
   }
 
@@ -67,7 +67,7 @@ class SavingProvider with ChangeNotifier {
       notifyListeners();
       return data;
     } else {
-      throw new Exception("Unknown exception");
+      throw Exception("Unknown exception");
     }
   }
 }

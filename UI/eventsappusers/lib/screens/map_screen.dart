@@ -24,7 +24,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:geocoding/geocoding.dart';
 
 class MapScreen extends StatefulWidget {
-  MapScreen({super.key});
+  const MapScreen({super.key});
 
   @override
   State<MapScreen> createState() => _MapScreenState();
@@ -32,7 +32,7 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   final TextEditingController _searchController = TextEditingController();
-  TextEditingController _cityController = TextEditingController();
+  final TextEditingController _cityController = TextEditingController();
   /*TextEditingController _datumOdDateController = TextEditingController();
   TextEditingController _datumDoDateController = TextEditingController();*/
   DateTime? _datumOd = DateTime.now();
@@ -78,7 +78,7 @@ class _MapScreenState extends State<MapScreen> {
     getLatLong(defaultLokacija);
   }
 
-  handleLoading() {
+  void handleLoading() {
     print("pozvan handle loading");
     print("kategorija $kategorijaLoaded mapa $mapLoaded");
     if (kategorijaLoaded == true && mapLoaded == true) {
@@ -88,7 +88,7 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  loadKategorije() async {
+  Future<void> loadKategorije() async {
     _kategorijeProvider.get().then((value) {
       setState(() {
         _kategorijeList = value.result;
@@ -99,7 +99,7 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-  extractLatitudeLongitude(Location location) {
+  LatLng extractLatitudeLongitude(Location location) {
     double lat = location.latitude;
     double long = location.longitude;
 
@@ -129,15 +129,10 @@ class _MapScreenState extends State<MapScreen> {
   }*/
 
   String printDate(DateTime date) {
-    return date.day.toString() +
-        ". " +
-        date.month.toString() +
-        ". " +
-        date.year.toString() +
-        ".";
+    return "${date.day}. ${date.month}. ${date.year}.";
   }
 
-  handleException(String msg) {
+  void handleException(String msg) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -157,7 +152,7 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  showFilterDialog() {
+  void showFilterDialog() {
     showDialog(
         context: context,
         builder: (BuildContext context) => EventsMapFilter(
@@ -227,13 +222,13 @@ class _MapScreenState extends State<MapScreen> {
             ));
   }*/
 
-  getLatLong(String lokacija) async {
+  Future<void> getLatLong(String lokacija) async {
     try {
       var locations = await locationFromAddress(lokacija);
       if (locations.isNotEmpty) {
         _refreshMap(locations[0]);
       }
-    } on Exception catch (e) {
+    } on Exception {
       /* if (lokacija == defaultLokacija)
         handleException(
             "Nije moguće pronaći vašu lokaciju. \n U postavkama profila unesite validnu adresu.");
@@ -247,13 +242,13 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  cityChanged() {
+  void cityChanged() {
     if (_cityController.text.isNotEmpty) {
       getLatLong(_cityController.text);
     }
   }
 
-  filter() async {
+  Future<void> filter() async {
     //TBD
     /* if (filterData) {
       setState(() {
@@ -276,7 +271,7 @@ class _MapScreenState extends State<MapScreen> {
       'KategorijaIncluded': true
     };
 
-    print("filtriranje ${filterReq}");
+    print("filtriranje $filterReq");
 
     try {
       var value = await _dogadjajProvider.get(filter: filterReq);
@@ -305,7 +300,7 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  _refreshMap(Location location) {
+  void _refreshMap(Location location) {
     LatLng newCenter = extractLatitudeLongitude(location);
     setState(() {
       mapKey = UniqueKey();
@@ -348,7 +343,7 @@ class _MapScreenState extends State<MapScreen> {
                   )));
   }
 
-  _buildSearch() {
+  Padding _buildSearch() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20),
       child: Container(
@@ -373,7 +368,7 @@ class _MapScreenState extends State<MapScreen> {
                 child: TextField(
                   controller: _cityController,
                   decoration:
-                      new InputDecoration.collapsed(hintText: 'Naziv grada'),
+                      InputDecoration.collapsed(hintText: 'Naziv grada'),
                 ),
               )),
               Container(
@@ -392,14 +387,15 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  _buildMap(initialCenter) {
+  Widget _buildMap(initialCenter) {
     print('initialCenter: $initialCenter,');
-    if (initialCenter == null)
+    if (initialCenter == null) {
       return Text("Greška prilikom učitavanja lokacije");
+    }
 
     List<Marker> eventMarkers = [];
 
-    if (_searchController.text != null && _searchController.text != '') {
+    if (_searchController.text != '') {
       if (_dogadjajiResult == null || _dogadjajiResult!.isEmpty) {
         return Text("Događaj nije pronađen");
       }

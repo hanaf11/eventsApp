@@ -22,7 +22,7 @@ class HistorijaPregledaProvider with ChangeNotifier {
     var uri = Uri.parse(url);
     var headers = BaseProvider.createHeaders();
 
-    print("this is my uri: ${uri}");
+    print("this is my uri: $uri");
 
     var response = await http.get(uri, headers: headers);
 
@@ -35,7 +35,7 @@ class HistorijaPregledaProvider with ChangeNotifier {
       }
       return result;
     } else {
-      throw new Exception("Unknown exception");
+      throw Exception("Unknown exception");
     }
   }
 

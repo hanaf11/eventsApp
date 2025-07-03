@@ -44,7 +44,7 @@ class _MasterScreenState extends State<MasterScreen> {
     }
   }
 
-  _getPage(index) {
+  StatefulWidget _getPage(index) {
     switch (index) {
       case 0:
         return HomeScreen();
@@ -54,15 +54,19 @@ class _MasterScreenState extends State<MasterScreen> {
         return SpremljenoScreen();
       case 3:
         return ProfileScreen();
+      default:
+      throw Exception("Invalid page index: $index");
     }
   }
 
-  getScreen(index) {
+  StatefulWidget getScreen(index) {
     switch (index) {
       case 0:
         return KategorijeScreen();
       case 1:
         return KreirajDogadjajScreen();
+      default:
+      throw Exception("Invalid page index: $index");
     }
   }
 
@@ -76,9 +80,9 @@ class _MasterScreenState extends State<MasterScreen> {
   }
 
   String getFollowingText() {
-    if (widget.following != null && widget.following == true)
+    if (widget.following != null && widget.following == true) {
       return "- Odprati";
-    else if (widget.following != null && widget.following == false) {
+    } else if (widget.following != null && widget.following == false) {
       return "+ Prati";
     } else
       return '';

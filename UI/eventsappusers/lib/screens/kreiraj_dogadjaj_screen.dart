@@ -39,7 +39,7 @@ import '../widgets/narudzba_master_screen.dart';
 import '../widgets/photo_gallery.dart';
 
 class KreirajDogadjajScreen extends StatefulWidget {
-  KreirajDogadjajScreen({super.key});
+  const KreirajDogadjajScreen({super.key});
 
   @override
   State<KreirajDogadjajScreen> createState() => _KreirajDogadjajScreenState();
@@ -59,9 +59,9 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
   TextEditingController datumDoTimeController = TextEditingController();
 
   List<String> kategorije = [];
-  final formKey = new GlobalKey<FormBuilderState>();
-  final _eventFormKey = new GlobalKey<FormBuilderState>();
-  final _karteFormKey = new GlobalKey<FormBuilderState>();
+  final formKey = GlobalKey<FormBuilderState>();
+  final _eventFormKey = GlobalKey<FormBuilderState>();
+  final _karteFormKey = GlobalKey<FormBuilderState>();
   List<dynamic>? _podkategorijeSelected = [];
   TimeOfDay timeOfDay = TimeOfDay.now();
   //Image _naslovna = Image.asset('assets/images/empty.jpg', fit: BoxFit.cover);
@@ -104,7 +104,7 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
     loadDobavljaci();
   }
 
-  loadKategorije() async {
+  Future<void> loadKategorije() async {
     await _kategorijeProvider.get().then((data) => {
           setState(() {
             _kategorijeList = data.result;
@@ -120,7 +120,7 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
         });
   }
 
-  handleSuccess(String msg) {
+  void handleSuccess(String msg) {
     showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
@@ -140,7 +140,7 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
             ));
   }
 
-  handleLoading() {
+  void handleLoading() {
     if (kategorijeLoaded && dobavljaciLoaded) {
       setState(() {
         isLoading = false;
@@ -148,7 +148,7 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
     }
   }
 
-  handleException(Exception e) {
+  void handleException(Exception e) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -164,7 +164,7 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
     );
   }
 
-  loadDobavljaci() async {
+  Future<void> loadDobavljaci() async {
     var filter = {"Active": true};
     await _dobavljacProvider.get(filter: filter).then((data) => {
           setState(() {
@@ -179,7 +179,7 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
         });
   }
 
-  kategorijaChanged(int? val) {
+  void kategorijaChanged(int? val) {
     if (val != null) {
       if (val != selectedKategorija) {
         setState(() {
@@ -240,7 +240,7 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
     }
   }
 
-  handleDobavljacSelected(int? val) {
+  void handleDobavljacSelected(int? val) {
     if (val != null) {
       _selectedDobavljacId = val;
     }
@@ -264,12 +264,12 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
 
     if (result != null && result.files.single.path != null) {
       file = File(result.files.single.path!);
-      base64Image = base64Encode(file!.readAsBytesSync());
+      base64Image = base64Encode(file.readAsBytesSync());
       final image = Image.file(
         file,
         fit: BoxFit.cover,
       );
-      print("image: ${image}");
+      print("image: $image");
       print("baase64: $base64Image");
       onImageSelected(ImageObj(image, base64Image));
     }
@@ -313,7 +313,7 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
     );
   }
 
-  _objaviDogadjaj() async {
+  Future<void> _objaviDogadjaj() async {
     print("uslo u objavljivanje");
     final isForm1Valid =
         _eventFormKey.currentState?.saveAndValidate(focusOnInvalid: false) ??
@@ -352,7 +352,7 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
     
   }
 
-  sendRequest(bool prodajaKarata) async {
+  Future<void> sendRequest(bool prodajaKarata) async {
     print("uslo u objavljivanje");
     var request = {};
     var request1 = Map.from(_eventFormKey.currentState!.value);
@@ -367,7 +367,7 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
       request = {...request1};
     }
 
-  print("request ${request}");
+  print("request $request");
     request.forEach((key, value) {
       if (value is DateTime) {
         request[key] = value.toIso8601String(); // Convert DateTime to String
@@ -398,14 +398,16 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
 
   List<String> formGalleryRequest() {
     List<String> gallery = [];
-    imageList.forEach((img) => gallery.add(img.base64Image));
+    for (var img in imageList) {
+      gallery.add(img.base64Image);
+    }
     return gallery;
   }
 
   List<Map<String, dynamic>> formTipoviKarataRequest() {
     List<Map<String, dynamic>> tipovi = [];
 
-    tipKarteList?.forEach((tip) {
+    tipKarteList.forEach((tip) {
       tipovi.add({
         'Naziv': tip['tipKarte'],
         'Cijena': tip['cijena'],
@@ -417,7 +419,7 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
   }
 
   /*TIP KARTE */
-  _addNewRow() {
+  void _addNewRow() {
     setState(() {
       rows.add(RowData(
           tipKarteController: TextEditingController(),
@@ -426,7 +428,7 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
     });
   }
 
-  _removeRow(int index) {
+  void _removeRow(int index) {
     var row = rows[index];
     var tipKarte = row.tipKarteController.text;
     setState(() {
@@ -442,9 +444,9 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
     }
   }
 
-  _updateRowIndex(int index) {
-    tipKarteList.forEach((e) => {
-          if (e['rowsIndex'] > index) {e['rowsIndex'] -= 1}
+  void _updateRowIndex(int index) {
+    tipKarteList.forEach((e) {
+          if (e['rowsIndex'] > index) {e['rowsIndex'] -= 1;};
         });
   }
 
@@ -470,7 +472,7 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
           var tipKarteExists = tipKarteList
               .indexWhere((element) => element['tipKarte'] == tipKarte);
           if (tipKarteExists != -1) {
-            handleException(new Exception("Tip karte već postoji"));
+            handleException(Exception("Tip karte već postoji"));
             return;
           }
 
@@ -803,11 +805,6 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
                                         onPressed: () async {
                                           await _objaviDogadjaj();
                                         },
-                                        child: Text(
-                                          "Objavi",
-                                          style: TextStyle(
-                                              fontFamily: 'Montserrat'),
-                                        ),
                                         style: ElevatedButton.styleFrom(
                                             padding: EdgeInsets.symmetric(
                                                 horizontal: 100, vertical: 10),
@@ -819,7 +816,12 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
                                                   BorderRadius.circular(40),
-                                            ))))
+                                            )),
+                                        child: Text(
+                                          "Objavi",
+                                          style: TextStyle(
+                                              fontFamily: 'Montserrat'),
+                                        )))
                               ],
                             )),
                       ),
@@ -829,15 +831,15 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
               ]))));
   }
 
-  _buildHeader() {
-    return Container(
+  SizedBox _buildHeader() {
+    return SizedBox(
         height: 50,
         child: Column(children: [
           HeadingWidget(text: "Kreiraj događaj"),
         ]));
   }
 
-  _buildKarteForm() {
+  Column _buildKarteForm() {
     return Column(
       children: [
         Padding(
@@ -888,7 +890,7 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
     );
   }
 
-  _dodajSliku(Function(ImageObj) onImageSelected) {
+  Align _dodajSliku(Function(ImageObj) onImageSelected) {
     return Align(
         alignment: Alignment.centerRight,
         child: InkWell(
@@ -906,7 +908,7 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
         ));
   }
 
-  _buildDatePicker() {
+  Padding _buildDatePicker() {
     var validateDate = FormBuilderValidators.compose([
       (value) {
         if (value == null) {
@@ -936,7 +938,7 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
             CrossAxisAlignment.start, // Align columns at the top
         children: [
           Expanded(
-            child: Container(
+            child: SizedBox(
               height: 93, // Fixed height to ensure space for error text
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -957,7 +959,7 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
           ),
           SizedBox(width: 4), // Add some spacing between the columns
           Expanded(
-            child: Container(
+            child: SizedBox(
               height: 93, // Fixed height to ensure space for error text
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1044,7 +1046,7 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
         ]));
   }*/
 
-  _buildImage(Image? image, String tag) {
+  StatelessWidget _buildImage(Image? image, String tag) {
     return image != null
         ? GestureDetector(
             onTap: () {
@@ -1066,7 +1068,7 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
         : Container();
   }
 
-  _buildHeading(String naslov) {
+  Text _buildHeading(String naslov) {
     return Text(
         style: TextStyle(
             fontFamily: 'Montserrat',
@@ -1226,7 +1228,7 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
         });
   }*/
 
-  _buildMultipleChoice() {
+  FormBuilder _buildMultipleChoice() {
     return FormBuilder(
       key: formKey,
       child: Column(
@@ -1374,7 +1376,7 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
         .toList();
   }
 
-  _buildTipKarte() {
+  Column _buildTipKarte() {
     return Column(
       children: [
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -1479,7 +1481,7 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
     );
   }*/
 
-  _buildRows() {
+  Column _buildRows() {
     return Column(
       children: rows.asMap().entries.map((entry) {
         int index = entry.key;
@@ -1560,7 +1562,7 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
     );
   }
 
-  _buildDodajTipKarte() {
+  Row _buildDodajTipKarte() {
     print("pritisnuto");
     var tipKarteController = TextEditingController();
     var cijenaController = TextEditingController();

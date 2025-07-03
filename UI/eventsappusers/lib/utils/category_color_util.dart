@@ -30,7 +30,10 @@ class CategoryColorManager {
   }
 
   Color getColorForCategory(int categoryId) {
-    return _categoryColors[categoryId]!;
+      if (!_categoryColors.containsKey(categoryId)) {
+    _categoryColors[categoryId] = _generateRandomColor();
+  }
+  return _categoryColors[categoryId]!;
   }
 
   Color _generateRandomColor() {

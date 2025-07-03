@@ -134,9 +134,16 @@ namespace eventsApp.Services
 
             if (search?.KorisnikId!=null)
             {
-                var dogadjajiEntities = query.Where(n => n.KorisnikId == search.KorisnikId)
+                /*var dogadjajiEntities = query.Where(n => n.KorisnikId == search.KorisnikId)
                .Include(n => n.NarudzbaStavkes).ThenInclude(ns => ns.TipKarte).ThenInclude(tk => tk.Dogadjaj)
-               .ThenInclude(d => d.Kategorija).SelectMany(n => n.NarudzbaStavkes).Select(ns => ns.TipKarte.Dogadjaj);
+               .ThenInclude(d => d.Kategorija).SelectMany(n => n.NarudzbaStavkes).Select(ns => ns.TipKarte.Dogadjaj);*/
+
+                var dogadjajiEntities = await query.Where(n => n.KorisnikId == search.KorisnikId)
+                    .Include(n => n.NarudzbaStavkes).ThenInclude(ns => ns.TipKarte).ThenInclude(tk => tk.Dogadjaj)
+                    .ThenInclude(d => d.Kategorija).SelectMany(n => n.NarudzbaStavkes)
+                    .Select(ns => ns.TipKarte.Dogadjaj).ToListAsync();
+
+                var distinctDogadjaji = dogadjajiEntities.GroupBy(d => d.DogadjajId).Select(g => g.First()).ToList();
 
                 result =_mapper.Map<List<Model.Dogadjaji>>(dogadjajiEntities);
 

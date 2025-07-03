@@ -39,7 +39,7 @@ bool isEmailValid(String value) {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   //AuthProvider? _authProvider;
-  final _formKey = new GlobalKey<FormBuilderState>();
+  final _formKey = GlobalKey<FormBuilderState>();
   String? userName;
   String? email;
   String? password;
@@ -54,7 +54,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _korisnikProvider = context.read<KorisnikProvider>();
   }
 
-  _register() async {
+  Future<void> _register() async {
     print("uslo u objavljivanje");
 
     if (_formKey.currentState?.saveAndValidate() ?? false) {
@@ -74,7 +74,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
-  handleSuccess(String msg) {
+  void handleSuccess(String msg) {
     showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
@@ -92,7 +92,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ));
   }
 
-  handleException(Exception e) {
+  void handleException(Exception e) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -108,7 +108,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  @override
+ /* @override
   Widget build(BuildContext context) {
     myColor = Color.fromRGBO(54, 112, 232, 1);
     mediaSize = MediaQuery.of(context).size;
@@ -210,9 +210,123 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ],
           ),
         ));
-  }
+  }*/
 
-  _buildForm() {
+@override
+Widget build(BuildContext context) {
+  myColor = const Color.fromRGBO(54, 112, 232, 1);
+  mediaSize = MediaQuery.of(context).size;
+
+  return Container(
+    decoration: BoxDecoration(
+      color: myColor,
+      image: DecorationImage(
+        image: const AssetImage("assets/images/banner.jpg"),
+        fit: BoxFit.cover,
+        colorFilter: ColorFilter.mode(
+          myColor.withOpacity(0.5),
+          BlendMode.dstATop,
+        ),
+      ),
+    ),
+    constraints: BoxConstraints(maxHeight: mediaSize.height),
+    child: Column(
+      children: [
+        Expanded(
+          child: Container(), // this fills all top space, pushing the Card down
+        ),
+        SingleChildScrollView(
+          child: Card(
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Events",
+                        style: TextStyle(
+                          color: myColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 37,
+                        ),
+                      ),
+                      Text(
+                        "App",
+                        style: TextStyle(
+                          color: const Color.fromARGB(204, 123, 146, 191),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 37,
+                        ),
+                      ),
+                    ],
+                  ),
+                  _buildForm(),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const SizedBox(width: 5),
+                      const Text(
+                        'Već ste registrovani?',
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 94, 94, 95),
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+                      InkWell(
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => LoginPage(),
+                          ),
+                        ),
+                        child: const Text(
+                          'Prijava',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromRGBO(54, 112, 232, 1),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () async {
+                      await _register();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      shape: const StadiumBorder(),
+                      elevation: 20,
+                      shadowColor: Colors.grey,
+                      backgroundColor: myColor,
+                      minimumSize: const Size.fromHeight(60),
+                    ),
+                    child: const Text(
+                      "REGISTRUJ SE",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+
+
+  FormBuilder _buildForm() {
     return FormBuilder(
         key: _formKey,
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -320,7 +434,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ]));
   }
 
-  _buildCountryInput() {
+  InkWell _buildCountryInput() {
     return InkWell(
         child: IgnorePointer(
           child: FieldWithValidate(

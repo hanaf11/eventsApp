@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class NextStepWidget extends StatelessWidget {
-  NextStepWidget();
+  const NextStepWidget({super.key});
 
   @override
   Widget build(BuildContext context) {

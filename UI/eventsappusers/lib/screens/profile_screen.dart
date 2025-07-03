@@ -15,14 +15,14 @@ import '../widgets/dogadjaj_vertical.dart';
 import '../widgets/master_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
-  ProfileScreen({super.key});
+  const ProfileScreen({super.key});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  String _username = KorisnikGlobal.username ?? 'username';
+  final String _username = KorisnikGlobal.username ?? 'username';
   Image _profilna = imageFromBase64String(KorisnikGlobal.slika);
   String _lokacija = KorisnikGlobal.lokacija ?? '';
   bool _isLoading = true;
@@ -49,7 +49,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     loadKreirano();
   }
 
-  loadKreirano() async {
+  Future<void> loadKreirano() async {
     var filterReq = {
       'Username': KorisnikGlobal.username,
       'KategorijaIncluded': true,
@@ -64,7 +64,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     handleLoading();
   }
 
-  loadHistorijaPregleda() async {
+  Future<void> loadHistorijaPregleda() async {
     var filterReq = {
       'KorisnikId': KorisnikGlobal.korisnikId,
     };
@@ -77,7 +77,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     handleLoading();
   }
 
-  loadKupljeno() async {
+  Future<void> loadKupljeno() async {
     var filterReq = {
       'KorisnikId': KorisnikGlobal.korisnikId,
       'OrderBy': 'Datum'
@@ -91,7 +91,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     handleLoading();
   }
 
-  handleLoading() {
+  void handleLoading() {
     if (_kreiranoLoaded && _pregledanoLoaded && _kupovinaLoaded) {
       setState(() {
         _isLoading = false;
@@ -99,14 +99,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  refreshUserData() {
+  void refreshUserData() {
     setState(() {
       _profilna = imageFromBase64String(KorisnikGlobal.slika);
       _lokacija = KorisnikGlobal.lokacija ?? '';
     });
   }
 
-  logout() {
+  void logout() {
     KorisnikGlobal.clear();
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => LoginPage()));
@@ -224,7 +224,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ? Container(
                     alignment: Alignment.centerLeft,
                     child: Text("Nema rezultata"))
-                : Container(
+                : SizedBox(
                     height: 240,
                     // width: MediaQuery.of(context).size.width,
                     child: ListView(

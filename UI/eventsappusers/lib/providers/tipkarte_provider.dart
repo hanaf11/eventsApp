@@ -9,7 +9,7 @@ import 'package:http/http.dart';
 import '../models/kategorija.dart';
 
 class TipkarteProvider extends BaseProvider<TipKarte> {
-  TipkarteProvider() : super("TipKarte") {}
+  TipkarteProvider() : super("TipKarte");
 
   @override
   TipKarte fromJson(data) {

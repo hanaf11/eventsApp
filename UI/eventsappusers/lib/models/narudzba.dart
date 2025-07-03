@@ -1,5 +1,3 @@
-import 'package:eventsappusers/models/korisnik.dart';
-import 'package:eventsappusers/models/podkategorija.dart';
 import 'package:eventsappusers/models/validtipkarte.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'narudzba.g.dart';

@@ -27,14 +27,14 @@ class _DogadjajHorizontalWidgetState extends State<DogadjajHorizontalWidget> {
 
   _DogadjajHorizontalWidgetState();
 
-  navigateToEventDetails() async {
+  Future<void> navigateToEventDetails() async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
           builder: (context) =>
               EventDetailsScreen(dogadjajId: widget.dogadjaj.dogadjajId!)),
     );
-    print("resukt je ${result}");
+    print("resukt je $result");
     if (result == true) {
       loadData();
     }
@@ -47,7 +47,7 @@ class _DogadjajHorizontalWidgetState extends State<DogadjajHorizontalWidget> {
     loadData();
   }
 
-  loadData() {
+  void loadData() {
     _savingProvider.isSaved({
       'DogadjajId': widget.dogadjaj.dogadjajId,
       'KorisnikId': KorisnikGlobal.korisnikId
@@ -62,7 +62,7 @@ class _DogadjajHorizontalWidgetState extends State<DogadjajHorizontalWidget> {
     }
   }
 
-  _savedClicked() async {
+  Future<void> _savedClicked() async {
     bool? value;
     var request = {
       "DogadjajId": widget.dogadjaj.dogadjajId,
@@ -85,7 +85,7 @@ class _DogadjajHorizontalWidgetState extends State<DogadjajHorizontalWidget> {
     }
   }
 
-  handleException(Exception e) {
+  void handleException(Exception e) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -182,15 +182,13 @@ class _DogadjajHorizontalWidgetState extends State<DogadjajHorizontalWidget> {
                                                       CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
-                                                      dayAndMonth(widget
+                                                      "${dayAndMonth(widget
                                                                   .dogadjaj
                                                                   .datumOd ??
-                                                              DateTime.now()) +
-                                                          " - " +
-                                                          dayAndMonth(widget
+                                                              DateTime.now())} - ${dayAndMonth(widget
                                                                   .dogadjaj
                                                                   .datumDo ??
-                                                              DateTime.now()),
+                                                              DateTime.now())}",
                                                       textAlign:
                                                           TextAlign.start,
                                                       style: TextStyle(

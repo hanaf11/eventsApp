@@ -5,7 +5,7 @@ class FieldWithValidate extends StatelessWidget {
   final String label;
   final Widget field;
 
-  FieldWithValidate({
+  const FieldWithValidate({super.key, 
     required this.field,
     required this.label,
   });

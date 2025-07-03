@@ -1137,7 +1137,7 @@ class _DogadjajiDetailsScreenState extends State<DogadjajiDetailsScreen> {
                           DataCell(Text(
                             e.naziv ?? '',
                           )),
-                          DataCell(Text(formatNumber(e.cijena))),
+                          DataCell(Text(formatCijena(e.cijena))),
                         ]))
                     .toList() ??
                 [])

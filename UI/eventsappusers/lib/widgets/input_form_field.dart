@@ -8,7 +8,7 @@ class InputFormField extends StatefulWidget {
   final Widget field;
   final String? label;
   final bool? multiline;
-  InputFormField({super.key, required this.field, this.label, this.multiline});
+  const InputFormField({super.key, required this.field, this.label, this.multiline});
 
   @override
   State<InputFormField> createState() => _InputFormFieldState();

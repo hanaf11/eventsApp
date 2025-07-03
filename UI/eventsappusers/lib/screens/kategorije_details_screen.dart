@@ -62,7 +62,7 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
     loadData(widget.kategorijaId);
   }
 
-  handleLoading() {
+  void handleLoading() {
     if (kategorijeLoaded == true &&
         dogadjajiLoaded == true &&
         pracenjeLoaded == true) {
@@ -72,14 +72,14 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
     }
   }
 
-  initializeCenter(String lokacija) async {
+  Future<void> initializeCenter(String lokacija) async {
     LatLng latLong = await getLatLong(lokacija);
     setState(() {
       initialCenter = latLong;
     });
   }
 
-  handleException(Exception e) {
+  void handleException(Exception e) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -95,7 +95,7 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
     );
   }
 
-  loadData(int id) {
+  void loadData(int id) {
     print("load data called");
     _kategorijaProvider.getById(id).then((value) {
       setState(() {
@@ -115,7 +115,7 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
         _dogadjajiResult = value;
         dogadjajiLoaded = true;
       });
-      print("dogadajaj result je ${_dogadjajiResult}");
+      print("dogadajaj result je $_dogadjajiResult");
       handleLoading();
     });
     _pracenjeProvider.isFollowing({
@@ -130,7 +130,7 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
     });
   }
 
-  filtriraj() async {
+  Future<void> filtriraj() async {
     setState(() {
       isLoading = true;
     });
@@ -186,7 +186,7 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
     });
   }
 
-  follow() async {
+  Future<void> follow() async {
     bool? value;
     var request = {
       "KategorijaId": _selectedKategorija.kategorijaId,
@@ -270,8 +270,8 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
             Expanded(
                 child: ElevatedButton(
               onPressed: () => filtriraj(),
-              child: Text("Filtriraj"),
               style: buttonPrimary,
+              child: Text("Filtriraj"),
             ))
           ],
         )
@@ -376,7 +376,7 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
     );
   }
 
-  _buildDogadjajiTiles() {
+  Expanded _buildDogadjajiTiles() {
     return Expanded(
       child: ListView.builder(
           itemCount: _dogadjajiResult?.count,
