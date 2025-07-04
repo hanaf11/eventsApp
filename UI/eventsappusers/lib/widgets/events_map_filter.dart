@@ -41,24 +41,6 @@ class _EventsMapFilterState extends State<EventsMapFilter>
   late TextEditingController _datumDoController;
   late DateTime? _datumOd;
   late DateTime? _datumDo;
-  /*  Future<void> _selectDate(BuildContext context, String field) async {
-    DateTime? selectedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-
-    if (selectedDate != null) {
-      setState(() {
-        if (field == 'datumOd') {
-          _datumOdDateController.text = selectedDate.toLocal().toString().split(' ')[0];
-        } else if (field == 'datumDo') {
-          _datumDoDateController.text = selectedDate.toLocal().toString().split(' ')[0];
-        }
-      });
-    }
-  }*/
 
   @override
   void initState() {
@@ -74,7 +56,6 @@ class _EventsMapFilterState extends State<EventsMapFilter>
 
   @override
   clear(dynamic input) {
-    print(input);
     if (input is TextField) {
       if (input.key != null) {
         String keyName = input.key!.toString().replaceAll(RegExp(r"[<'>]"), '');
@@ -114,8 +95,6 @@ class _EventsMapFilterState extends State<EventsMapFilter>
             firstDate: DateTime(2022),
             lastDate: DateTime(2030))
         .then((value) {
-      print("value $value");
-      print("caller $caller");
       if (value != null) {
         setState(() {
           if (caller == "_datumOd") {
@@ -285,43 +264,4 @@ class _EventsMapFilterState extends State<EventsMapFilter>
     );
   }
 
-/*Widget _buildDatePicker() {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-    child: Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: InkWell(
-                onTap: () => _selectDate(context, 'datumOd'),
-                child: IgnorePointer(
-                  child: TextField(
-                    controller: _datumOdDateController,
-                    decoration: const InputDecoration(labelText: 'Od:'),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        Row(
-          children: [
-            Expanded(
-              child: InkWell(
-                onTap: () => _selectDate(context, 'datumDo'),
-                child: IgnorePointer(
-                  child: TextField(
-                    controller: _datumDoDateController,
-                    decoration: const InputDecoration(labelText: 'Do:'),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    ),
-  );
-}*/
 }

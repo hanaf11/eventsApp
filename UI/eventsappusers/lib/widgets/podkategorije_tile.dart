@@ -22,7 +22,6 @@ class _PodkategorijaTileState extends State<PodkategorijaTile> {
     return InkWell(
         onTap: () {
           widget.onSelect(!widget.isSelected);
-          //   print("selected " + text);
         },
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 3.0),

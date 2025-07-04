@@ -3,7 +3,6 @@ import 'package:eventsappusers/models/korisnik_global.dart';
 import 'package:eventsappusers/providers/dogadjaj_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../widgets/dogadjaj_horizontal.dart';
 import '../widgets/heading_widget.dart';
 import '../widgets/master_screen.dart';
@@ -29,9 +28,6 @@ class _SpremljenoScreenState extends State<SpremljenoScreen> {
   }
 
   Future<void> loadData() async {
-    /* setState(() {
-      isLoading = true;
-    });*/
     await _dogadjajProvider.getSaved(KorisnikGlobal.korisnikId).then((value) {
       setState(() {
         _savedList = value;

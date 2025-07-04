@@ -20,7 +20,6 @@ class DogadjajHorizontalWidget extends StatefulWidget {
 }
 
 class _DogadjajHorizontalWidgetState extends State<DogadjajHorizontalWidget> {
-  //_DogadjajHorizontalWidgetState();
   bool saved = false;
   bool isLoading = true;
   late SavingProvider _savingProvider;
@@ -34,7 +33,7 @@ class _DogadjajHorizontalWidgetState extends State<DogadjajHorizontalWidget> {
           builder: (context) =>
               EventDetailsScreen(dogadjajId: widget.dogadjaj.dogadjajId!)),
     );
-    print("resukt je $result");
+
     if (result == true) {
       loadData();
     }

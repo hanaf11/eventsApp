@@ -27,9 +27,7 @@ class _InputWidgetState extends State<InputWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return /*Padding(
-        padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-        child:*/
+    return 
         Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -83,9 +81,7 @@ class _InputWidgetState extends State<InputWidget> {
               ),
             )),
       ],
-    )
-        // )
-        ;
+    );
   }
 
   TextInputType? _getType() {

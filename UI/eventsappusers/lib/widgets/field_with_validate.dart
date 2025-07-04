@@ -15,7 +15,6 @@ class FieldWithValidate extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Label (optional)
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 8),
           child: Text(
@@ -27,8 +26,6 @@ class FieldWithValidate extends StatelessWidget {
                 letterSpacing: 0.3),
           ),
         ),
-        // Container for the input field
-        // SizedBox(height: 60, child: field)
         field
       ],
     );

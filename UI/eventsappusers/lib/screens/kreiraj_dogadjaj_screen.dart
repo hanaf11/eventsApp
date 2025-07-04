@@ -1,9 +1,5 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
-import 'dart:ui';
-
-//import 'package:editable/editable.dart';
 import 'package:eventsappusers/models/dobavljac.dart';
 import 'package:eventsappusers/models/kategorija.dart';
 import 'package:eventsappusers/models/korisnik_global.dart';
@@ -17,25 +13,17 @@ import 'package:eventsappusers/utils/style_util.dart';
 import 'package:eventsappusers/utils/util.dart';
 import 'package:eventsappusers/widgets/field_with_validate.dart';
 import 'package:eventsappusers/widgets/heading_widget.dart';
-import 'package:eventsappusers/widgets/input_field.dart';
-import 'package:eventsappusers/widgets/input_form_field.dart';
 import 'package:eventsappusers/widgets/input_widget.dart';
-import 'package:eventsappusers/widgets/list_input_widget.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:intl/intl.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:multiselect_formfield/multiselect_formfield.dart';
 import 'package:provider/provider.dart';
-
 import '../utils/formatting_util.dart';
 import '../widgets/full_screen_image.dart';
 import '../widgets/master_screen.dart';
-import '../widgets/narudzba_master_screen.dart';
 import '../widgets/photo_gallery.dart';
 
 class KreirajDogadjajScreen extends StatefulWidget {
@@ -47,12 +35,6 @@ class KreirajDogadjajScreen extends StatefulWidget {
 
 class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
   double _contentHeight = 0;
-
-  TextEditingController nazivController = TextEditingController();
-  TextEditingController lokacijaController = TextEditingController();
-  TextEditingController websiteController = TextEditingController();
-  TextEditingController opisController = TextEditingController();
-  TextEditingController programController = TextEditingController();
   TextEditingController datumOdDateController = TextEditingController();
   TextEditingController datumDoDateController = TextEditingController();
   TextEditingController datumOdTimeController = TextEditingController();
@@ -64,7 +46,6 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
   final _karteFormKey = GlobalKey<FormBuilderState>();
   List<dynamic>? _podkategorijeSelected = [];
   TimeOfDay timeOfDay = TimeOfDay.now();
-  //Image _naslovna = Image.asset('assets/images/empty.jpg', fit: BoxFit.cover);
   ImageObj? _naslovna;
   ImageObj? _program;
   ImageObj? _lokacijaSlika;
@@ -74,18 +55,15 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
   late DogadjajProvider _dogadjajProvider;
   late List<Kategorija>? _kategorijeList;
   late List<Podkategorija> _podkategorijeList = [];
-  late List<dynamic>? _podkategorije;
   late List<DropdownMenuItem<int>> _kategorijeDropDownList;
   late List<DropdownMenuItem<int>> _dobavljaciDropdownList;
   late List<DropdownMenuItem<int>> _podkategorijeDropdownList;
   bool isLoading = true;
   bool podkategorijeLoaded = false;
   late List<Dobavljac>? _dobavljaciList = [];
-  late List<String>? dobavljaci;
   final List<ImageObj> imageList = [];
   int? _selectedDobavljacId;
-  List<Map<String, dynamic>> tipKarteList =
-      []; // This list will hold saved data
+  List<Map<String, dynamic>> tipKarteList =[];
   List<RowData> rows = [];
   int? selectedKategorija;
   bool kategorijeLoaded = false;
@@ -112,8 +90,6 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
               return DropdownMenuItem<int>(
                   value: k.kategorijaId, child: Text(k.naziv ?? 'not loaded'));
             }).toList();
-            /*  kategorije =
-                _kategorijeList!.map((k) => k.naziv.toString()).toList();*/
             kategorijeLoaded = true;
             handleLoading();
           })
@@ -203,59 +179,11 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
     }
   }
 
-  /*_saveForm() {
-    var form = formKey.currentState!;
-    if (form.validate()) {
-      form.save();
-      setState(() {
-        _myActivitiesResult = _podkategorijeSelected.toString();
-      });
-    }
-  }*/
-
-  Future<void> _selectDate(BuildContext context, String caller) async {
-    final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(2015, 8),
-        lastDate: DateTime(2101));
-    if (picked != null && picked != DateTime.now()) {
-      setState(() {
-        caller == 'datumOd'
-            ? datumOdDateController.text = printDate(picked)
-            : datumDoDateController.text = printDate(picked);
-      });
-    }
-  }
-
-  Future<void> _selectTime(BuildContext context, String caller) async {
-    var picked = await showTimePicker(context: context, initialTime: timeOfDay);
-
-    if (picked != null) {
-      setState(() {
-        caller == 'datumOd'
-            ? datumOdTimeController.text = printTime(picked)
-            : datumDoTimeController.text = printTime(picked);
-      });
-    }
-  }
-
   void handleDobavljacSelected(int? val) {
     if (val != null) {
       _selectedDobavljacId = val;
     }
-    print("selected id je $_selectedDobavljacId");
   }
-
-  /*int? findDobavljacIdByName(String? name) {
-    if (name == null) return null;
-    for (var dobavljac in _dobavljaciList!) {
-      if (dobavljac.naziv == name) {
-        return dobavljac.dobavljacId;
-      }
-    }
-    return null;
-  }*/
 
   Future getImage(Function(ImageObj) onImageSelected) async {
     File? file;
@@ -269,14 +197,11 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
         file,
         fit: BoxFit.cover,
       );
-      print("image: $image");
-      print("baase64: $base64Image");
       onImageSelected(ImageObj(image, base64Image));
     }
   }
 
   void deleteImage(int index) {
-    print(imageList.length);
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -291,20 +216,10 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
             onPressed: () {
               Navigator.pop(context, 'Potvrdi');
               if (index >= 0 && index < imageList.length) {
-                /*if (id != null) {
-                    _galerijaProvider.delete(id).then((value) => {
-                        setState(() {
-                          galleryItems.removeAt(index);
-                        })
-                      });*/
-                //} else {
                 setState(() {
                   imageList.removeAt(index);
                 });
-                //}
               }
-
-              print(imageList.length);
             },
             child: const Text('Potvrdi'),
           ),
@@ -314,7 +229,6 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
   }
 
   Future<void> _objaviDogadjaj() async {
-    print("uslo u objavljivanje");
     final isForm1Valid =
         _eventFormKey.currentState?.saveAndValidate(focusOnInvalid: false) ??
             false;
@@ -322,8 +236,6 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
         _karteFormKey.currentState?.saveAndValidate(focusOnInvalid: false) ??
             true;
 
-    print("validnost $isForm1Valid $isForm2Valid");
-      print("validnost druge ${  _karteFormKey.currentState?.saveAndValidate(focusOnInvalid: false)}");
     var prodajaKarata = _eventFormKey.currentState?.value['ProdajaKarata'];
     if (prodajaKarata != null && prodajaKarata) {
       if (tipKarteList.isEmpty) {
@@ -335,13 +247,6 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
     }
 
       if (isForm1Valid) {
-        /* if (prodajaKarata != null && prodajaKarata) {
-        if (tipKarteList.isEmpty) {
-          setState(() {
-            showTipoviError = true;
-          });
-          return;
-        }*/
         if (isForm2Valid && tipKarteList.isNotEmpty) {
           sendRequest(true);
         }
@@ -353,11 +258,9 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
   }
 
   Future<void> sendRequest(bool prodajaKarata) async {
-    print("uslo u objavljivanje");
     var request = {};
     var request1 = Map.from(_eventFormKey.currentState!.value);
     if (prodajaKarata) {
-      print("ukljucena prodaja");
       var request2 = Map.from(_karteFormKey.currentState!.value);
       request = {
         ...request1,
@@ -367,18 +270,15 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
       request = {...request1};
     }
 
-  print("request $request");
     request.forEach((key, value) {
       if (value is DateTime) {
-        request[key] = value.toIso8601String(); // Convert DateTime to String
+        request[key] = value.toIso8601String();
       }
     });
     request['ProgramSlika'] = _program?.base64Image;
     request['Organizator'] = KorisnikGlobal.username;
     request['Galerija'] = formGalleryRequest();
     var latLong = await getLatLong(request['Lokacija']);
-    print("latlong koji smo dobili $latLong");
-
     request['Latitude'] = latLong.latitude;
     request['Longitude'] = latLong.longitude;
 
@@ -386,7 +286,6 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
       request['LokacijaSlika'] = _lokacijaSlika?.base64Image;
       request['TipoviKarata'] = formTipoviKarataRequest();
     }
-    print("request $request");
 
     try {
       await _dogadjajProvider.insert(request).then((value) =>
@@ -436,7 +335,6 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
       rows.removeAt(index);
     });
     _updateRowIndex(index);
-    print("list KARTI $tipKarteList");
     if (tipKarteList.isEmpty) {
       setState(() {
         showTipoviError = true;
@@ -485,7 +383,6 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
         }
       });
 
-      print("Updated tipKarteList: $tipKarteList");
       if (tipKarteList.isNotEmpty) {
         setState(() {
           showTipoviError = false;
@@ -547,7 +444,6 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
                             padding: const EdgeInsets.all(10),
                             child: Column(
                               children: [
-                                // _buildForm(),
                                 FormBuilder(
                                     key: _eventFormKey,
                                     child: Column(
@@ -704,11 +600,11 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
                                                                     imageObj;
                                                                 field.didChange(
                                                                     _naslovna
-                                                                        ?.base64Image); // Update field value
+                                                                        ?.base64Image);
                                                               });
                                                             }),
                                                             if (field
-                                                                .hasError) // Display error text if validation fails
+                                                                .hasError)
                                                               Padding(
                                                                 padding:
                                                                     const EdgeInsets
@@ -729,11 +625,6 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
                                                           ],
                                                         );
                                                       })
-                                                  /* _dodajSliku((imageObj) {
-                                                    setState(() {
-                                                      _naslovna = imageObj;
-                                                    });
-                                                  }),*/
                                                 ],
                                               )),
                                           _buildImage(_naslovna?.image,
@@ -864,11 +755,6 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
             )),
         _buildImage(_lokacijaSlika?.image, 'lokacijaSlika'),
         SizedBox(height: 5),
-        /*  ListInputWidget(
-          label: "Odaberite dobavljača karata:",
-          valueList: dobavljaci ?? [],
-          onChanged: handleDobavljacSelected,
-        ),*/
         FieldWithValidate(
             label: 'Odaberite dobavljača karata:',
             field: FormBuilderDropdown(
@@ -912,13 +798,12 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
     var validateDate = FormBuilderValidators.compose([
       (value) {
         if (value == null) {
-          return 'Polje je obavezno'; // Required field
+          return 'Polje je obavezno';
         }
         return null;
       },
       (value) {
         if (value is DateTime) {
-          print(_eventFormKey.currentState?.fields['DatumOd']?.value);
           if (value.isBefore(DateTime.now())) {
             return 'Datum mora biti u buducnosti';
           }
@@ -935,11 +820,11 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
       padding: EdgeInsets.symmetric(horizontal: 2, vertical: 2),
       child: Row(
         crossAxisAlignment:
-            CrossAxisAlignment.start, // Align columns at the top
+            CrossAxisAlignment.start,
         children: [
           Expanded(
             child: SizedBox(
-              height: 93, // Fixed height to ensure space for error text
+              height: 93,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -957,10 +842,10 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
               ),
             ),
           ),
-          SizedBox(width: 4), // Add some spacing between the columns
+          SizedBox(width: 4),
           Expanded(
             child: SizedBox(
-              height: 93, // Fixed height to ensure space for error text
+              height: 93,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -982,69 +867,6 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
       ),
     );
   }
-
-  /*_buildDatePicker() {
-    var validateDate = FormBuilderValidators.compose([
-      (value) {
-        if (value == null) {
-          return 'Polje je obavezno'; // Required field
-        }
-        return null;
-      },
-      (value) {
-        if (value is DateTime) {
-          print(_eventFormKey.currentState?.fields['DatumOd']?.value);
-          if (value.isBefore(DateTime.now())) {
-            return 'Datum mora biti u buducnosti';
-          }
-          if (value
-              .isBefore(_eventFormKey.currentState?.fields['DatumOd']?.value)) {
-            return 'Datum do mora biti poslije datuma od';
-          }
-        }
-        return null;
-      },
-    ]);
-
-    return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-        child: Row(children: [
-          Expanded(
-            child: /*InputFormField(
-                  label: 'Od:',
-                  field: FormBuilderDateTimePicker(
-                    name: 'DatumOd',
-                    decoration: InputDecoration(border: InputBorder.none),
-                    format: DateFormat('dd.MM.yyyy. HH:mm'),
-                  ))*/
-                FieldWithValidate(
-                    label: 'Datum od:',
-                    field: FormBuilderDateTimePicker(
-                        style: TextStyle(fontSize: 14),
-                        name: "DatumOd",
-                        decoration: inputField,
-                        format: DateFormat('dd.MM.yyyy. HH:mm'),
-                        validator: validateDate)),
-          ),
-          Expanded(
-            child: /*InputFormField(
-                  label: 'Do:',
-                  field: FormBuilderDateTimePicker(
-                    name: 'DatumDo',
-                    decoration: InputDecoration(border: InputBorder.none),
-                    format: DateFormat('dd.MM.yyyy. HH:mm'),
-                  ))*/
-                FieldWithValidate(
-                    label: 'Datum do:',
-                    field: FormBuilderDateTimePicker(
-                        style: TextStyle(fontSize: 14),
-                        name: "DatumDo",
-                        decoration: inputField,
-                        format: DateFormat('dd.MM.yyyy. HH:mm'),
-                        validator: validateDate)),
-          )
-        ]));
-  }*/
 
   StatelessWidget _buildImage(Image? image, String tag) {
     return image != null
@@ -1068,93 +890,6 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
         : Container();
   }
 
-  Text _buildHeading(String naslov) {
-    return Text(
-        style: TextStyle(
-            fontFamily: 'Montserrat',
-            fontWeight: FontWeight.w600,
-            color: Color.fromRGBO(54, 112, 232, 1),
-            letterSpacing: 0.4,
-            fontSize: 24),
-        naslov);
-  }
-
-/*
-   _buildSingleChoice() {
-    return FormField<String>(
-      builder: (FormFieldState<String> state) {
-        return Padding(
-            padding: EdgeInsets.symmetric(vertical: 2),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                child: Text(
-                  "Odaberite kategoriju",
-                  style: TextStyle(
-                      color: Color.fromRGBO(60, 71, 92, 1),
-                      fontFamily: 'Montserrat',
-                      fontSize: 15,
-                      letterSpacing: 0.3),
-                ),
-              ),
-              Container(
-                  height: 35,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(20)),
-                    border: Border.all(color: Color.fromRGBO(200, 200, 200, 1)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.4),
-                        spreadRadius: 1,
-                        blurRadius: 3,
-                        offset: Offset(2, 3),
-                      ),
-                    ],
-                  ),
-                  child: InputDecorator(
-                      decoration: InputDecoration(
-                          constraints: BoxConstraints(maxHeight: 35),
-                          contentPadding:
-                              EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-                          labelStyle: TextStyle(
-                              color: Color.fromARGB(255, 164, 163, 163),
-                              fontSize: 11.0),
-                          errorStyle: TextStyle(
-                              color: Colors.redAccent, fontSize: 11.0),
-                          border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(20.0))),
-                      isEmpty: _kategorijaSelected == '-',
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<String>(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                          value: _kategorijaSelected,
-                          isDense: true,
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              _kategorijaSelected = newValue ?? '-';
-                              state.didChange(newValue);
-                            });
-                          },
-                          items: kategorije.map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(
-                                value,
-                                style: TextStyle(
-                                    color: Color.fromARGB(255, 168, 168, 168)),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      )))
-            ]));
-      },
-    );
-  }*/
   FieldWithValidate _buildPodkategorije() {
     return FieldWithValidate(
         label: 'Odaberite podkategoriju:',
@@ -1162,218 +897,7 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
             name: 'PodkategorijaId',
             decoration: inputField,
             items: _podkategorijeDropdownList
-
-            /* onChanged: (int? newValue) {
-                                                    kategorijaChanged(newValue);
-                                                  }*/
             ));
-  }
-
-  /*_buildPodkategorije() {
-    return FormBuilderField<List<dynamic>?>(
-        name: 'PodkategorijeId',
-        builder: (FormFieldState field) {
-          return MultiSelectFormField(
-            enabled: podkategorijeLoaded,
-            autovalidate: AutovalidateMode.disabled,
-            chipBackGroundColor: Colors.white,
-            chipLabelStyle: TextStyle(
-                fontWeight: FontWeight.w400,
-                fontFamily: 'Montserrat',
-                color: const Color.fromRGBO(60, 71, 92, 1)),
-            dialogTextStyle: TextStyle(fontWeight: FontWeight.w400),
-            checkBoxActiveColor: Colors.blue,
-            checkBoxCheckColor: Colors.white,
-            dialogShapeBorder: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(20.0))),
-            title: Text(
-              "Odaberite podkategoriju/e",
-              textAlign: TextAlign.left,
-              style: TextStyle(
-                  color: Color.fromRGBO(60, 71, 92, 1),
-                  fontFamily: 'Montserrat',
-                  fontSize: 15,
-                  letterSpacing: 0.3),
-            ),
-            validator: (value) {
-              /*if (value == null || value.length == 0) {
-                  return 'Odaberite jednu ili više opcija';
-                }*/
-              return null;
-            },
-            dataSource: getDataSource(),
-            textField: 'display',
-            valueField: 'value',
-            okButtonLabel: 'OK',
-            cancelButtonLabel: 'CANCEL',
-            hintWidget: Text(
-              'Odaberite jednu ili više opcija',
-              style: TextStyle(
-                  color: Color.fromRGBO(60, 71, 92, 1),
-                  fontFamily: 'Montserrat',
-                  fontSize: 12,
-                  letterSpacing: 0.3),
-            ),
-            initialValue: _podkategorijeSelected,
-            onSaved: (value) {
-              if (value == null) return;
-              field.didChange(value);
-              setState(() {
-                //  _podkategorijeSelected?.add(value);
-                _podkategorijeSelected = value;
-              });
-              print(_podkategorijeSelected);
-            },
-          );
-        });
-  }*/
-
-  FormBuilder _buildMultipleChoice() {
-    return FormBuilder(
-      key: formKey,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Container(
-            padding: EdgeInsets.all(0),
-            child: MultiSelectFormField(
-              enabled: podkategorijeLoaded,
-              autovalidate: AutovalidateMode.disabled,
-              chipBackGroundColor: Colors.white,
-              chipLabelStyle: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  fontFamily: 'Montserrat',
-                  color: const Color.fromRGBO(60, 71, 92, 1)),
-              dialogTextStyle: TextStyle(fontWeight: FontWeight.w400),
-              checkBoxActiveColor: Colors.blue,
-              checkBoxCheckColor: Colors.white,
-              dialogShapeBorder: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(20.0))),
-              title: Text(
-                "Odaberite podkategoriju/e",
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                    color: Color.fromRGBO(60, 71, 92, 1),
-                    fontFamily: 'Montserrat',
-                    fontSize: 15,
-                    letterSpacing: 0.3),
-              ),
-              validator: (value) {
-                /*if (value == null || value.length == 0) {
-                  return 'Odaberite jednu ili više opcija';
-                }*/
-                return null;
-              },
-              dataSource: getDataSource(),
-              textField: 'display',
-              valueField: 'value',
-              okButtonLabel: 'OK',
-              cancelButtonLabel: 'CANCEL',
-              hintWidget: Text(
-                'Odaberite jednu ili više opcija',
-                style: TextStyle(
-                    color: Color.fromRGBO(60, 71, 92, 1),
-                    fontFamily: 'Montserrat',
-                    fontSize: 12,
-                    letterSpacing: 0.3),
-              ),
-              initialValue: _podkategorijeSelected,
-              onSaved: (value) {
-                if (value == null) return;
-
-                setState(() {
-                  //  _podkategorijeSelected?.add(value);
-                  _podkategorijeSelected = value;
-                });
-                print(_podkategorijeSelected);
-              },
-            ),
-          ),
-          SizedBox(
-            height: 10,
-          )
-        ],
-      ),
-    );
-  }
-
-  /*_buildMultipleChoice() {
-    return FormBuilderField(
-      key: formKey,
-      name: 'podkategorije',
-      initialValue: _podkategorijeSelected,
-      validator: (value) {
-        // Add your custom validator logic here
-        return null; // Replace with the validation message, if any
-      },
-      builder: (FormFieldState<List<dynamic>> field) {
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              padding: EdgeInsets.all(0),
-              child: MultiSelectFormField(
-                enabled: podkategorijeLoaded,
-                autovalidate: AutovalidateMode.disabled,
-                chipBackGroundColor: Colors.white,
-                chipLabelStyle: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  fontFamily: 'Montserrat',
-                  color: const Color.fromRGBO(60, 71, 92, 1),
-                ),
-                dialogTextStyle: TextStyle(fontWeight: FontWeight.w400),
-                checkBoxActiveColor: Colors.blue,
-                checkBoxCheckColor: Colors.white,
-                dialogShapeBorder: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                ),
-                title: Text(
-                  "Odaberite podkategoriju/e",
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                    color: Color.fromRGBO(60, 71, 92, 1),
-                    fontFamily: 'Montserrat',
-                    fontSize: 15,
-                    letterSpacing: 0.3,
-                  ),
-                ),
-                dataSource: getDataSource(),
-                textField: 'display',
-                valueField: 'value',
-                okButtonLabel: 'OK',
-                cancelButtonLabel: 'CANCEL',
-                hintWidget: Text(
-                  'Odaberite jednu ili više opcija',
-                  style: TextStyle(
-                    color: Color.fromRGBO(60, 71, 92, 1),
-                    fontFamily: 'Montserrat',
-                    fontSize: 12,
-                    letterSpacing: 0.3,
-                  ),
-                ),
-                initialValue: field.value,
-                onSaved: (value) {
-                  field.didChange(value); // Update FormBuilderField's value
-                  print('Selected values: $value');
-                },
-              ),
-            ),
-            SizedBox(height: 10),
-          ],
-        );
-      },
-    );
-  }*/
-
-  List<Map<String, dynamic>> getDataSource() {
-    return _podkategorijeList
-        .map((podkategorija) => {
-              'display': podkategorija.naziv,
-              'value': podkategorija.podkategorijaId
-            })
-        .toList();
   }
 
   Column _buildTipKarte() {
@@ -1417,69 +941,6 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
     );
   }
 
-  /* _buildRows() {
-    return Column(
-      children: rows.asMap().entries.map((entry) {
-        int index = entry.key;
-        RowData rowData = entry.value;
-
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  // Tip karte input
-                  Flexible(
-                    flex: 2,
-                    child: InputWidget(
-                      label: 'Tip karte',
-                      controller: rowData.tipKarteController,
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  // Cijena input
-                  Flexible(
-                    flex: 1,
-                    child: InputWidget(
-                      label: 'Cijena',
-                      controller: rowData.cijenaController,
-                      type: 'number',
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  // Cijena input
-                  Flexible(
-                    flex: 1,
-                    child: Checkbox(
-                      value: rowData.numerisanjeSjedista,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          rowData.numerisanjeSjedista =
-                              value ?? rowData.numerisanjeSjedista;
-                        });
-                      },
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.save,
-                        color: Color.fromRGBO(54, 112, 232, 1)),
-                    onPressed: () => _saveRow(index), // Save the row
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.delete,
-                        color: Color.fromRGBO(54, 112, 232, 1)),
-                    onPressed: () => _removeRow(index),
-                  ),
-                ],
-              ),
-              SizedBox(height: 20),
-            ],
-          ),
-        );
-      }).toList(),
-    );
-  }*/
 
   Column _buildRows() {
     return Column(
@@ -1493,7 +954,6 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
             children: [
               Row(
                 children: [
-                  // Tip karte input
                   Flexible(
                     flex: 2,
                     child: InputWidget(
@@ -1502,7 +962,6 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
                     ),
                   ),
                   SizedBox(width: 10),
-                  // Cijena input
                   Flexible(
                     flex: 1,
                     child: InputWidget(
@@ -1512,12 +971,10 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
                     ),
                   ),
                   SizedBox(width: 10),
-                  // Cijena input
-
                   IconButton(
                     icon: Icon(Icons.save,
                         color: Color.fromRGBO(54, 112, 232, 1)),
-                    onPressed: () => _saveRow(index), // Save the row
+                    onPressed: () => _saveRow(index),
                   ),
                 ],
               ),
@@ -1559,25 +1016,6 @@ class _KreirajDogadjajScreenState extends State<KreirajDogadjajScreen> {
           ),
         );
       }).toList(),
-    );
-  }
-
-  Row _buildDodajTipKarte() {
-    print("pritisnuto");
-    var tipKarteController = TextEditingController();
-    var cijenaController = TextEditingController();
-    return Row(
-      children: [
-        InputWidget(
-          controller: tipKarteController,
-          label: 'Tip karte',
-        ),
-        InputWidget(
-          label: 'Cijena',
-          controller: cijenaController,
-          type: 'number',
-        )
-      ],
     );
   }
 }

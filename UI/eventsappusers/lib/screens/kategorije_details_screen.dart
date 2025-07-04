@@ -11,10 +11,8 @@ import 'package:eventsappusers/utils/util.dart';
 import 'package:eventsappusers/widgets/dogadjaj_horizontal.dart';
 import 'package:eventsappusers/widgets/podkategorije_tile.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
-
 import '../widgets/heading_widget.dart';
 import '../widgets/input_field.dart';
 import '../widgets/master_screen.dart';
@@ -96,7 +94,6 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
   }
 
   void loadData(int id) {
-    print("load data called");
     _kategorijaProvider.getById(id).then((value) {
       setState(() {
         _selectedKategorija = value;
@@ -105,6 +102,7 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
       });
       handleLoading();
     });
+
     _dogadjajProvider.get(filter: {
       'Kategorija': widget.kategorijaId,
       'KategorijaIncluded': true,
@@ -115,9 +113,9 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
         _dogadjajiResult = value;
         dogadjajiLoaded = true;
       });
-      print("dogadajaj result je $_dogadjajiResult");
       handleLoading();
     });
+
     _pracenjeProvider.isFollowing({
       'KategorijaId': widget.kategorijaId,
       'KorisnikId': KorisnikGlobal.korisnikId
@@ -152,6 +150,7 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
         'OrderBy': '-created',
       });
     }
+    
     var data = await _dogadjajProvider.get(filter: myFilter);
     setState(() {
       _dogadjajiResult = data;

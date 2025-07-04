@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:eventsappusers/models/validtipkarte.dart';
 import 'package:eventsappusers/utils/formatting_util.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +20,6 @@ class DogadjajSmallOverview extends StatefulWidget {
       this.lokacija,
       this.naslovna,
       this.lokacijaSlika,
-      // this.naslovnaImg,
       super.key});
 
   @override
@@ -51,7 +48,6 @@ class _DogadjajSmallOverviewState extends State<DogadjajSmallOverview> {
           naslovnaLoaded = true;
         });
       } catch (e) {
-        print("Error decoding Base64 image: $e");
         setState(() {
           naslovnaImage =
               Image.asset('assets/images/no_picture.jpg', fit: BoxFit.cover);

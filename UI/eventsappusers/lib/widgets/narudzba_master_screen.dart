@@ -4,9 +4,6 @@ import 'package:flutter/material.dart';
 import 'dogadjaj_small_overview.dart';
 
 class NarudzbaMasterScreen extends StatefulWidget {
-/*  final int? selectedIndex;
-  final bool showBreadcrumbs;
-  String naslov;*/
   Widget child;
   double childHeight;
   String naslov;

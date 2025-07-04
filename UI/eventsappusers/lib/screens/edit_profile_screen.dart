@@ -9,15 +9,11 @@ import 'package:eventsappusers/utils/formatting_util.dart';
 import 'package:eventsappusers/utils/style_util.dart';
 import 'package:eventsappusers/utils/util.dart';
 import 'package:eventsappusers/widgets/field_with_validate.dart';
-import 'package:eventsappusers/widgets/heading_widget.dart';
-import 'package:eventsappusers/widgets/input_widget.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:provider/provider.dart';
-
-import '../widgets/dogadjaj_vertical.dart';
 import '../widgets/full_screen_image.dart';
 import '../widgets/master_screen.dart';
 
@@ -33,9 +29,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   ImageObj _profilna = ImageObj(
       imageFromBase64String(KorisnikGlobal.slika), KorisnikGlobal.slika ?? "");
   bool _imageUpdated = false;
-  TextEditingController oldPassController = TextEditingController();
-  TextEditingController newPassController = TextEditingController();
-  TextEditingController newPassConfirmController = TextEditingController();
   late KorisnikProvider _korisnikProvider;
   late Korisnik _korisnik;
   DateTime created = DateTime.now();
@@ -71,8 +64,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         file,
         fit: BoxFit.cover,
       );
-      print("image: $image");
-      print("baase64: $base64Image");
       onImageSelected(ImageObj(image, base64Image));
     }
   }
@@ -110,7 +101,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<void> editKorisnik() async {
     if (_formKey.currentState?.saveAndValidate() ?? false) {
-      print(_formKey.currentState?.value);
 
       Korisnik request = Korisnik.fromJson(_formKey.currentState!.value);
       request.status = true;

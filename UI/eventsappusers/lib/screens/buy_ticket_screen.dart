@@ -2,19 +2,13 @@ import 'package:eventsappusers/models/dogadjaj.dart';
 import 'package:eventsappusers/models/narudzba.dart';
 import 'package:eventsappusers/models/search_result.dart';
 import 'package:eventsappusers/models/tipkarte.dart';
-import 'package:eventsappusers/providers/dogadjaj_provider.dart';
-import 'package:eventsappusers/providers/korisnik_provider.dart';
 import 'package:eventsappusers/providers/narudzba_provider.dart';
 import 'package:eventsappusers/providers/tipkarte_provider.dart';
 import 'package:eventsappusers/screens/personal_information_screen.dart';
 import 'package:eventsappusers/utils/formatting_util.dart';
-import 'package:eventsappusers/widgets/heading_widget.dart';
 import 'package:eventsappusers/widgets/narudzba_master_screen.dart';
-import 'package:eventsappusers/widgets/next_step_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../widgets/comment_widget.dart';
 import '../widgets/dogadjaj_small_overview.dart';
 import '../widgets/dostupne_karte.dart';
 import '../widgets/full_screen_image.dart';
@@ -98,7 +92,6 @@ class _BuyTicketScreenState extends State<BuyTicketScreen> {
   }
 
   Future<void> validateRequest() async {
-    print("selected quantities $selectedQuantities");
     int numOfTickets = 0;
     for (var entry in selectedQuantities.entries) {
       numOfTickets += entry.value;
@@ -134,7 +127,6 @@ class _BuyTicketScreenState extends State<BuyTicketScreen> {
                 ? const Center(child: CircularProgressIndicator())
                 : LayoutBuilder(builder:
                     (BuildContext context, BoxConstraints constraints) {
-                    // Set the initial content height if not already set
                     if (_contentHeight == 0) {
                       _contentHeight = constraints.maxHeight;
                     }

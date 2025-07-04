@@ -1,9 +1,7 @@
 import 'dart:convert';
-
 import 'package:eventsappusers/models/slika.dart';
 import 'package:eventsappusers/utils/util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
 List months = [
@@ -43,16 +41,6 @@ String dayAndMonth(DateTime date) {
   return "${date.day}. " + months[date.month - 1];
 }
 
-String printTime(TimeOfDay time) {
-  final hours = time.hour.toString().padLeft(2, '0');
-  final minutes = time.minute.toString().padLeft(2, '0');
-  return '$hours:$minutes';
-}
-
-Image imageFromString(String input) {
-  return Image.memory(base64Decode(input));
-}
-
 ImageProvider imageProviderFromBase64String(String? base64Image) {
   if (base64Image != null) {
     try {
@@ -83,13 +71,8 @@ Image imageFromBase64String(String? base64Image) {
   return Image.asset('assets/images/no_picture.jpg', fit: BoxFit.cover);
 }
 
-MemoryImage getDecorationImage(String base64Image) {
-  return MemoryImage(base64Decode(base64Image));
-}
-
 List<ImageObj>? imageListFromBase64String(List<Slika>? galerija) {
   if (galerija == null || galerija.isEmpty) {
-    print("galerija null ili empty");
     return null;
   }
 

@@ -1,25 +1,15 @@
-import 'dart:ffi';
-
 import 'package:eventsappusers/models/dogadjaj.dart';
 import 'package:eventsappusers/models/kategorija.dart';
 import 'package:eventsappusers/models/korisnik_global.dart';
 import 'package:eventsappusers/providers/dogadjaj_provider.dart';
 import 'package:eventsappusers/providers/kategorije_provider.dart';
-import 'package:eventsappusers/utils/formatting_util.dart';
 import 'package:eventsappusers/utils/category_color_util.dart';
-import 'package:eventsappusers/utils/style_util.dart';
-import 'package:eventsappusers/widgets/dogadjaj_small_overview.dart';
 import 'package:eventsappusers/widgets/dogadjaj_vertical.dart';
 import 'package:eventsappusers/widgets/events_map_filter.dart';
-import 'package:eventsappusers/widgets/input_field.dart';
-import 'package:eventsappusers/widgets/input_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../widgets/master_screen.dart';
-
 import 'package:latlong2/latlong.dart';
-import 'package:latlong2/spline.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geocoding/geocoding.dart';
 
@@ -33,15 +23,11 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
-  /*TextEditingController _datumOdDateController = TextEditingController();
-  TextEditingController _datumDoDateController = TextEditingController();*/
   DateTime? _datumOd = DateTime.now();
   DateTime? _datumDo = DateTime.now().add(Duration(days: 100));
   late TextEditingController _datumOdController;
   late TextEditingController _datumDoController;
   int? _kategorijaSelected;
-  double latitude = 50;
-  double longitude = 50;
   late LatLng? initialCenter;
   Key mapKey = UniqueKey();
   late KategorijeProvider _kategorijeProvider;
@@ -49,7 +35,6 @@ class _MapScreenState extends State<MapScreen> {
   bool isLoading = true;
   bool kategorijaLoaded = false;
   bool mapLoaded = false;
-
   String defaultLokacija = KorisnikGlobal.lokacija ?? 'Sarajevo';
   late DogadjajProvider _dogadjajProvider;
   late List<Dogadjaj>? _dogadjajiResult;
@@ -79,8 +64,6 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void handleLoading() {
-    print("pozvan handle loading");
-    print("kategorija $kategorijaLoaded mapa $mapLoaded");
     if (kategorijaLoaded == true && mapLoaded == true) {
       setState(() {
         isLoading = false;
@@ -92,7 +75,6 @@ class _MapScreenState extends State<MapScreen> {
     _kategorijeProvider.get().then((value) {
       setState(() {
         _kategorijeList = value.result;
-        // initialCenter = extractLatitudeLongitude(lokacija ?? 'Sarajevo');
         kategorijaLoaded = true;
       });
       handleLoading();
@@ -102,31 +84,8 @@ class _MapScreenState extends State<MapScreen> {
   LatLng extractLatitudeLongitude(Location location) {
     double lat = location.latitude;
     double long = location.longitude;
-
     return LatLng(lat, long);
   }
-
-  /*Future<void> _selectDate(BuildContext context, String caller) async {
-    final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(2015, 8),
-        lastDate: DateTime(2101));
-    if (picked != null && picked != DateTime.now()) {
-      setState(() {
-        caller == 'datumOd'
-            ? {
-                _datumOd = picked,
-                _datumOdDateController.text = formatDate(picked)
-              }
-            : {
-                _datumDo =
-                    DateTime(picked.year, picked.month, picked.day, 23, 59, 59),
-                _datumDoDateController.text = formatDate(picked)
-              };
-      });
-    }
-  }*/
 
   String printDate(DateTime date) {
     return "${date.day}. ${date.month}. ${date.year}.";
@@ -183,45 +142,6 @@ class _MapScreenState extends State<MapScreen> {
             ));
   }
 
-  /*showFilterDialog() {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-              title: Text("Filtriranje"),
-              content: SingleChildScrollView(
-                  child: Column(
-                children: [
-                  /* InputWidget(
-                      label: "Lokacija:",
-                      controller: _cityController,
-                      placeholder: "Lokacija"),*/
-                  InputField(
-                      field: TextField(
-                        style: const TextStyle(
-                            color: Color.fromRGBO(68, 68, 68, 1),
-                            fontSize: 14,
-                            letterSpacing: 0.3,
-                            fontFamily: 'Montserrat'),
-                        decoration:
-                            InputDecoration.collapsed(hintText: 'Lokacija'),
-                        controller: _cityController,
-                      ),
-                      clearable: this),
-                  if (!isLoading) _buildKategorija(),
-                  _buildDatePicker(),
-                ],
-              )),
-              actions: [
-                TextButton(
-                    onPressed: () {
-                      filter();
-                      Navigator.pop(context);
-                    },
-                    child: Text("OK"))
-              ],
-            ));
-  }*/
-
   Future<void> getLatLong(String lokacija) async {
     try {
       var locations = await locationFromAddress(lokacija);
@@ -229,10 +149,6 @@ class _MapScreenState extends State<MapScreen> {
         _refreshMap(locations[0]);
       }
     } on Exception {
-      /* if (lokacija == defaultLokacija)
-        handleException(
-            "Nije moguće pronaći vašu lokaciju. \n U postavkama profila unesite validnu adresu.");
-      else*/
       handleException(
           "Nije moguće pronaći traženu lokaciju, unesite validnu adresu");
       setState(() {
@@ -249,19 +165,12 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Future<void> filter() async {
-    //TBD
-    /* if (filterData) {
-      setState(() {
-        _cityController.text = filterData.cityController.text;
-      });
-    }*/
     setState(() {
       isLoading = true;
     });
 
     var filterReq = {
       'FTS': _searchController.text,
-      //'Lokacija': _cityController.text,
       'Kategorija': _kategorijaSelected,
       'DatumOd': _datumOd,
       'DatumDo': _datumDo,
@@ -271,8 +180,6 @@ class _MapScreenState extends State<MapScreen> {
       'KategorijaIncluded': true
     };
 
-    print("filtriranje $filterReq");
-
     try {
       var value = await _dogadjajProvider.get(filter: filterReq);
       setState(() {
@@ -280,20 +187,17 @@ class _MapScreenState extends State<MapScreen> {
         mapLoaded = true;
         handleLoading();
       });
-      print("dogadjaji result $_dogadjajiResult");
     } on Exception catch (e) {
-      print("uslo u exception");
       handleException(e.toString());
     }
   }
 
   void _showEventDetails(Dogadjaj event) {
-    print('Tapped on event: ${event.naziv}');
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Material(
-          color: Colors.transparent, // Transparent background
+          color: Colors.transparent,
           child: Center(child: DogadjajVerticalWidget(dogadjaj: event)),
         );
       },
@@ -374,7 +278,6 @@ class _MapScreenState extends State<MapScreen> {
               Container(
                   child: IconButton(
                 onPressed: () {
-                  //  filter();
                   cityChanged();
                 },
                 icon: const Icon(Icons.search),
@@ -388,7 +291,6 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Widget _buildMap(initialCenter) {
-    print('initialCenter: $initialCenter,');
     if (initialCenter == null) {
       return Text("Greška prilikom učitavanja lokacije");
     }
@@ -426,8 +328,6 @@ class _MapScreenState extends State<MapScreen> {
       );
     } else {
       eventMarkers = _dogadjajiResult?.map((event) {
-            print(
-                "dogadjaj ${event.naziv} lat ${event.latitude} long ${event.longitude} kategorija ${event.kategorijaId}");
             return Marker(
               key: Key(event.dogadjajId.toString()),
               point: LatLng(event.latitude ?? 0, event.longitude ?? 0),
@@ -464,7 +364,6 @@ class _MapScreenState extends State<MapScreen> {
         ),
       );
     }
-    //print("jesu li dosli dogadjaji ${eventMarkers.first.key}");
 
     return Expanded(
         child: Stack(children: [
@@ -480,187 +379,6 @@ class _MapScreenState extends State<MapScreen> {
             ),
             MarkerLayer(markers: eventMarkers),
           ]),
-      /*Positioned(
-        top: 10,
-        right: 10,
-        child: FloatingActionButton(
-          onPressed: _refreshMap,
-          child: Icon(Icons.refresh),
-        ),
-      ),*/
     ]));
   }
-
-//jedan u drugom
-  /* _buildKategorija() {
-    return Column(children: [
-      SizedBox(height: 5),
-      InputField(
-          field: FormField<int>(
-            builder: (FormFieldState<int> state) {
-              return Container(
-                  height: 35,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                  ),
-                  child: InputDecorator(
-                      decoration: InputDecoration(
-                          constraints: BoxConstraints(maxHeight: 35),
-                          contentPadding:
-                              EdgeInsets.symmetric(vertical: 6, horizontal: 0),
-                          hintStyle: const TextStyle(
-                              color: Color.fromRGBO(68, 68, 68, 1),
-                              fontSize: 14,
-                              letterSpacing: 0.3,
-                              fontFamily: 'Montserrat'),
-                          hintText: 'Kategorija',
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                          )),
-                      isEmpty: _kategorijaSelected == null,
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<int>(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                          value: _kategorijaSelected,
-                          isDense: true,
-                          onChanged: (int? newValue) {
-                            setState(() {
-                              _kategorijaSelected =
-                                  newValue ?? _kategorijaSelected;
-                              state.didChange(newValue);
-                            });
-                          },
-                          items: _kategorijeList.map((Kategorija value) {
-                            return DropdownMenuItem<int>(
-                              value: value.kategorijaId,
-                              child: Text(
-                                value.naziv ?? '',
-                                style: const TextStyle(
-                                    color: Color.fromRGBO(68, 68, 68, 1),
-                                    fontSize: 14,
-                                    letterSpacing: 0.3,
-                                    fontFamily: 'Montserrat'),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      )));
-            },
-          ),
-          clearable: this),
-    ]);
-  }*/
-
-//original
-  /* _buildKategorija() {
-   return Column(children: [
-      SizedBox(height: 5),
-      Padding(
-          padding: EdgeInsets.symmetric(horizontal: 5),
-          child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                textAlign: TextAlign.left,
-                "Kategorija:",
-                style: TextStyle(
-                    color: Color.fromRGBO(60, 71, 92, 1),
-                    fontFamily: 'Montserrat',
-                    fontSize: 15,
-                    letterSpacing: 0.3),
-              ))),
-      FormField<int>(
-        builder: (FormFieldState<int> state) {
-          return Padding(
-              padding: EdgeInsets.symmetric(vertical: 0, horizontal: 5),
-              child: Container(
-                  height: 35,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(20)),
-                    border: Border.all(color: Color.fromRGBO(200, 200, 200, 1)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.4),
-                        spreadRadius: 1,
-                        blurRadius: 3,
-                        offset: Offset(2, 3),
-                      ),
-                    ],
-                  ),
-                  child: InputDecorator(
-                      decoration: InputDecoration(
-                          constraints: BoxConstraints(maxHeight: 35),
-                          contentPadding:
-                              EdgeInsets.symmetric(vertical: 3, horizontal: 4),
-                          labelStyle: TextStyle(
-                              color: Color.fromARGB(255, 164, 163, 163),
-                              fontSize: 11.0),
-                          hintText: 'Kategorija',
-                          border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(20.0))),
-                      isEmpty: _kategorijaSelected == null,
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<int>(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 2, vertical: 5),
-                          value: _kategorijaSelected,
-                          isDense: true,
-                          onChanged: (int? newValue) {
-                            setState(() {
-                              _kategorijaSelected =
-                                  newValue ?? _kategorijaSelected;
-                              state.didChange(newValue);
-                            });
-                          },
-                          items: _kategorijeList.map((Kategorija value) {
-                            return DropdownMenuItem<int>(
-                              value: value.kategorijaId,
-                              child: Text(
-                                value.naziv ?? '',
-                                style: TextStyle(
-                                    color:
-                                        const Color.fromARGB(255, 88, 87, 87)),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ))));
-        },
-      )
-    ]);
-  }*/
-
-  /* _buildDatePicker() {
-    return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-        child: Column(children: [
-          Row(
-            children: [
-              Expanded(
-                  child: InkWell(
-                      onTap: () {
-                        _selectDate(context, 'datumOd');
-                      },
-                      child: IgnorePointer(
-                          child: InputWidget(
-                        label: 'Od:',
-                        controller: _datumOdDateController,
-                      )))),
-            ],
-          ),
-          Row(children: [
-            Expanded(
-                child: InkWell(
-                    onTap: () {
-                      _selectDate(context, 'datumDo');
-                    },
-                    child: IgnorePointer(
-                        child: InputWidget(
-                            label: 'Do:',
-                            controller: _datumDoDateController)))),
-          ])
-        ]));
-  }*/
 }

@@ -20,7 +20,6 @@ class DostupneKarteWidget extends StatefulWidget {
 }
 
 class _DostupneKarteWidgetState extends State<DostupneKarteWidget> {
-  //_DogadjajHorizontalWidgetState();
   int kolicina = 0;
 
   _DostupneKarteWidgetState();

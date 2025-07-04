@@ -1,5 +1,4 @@
 import 'package:eventsappusers/models/dogadjaj.dart';
-import 'package:eventsappusers/models/korisnik.dart';
 import 'package:eventsappusers/models/korisnik_global.dart';
 import 'package:eventsappusers/providers/dogadjaj_provider.dart';
 import 'package:eventsappusers/providers/kategorije_provider.dart';
@@ -7,14 +6,9 @@ import 'package:eventsappusers/providers/korisnik_provider.dart';
 import 'package:eventsappusers/providers/recommender_provider.dart';
 import 'package:eventsappusers/utils/category_color_util.dart';
 import 'package:eventsappusers/utils/util.dart';
-import 'package:eventsappusers/widgets/input_field.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
-
-import '../widgets/dogadjaj_horizontal.dart';
 import '../widgets/dogadjaj_vertical.dart';
 import '../widgets/heading_widget.dart';
 import '../widgets/master_screen.dart';
@@ -29,7 +23,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
   bool isLoading = true;
-  late KorisnikProvider _korisnikProvider;
   late KategorijeProvider _kategorijeProvider;
   late DogadjajProvider _dogadjajProvider;
   late RecommenderProvider _recommenderProvider;
@@ -54,7 +47,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     initializeCenter(defaultLokacija);
-    _korisnikProvider = context.read<KorisnikProvider>();
     _dogadjajProvider = context.read<DogadjajProvider>();
     _kategorijeProvider = context.read<KategorijeProvider>();
     _recommenderProvider = context.read<RecommenderProvider>();
@@ -63,36 +55,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> initializeCenter(String lokacija) async {
-    print("lokacija $lokacija");
-    /*ry {
-      var locations = await locationFromAddress(lokacija);
-      if (locations.isNotEmpty) {
-        double lat = locations[0].latitude;
-        double long = locations[0].latitude;
-        print(lat);
-        print(long);
-        var latLong = LatLng(lat, long);
-        setState(() {
-          initialCenter = latLong;
-          centerLoaded = true;
-        });
-      } else {
-        setState(() {
-          initialCenter = LatLng(0, 0);
-          centerLoaded = true;
-        });
-      }
-    } on Exception catch (e) {
-      print("Nije moguće pronaći traženu lokaciju, unesite validnu adresu");
-      return const LatLng(0, 0);
-    }*/
     LatLng latLong = await getLatLong(lokacija);
-    print("latlong koje dobijemo poslije await $latLong");
     setState(() {
       initialCenter = latLong;
       centerLoaded = true;
     });
-    print("poslije loadanje");
     if (centerLoaded) loadNearYou();
   }
 
@@ -121,7 +88,6 @@ class _HomeScreenState extends State<HomeScreen> {
     await _dogadjajProvider
         .getFollowing(KorisnikGlobal.korisnikId)
         .then((value) {
-      print("result je $value");
       setState(() {
         _pratiteList = value;
         pratiteLoaded = true;
@@ -154,9 +120,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> loadNearYou() async {
-    print(
-      "uslo u load near you ${initialCenter?.latitude} ${initialCenter?.longitude}",
-    );
     var filterReq = {
       'Status': 'ACTIVE',
       'KategorijaIncluded': true,
@@ -166,7 +129,6 @@ class _HomeScreenState extends State<HomeScreen> {
     };
 
     await _dogadjajProvider.get(filter: filterReq).then((value) {
-      print("dogadjaji near you: $value");
       setState(() {
         _nearYouList = value.result;
         nearYouLoaded = true;
@@ -174,14 +136,6 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     });
   }
-
-  /* getKorisnik() async {
-    /* await _korisnikProvider.getById();
-    setState(() {
-      _kategorijeList = kategorijeResult.result;
-      isLoading = false;
-    });*/
-  }*/
 
   Future<void> search() async {
     var filterReq = {

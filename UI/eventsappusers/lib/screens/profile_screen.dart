@@ -205,7 +205,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildDogadjajiTiles(String naslov, List<Dogadjaj>? dogadjajiList) {
-    // print("evo događaja ${dogadjajiList?.first.naziv}");
     return Padding(
         padding: EdgeInsets.all(8),
         child: Column(
@@ -226,7 +225,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Text("Nema rezultata"))
                 : SizedBox(
                     height: 240,
-                    // width: MediaQuery.of(context).size.width,
                     child: ListView(
                         scrollDirection: Axis.horizontal,
                         padding: EdgeInsets.symmetric(vertical: 5),

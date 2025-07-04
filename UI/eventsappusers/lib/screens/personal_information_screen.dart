@@ -1,13 +1,9 @@
-import 'dart:ffi';
-
 import 'package:eventsappusers/models/dogadjaj.dart';
 import 'package:eventsappusers/models/korisnik_global.dart';
 import 'package:eventsappusers/models/narudzba.dart';
 import 'package:eventsappusers/screens/narudzba_preview_screen.dart';
 import 'package:eventsappusers/utils/style_util.dart';
 import 'package:eventsappusers/widgets/field_with_validate.dart';
-import 'package:eventsappusers/widgets/input_form_field.dart';
-import 'package:eventsappusers/widgets/input_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -51,7 +47,6 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
 
       Navigator.of(context).push(MaterialPageRoute(
           builder: (context) =>
-              //PaymentInfoScreen(narudzba: n, dogadjaj: widget.dogadjaj)
               NarudzbaPreviewScreen(narudzba: n, dogadjaj: widget.dogadjaj)));
     }
   }
@@ -97,7 +92,6 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                             key: _infoFormKey,
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                //radi overflowa na validaciji
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   _buildHeading("Lični podaci"),
@@ -272,12 +266,10 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
           showCountryPicker(
               context: context,
               onSelect: (Country country) {
-                print(FormBuilder.of(context)?.fields["Drzava"]?.value);
                 setState(() {
                   _infoFormKey.currentState
                       ?.patchValue({"Drzava": country.name});
                   _infoFormKey.currentState?.save();
-                  print(_infoFormKey.currentState?.value["Drzava"]);
                 });
               });
         });

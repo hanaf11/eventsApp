@@ -4,13 +4,10 @@ import 'package:eventsappusers/providers/narudzba_provider.dart';
 import 'package:eventsappusers/screens/home_screen.dart';
 import 'package:eventsappusers/utils/formatting_util.dart';
 import 'package:eventsappusers/widgets/dogadjaj_small_overview.dart';
-import 'package:eventsappusers/widgets/input_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../widgets/master_screen.dart';
 import '../widgets/narudzba_master_screen.dart';
-import 'package:country_picker/country_picker.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 
 class NarudzbaPreviewScreen extends StatefulWidget {
@@ -58,21 +55,19 @@ class _NarudzbaPreviewScreenState extends State<NarudzbaPreviewScreen> {
     setState(() {
       isLoading = true;
     });
+
     try {
       String? clientSecret =
           await _narudzbaProvider.createPaymentIntent(paymentIntentReq);
-      print("client secret $clientSecret");
 
       await Stripe.instance.initPaymentSheet(
           paymentSheetParameters: SetupPaymentSheetParameters(
               paymentIntentClientSecret: clientSecret,
               merchantDisplayName: "eventsApp"));
       var paymentSuccess = await processPayment();
-      print("paymentSuccess $paymentSuccess");
+
       if (paymentSuccess) {
-        print("uslo u kreiranje narudzbe");
         var value = await _narudzbaProvider.createNarudzba(n);
-        print("value $value");
         handleNarudzbaSuccess();
       }
     } on Exception catch (ex) {

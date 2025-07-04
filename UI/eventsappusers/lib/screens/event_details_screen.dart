@@ -1,6 +1,5 @@
 import 'package:eventsappusers/models/dogadjaj.dart';
 import 'package:eventsappusers/models/komentar.dart';
-import 'package:eventsappusers/models/korisnik.dart';
 import 'package:eventsappusers/models/korisnik_global.dart';
 import 'package:eventsappusers/models/podkategorija.dart';
 import 'package:eventsappusers/models/slika.dart';
@@ -15,18 +14,14 @@ import 'package:eventsappusers/utils/formatting_util.dart';
 import 'package:eventsappusers/utils/util.dart';
 import 'package:eventsappusers/widgets/comment_widget.dart';
 import 'package:eventsappusers/widgets/heading_widget.dart';
-import 'package:eventsappusers/widgets/input_field.dart';
 import 'package:eventsappusers/widgets/podkategorije_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:eventsappusers/utils/style_util.dart';
-
 import '../widgets/full_screen_image.dart';
 import '../widgets/master_screen.dart';
 import '../widgets/photo_gallery.dart';
-
 import 'package:latlong2/latlong.dart';
-import 'package:latlong2/spline.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geocoding/geocoding.dart';
 
@@ -104,11 +99,9 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
     _dogadjajProvider.getById(widget.dogadjajId).then((value) {
       setState(() {
         _dogadjaj = value;
-        print("evo ga dogadjaj ${_dogadjaj.naziv}");
         dogadjajLoaded = true;
       });
 
-      print("podkategorija ${_dogadjaj.podkategorijaId}");
       if(_dogadjaj.podkategorijaId!=null){
       _podkategorijaProvider
           .getById(_dogadjaj.podkategorijaId)
@@ -116,11 +109,13 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
         setState(() {
           _podkategorija = podkategorijaValue;
           podkategorijaLoaded = true;
-          print("evo ga podkategorija ${_podkategorija?.naziv}");
         });
         handleLoading();
           });
-      } else {podkategorijaLoaded=true; handleLoading();}
+      } else {
+        setState(() {
+          podkategorijaLoaded = true;
+        }); handleLoading();}
 
         _komentariProvider
             .get(filter: {'dogadjajId': widget.dogadjajId, 'korisnikIncluded':true}).then((value) {
@@ -488,7 +483,6 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
         icon: Icon(Icons.arrow_back),
         color: Color.fromRGBO(60, 71, 92, 1),
         onPressed: () {
-          print("kliknuto pop");
           Navigator.pop(context, true);
         },
       ),)))
@@ -545,21 +539,6 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                 tag: tag, child: SizedBox(height: 170, child: programSlika))));
   }
 
-  /*Widget _buildKomentari() {
-    return Expanded(
-        child: ListView.builder(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemCount: commentList.length,
-            itemBuilder: (context, index) {
-              final comment = commentList[index];
-              return CommentWidget(
-                username: comment['username']!,
-                text: comment['text']!,
-              );
-            }));
-  }
-*/
   Widget _buildKomentari() {
     if (_komentariList == null || _komentariList!.isEmpty) {
       return Center(
@@ -572,7 +551,6 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
 
     return Column(
       children: _komentariList!.map((comment) {
-        print("komentar ${comment.korisnik?.ime} ${comment.korisnik?.korisnickoIme} ${comment.korisnikId}");
         return CommentWidget(
           username: comment.korisnik?.korisnickoIme ?? 'Unknown user',
           text: comment.komentar ?? 'No text',
@@ -664,6 +642,5 @@ LatLng _extractLatitudeLongitude(String output) {
   String lat = output.substring(latitudeStartIndex, latitudeEndIndex).trim();
   String long = output.substring(longitudeStartIndex, longitudeEndIndex).trim();
 
-  print("lat ${double.parse(lat)} long ${double.parse(long)}");
   return LatLng(double.parse(lat), double.parse(long));
 }

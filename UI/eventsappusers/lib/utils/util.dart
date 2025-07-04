@@ -13,7 +13,6 @@ String formErrorMessage(dynamic jsonResponse) {
       .map((entry) {
         String fieldName = entry.key;
         List<dynamic> fieldErrors = entry.value;
-        //return "$fieldName: ${fieldErrors.join(', ')}";
         return fieldErrors.join(', ');
       })
       .join('; ')
@@ -28,7 +27,6 @@ class ImageObj {
 }
 
 Future<LatLng> getLatLong(String lokacija) async {
-  print("lokacija $lokacija");
   try {
     var locations = await locationFromAddress(lokacija);
     if (locations.isNotEmpty) {
