@@ -141,7 +141,7 @@ namespace eventsApp.Services
                {
                    UserId = (uint)se.KorisnikId,
                    EventId = (uint)se.DogadjajId,
-                   InteractionScore = 1.0f
+                   InteractionScore = 4.0f
                }).ToListAsync();
             data.AddRange(savedEvents);
 
@@ -150,7 +150,7 @@ namespace eventsApp.Services
                 {
                     UserId = (uint)ve.KorisnikId,
                     EventId = (uint)ve.DogadjajId,
-                    InteractionScore = 0.5f
+                    InteractionScore = 1.0f
                 }).ToListAsync();
             data.AddRange(viewedEvents);
 
@@ -159,7 +159,7 @@ namespace eventsApp.Services
            {
                UserId = (uint)n.KorisnikId,
                EventId = (uint)(n.NarudzbaStavkes.First().TipKarte.DogadjajId ?? 0),
-               InteractionScore = 3.0f
+               InteractionScore = 5.0f
            }).ToListAsync();
             data.AddRange(ticketPurchases);
 
@@ -168,7 +168,7 @@ namespace eventsApp.Services
                 {
                     UserId = (uint)c.KorisnikId,
                     EventId = (uint)c.DogadjajId,
-                    InteractionScore = 1.0f
+                    InteractionScore = 3.0f
                 }).ToListAsync();
             data.AddRange(commentedEvents);
 
