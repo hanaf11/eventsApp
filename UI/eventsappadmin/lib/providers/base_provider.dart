@@ -40,7 +40,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
 
       return result;
     } else {
-      throw new Exception("Unknown exception");
+      throw Exception("Unknown exception");
     }
   }
 
@@ -58,7 +58,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
 
       return result;
     } else {
-      throw new Exception("Unknown exception");
+      throw Exception("Unknown exception");
     }
   }
 
@@ -74,7 +74,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
       var data = jsonDecode(response.body);
       return fromJson(data);
     } else {
-      throw new Exception("Unknown exception");
+      throw Exception("Unknown exception");
     }
   }
 
@@ -90,7 +90,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
       var data = jsonDecode(response.body);
       return fromJson(data);
     } else {
-      throw new Exception("Unknown exception");
+      throw Exception("Unknown exception");
     }
   }
 
@@ -117,21 +117,17 @@ abstract class BaseProvider<T> with ChangeNotifier {
     if (response.statusCode < 299) {
       return true;
     } else if (response.statusCode == 401) {
-      throw new Exception("Unauthorized");
+      throw Exception("Unauthorized");
     } else if (response.statusCode == 500) {
-      print(response.body);
-      throw new Exception("Server side error");
+      throw Exception("Server side error");
     } else if (response.statusCode == 400) {
-      print(response.body);
-      print(response.statusCode);
       var jsonResponse = jsonDecode(response.body);
       var errorMessage = formErrorMessage(jsonResponse);
       print(errorMessage);
       throw Exception("\n $errorMessage");
     }
     print(response.body);
-    print("status code ${response.statusCode}");
-    throw new Exception("Something bad happened. Please try again");
+    throw Exception("Something bad happened. Please try again");
   }
 
   static Map<String, String> createHeaders() {

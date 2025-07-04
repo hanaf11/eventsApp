@@ -121,18 +121,14 @@ abstract class BaseProvider<T> with ChangeNotifier {
     } else if (response.statusCode == 401) {
       throw Exception("Unauthorized");
     } else if (response.statusCode == 500) {
-      print(response.body);
       throw Exception("Server side error");
     } else if (response.statusCode == 400) {
-      print(response.body);
-      print(response.statusCode);
       var jsonResponse = jsonDecode(response.body);
       var errorMessage = formErrorMessage(jsonResponse);
       print(errorMessage);
       throw Exception("\n $errorMessage");
     }
     print(response.body);
-    print("status code ${response.statusCode}, ${response.bodyBytes}");
     throw Exception("Something bad happened. Please try again");
   }
 
@@ -190,6 +186,4 @@ abstract class BaseProvider<T> with ChangeNotifier {
     });
     return query;
   }
-
-  //String parseError(String error) {}
 }

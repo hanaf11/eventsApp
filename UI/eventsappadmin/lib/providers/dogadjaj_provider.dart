@@ -1,14 +1,9 @@
 import 'dart:convert';
-
 import 'package:eventsappadmin/models/dogadjaj.dart';
 import 'package:eventsappadmin/models/dogadjaji_report_response.dart';
 import 'package:eventsappadmin/models/search_result.dart';
 import 'package:eventsappadmin/providers/base_provider.dart';
-import 'package:eventsappadmin/screens/zahtjevi_list_screen.dart';
-import 'package:eventsappadmin/utils/util.dart';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
 
 class DogadjajProvider extends BaseProvider<Dogadjaj> {
   static String? _baseUrl;
@@ -21,7 +16,6 @@ class DogadjajProvider extends BaseProvider<Dogadjaj> {
     var url = "${_baseUrl}Dogadjaji/$id/hide";
     var uri = Uri.parse(url);
     var headers = BaseProvider.createHeaders();
-    print("my url is $url");
 
     var response = await http.put(uri, headers: headers);
 
@@ -37,7 +31,6 @@ class DogadjajProvider extends BaseProvider<Dogadjaj> {
     var url = "${_baseUrl}Dogadjaji/$id/verify";
     var uri = Uri.parse(url);
     var headers = BaseProvider.createHeaders();
-    print("my url is $url");
 
     var response = await http.put(uri, headers: headers);
 
@@ -57,7 +50,6 @@ class DogadjajProvider extends BaseProvider<Dogadjaj> {
     }
     var uri = Uri.parse(url);
     var headers = BaseProvider.createHeaders();
-    print("my url is $url");
 
     var response = await http.get(uri, headers: headers);
 
@@ -80,12 +72,8 @@ class DogadjajProvider extends BaseProvider<Dogadjaj> {
     var url = "${_baseUrl}Dogadjaji/$id/send-ticket-request";
     var uri = Uri.parse(url);
     var headers = BaseProvider.createHeaders();
-    print("my url is $url");
-    print("ono sto dobijem $req");
 
-    // String body = jsonEncode(req.map((item) => item.toJson()).toList());
     var jsonRequest = jsonEncode(req);
-    print("ovo saljem $jsonRequest");
     var response = await http.put(uri, headers: headers, body: jsonRequest);
 
     if (BaseProvider.isValidResponse(response)) {
@@ -114,7 +102,7 @@ class DogadjajProvider extends BaseProvider<Dogadjaj> {
 
       return result;
     } else {
-      throw new Exception("Unknown exception");
+      throw Exception("Unknown exception");
     }
   }
 

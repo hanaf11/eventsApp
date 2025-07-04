@@ -26,7 +26,6 @@ class DogadjajProvider extends BaseProvider<Dogadjaj> {
 
     if (BaseProvider.isValidResponse(response)) {
       var data = jsonDecode(response.body);
-      print("data $data");
 
       List<Dogadjaj> result = [];
       for (var item in data) {
@@ -48,7 +47,6 @@ class DogadjajProvider extends BaseProvider<Dogadjaj> {
 
     if (BaseProvider.isValidResponse(response)) {
       var data = jsonDecode(response.body);
-      print("data $data");
 
       List<Dogadjaj> result = [];
       for (var item in data) {

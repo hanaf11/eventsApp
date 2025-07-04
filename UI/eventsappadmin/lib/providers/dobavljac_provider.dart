@@ -28,7 +28,7 @@ class DobavljacProvider extends BaseProvider<Dobavljac> {
       var data = jsonDecode(response.body);
       return fromJson(data);
     } else {
-      throw new Exception("Unknown exception");
+      throw Exception("Unknown exception");
     }
   }
 }

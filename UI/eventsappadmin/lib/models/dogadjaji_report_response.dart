@@ -1,4 +1,3 @@
-import 'package:eventsappadmin/models/slika.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'dogadjaji_report_response.g.dart';

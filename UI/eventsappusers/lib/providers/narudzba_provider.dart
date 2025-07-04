@@ -1,9 +1,6 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'package:eventsappusers/models/dogadjaj.dart';
-import 'package:eventsappusers/models/komentar.dart';
 import 'package:eventsappusers/models/narudzba.dart';
-import 'package:eventsappusers/models/search_result.dart';
 import 'package:eventsappusers/models/validtipkarte.dart';
 import "package:http/http.dart" as http;
 
@@ -68,8 +65,6 @@ class NarudzbaProvider extends BaseProvider<Narudzba> {
     var uri = Uri.parse(url);
     var headers = BaseProvider.createHeaders();
 
-    print("this is my uri: $uri");
-
     var response = await http.get(uri, headers: headers);
 
     if (BaseProvider.isValidResponse(response)) {
@@ -96,8 +91,6 @@ class NarudzbaProvider extends BaseProvider<Narudzba> {
 
     if (BaseProvider.isValidResponse(response)) {
       var data = response.body;
-      print("data koju smo dobili $data");
-      //return data['clientSecret'];
       return data;
     } else {
       throw Exception("Unknown exception");

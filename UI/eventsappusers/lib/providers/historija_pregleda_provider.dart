@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:eventsappusers/models/dogadjaj.dart';
 import 'package:flutter/material.dart';
 import "package:http/http.dart" as http;
-import 'package:http/http.dart';
 
 import 'base_provider.dart';
 
@@ -21,8 +20,6 @@ class HistorijaPregledaProvider with ChangeNotifier {
 
     var uri = Uri.parse(url);
     var headers = BaseProvider.createHeaders();
-
-    print("this is my uri: $uri");
 
     var response = await http.get(uri, headers: headers);
 

@@ -33,7 +33,7 @@ class StavkeNarudzbeProvider extends BaseProvider<StavkeNarudzbe> {
 
       return result;
     } else {
-      throw new Exception("Unknown exception");
+      throw Exception("Unknown exception");
     }
   }
 
