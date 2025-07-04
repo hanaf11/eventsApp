@@ -30,8 +30,7 @@ namespace eventsApp.Services
             _narudzbaStavkeService = narudzbaStavkeService;
             _karteService = karteService;
             _notificationService = notificationService;
-          //  stripeSecretKey = configuration["StripeSettings:ApiKey"] ?? Environment.GetEnvironmentVariable("STRIPE_API_KEY");
-            stripeSecretKey = configuration["Stripe:SecretKey"] ?? Environment.GetEnvironmentVariable("STRIPE_API_KEY");
+            stripeSecretKey = Environment.GetEnvironmentVariable("STRIPE_SECRET_KEY") ?? configuration["Stripe:SecretKey"];
         }
 
         public async Task<List<Model.ValidTipKarte>> ValidateRequest(Dictionary<int, int> request)
@@ -145,7 +144,7 @@ namespace eventsApp.Services
 
                 var distinctDogadjaji = dogadjajiEntities.GroupBy(d => d.DogadjajId).Select(g => g.First()).ToList();
 
-                result =_mapper.Map<List<Model.Dogadjaji>>(dogadjajiEntities);
+                result =_mapper.Map<List<Model.Dogadjaji>>(distinctDogadjaji);
 
             }
             return result;

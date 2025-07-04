@@ -127,7 +127,19 @@ class _NarudzbeIzvjestajScreenState extends State<NarudzbeIzvjestajScreen> {
 
       final pdfFile = File(outputPath);
       await pdfFile.writeAsBytes(await pdf.save());
-      print("PDF saved to: $outputPath");
+     showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Successful'),
+        content: Text("PDF je spašen na: ${outputPath}"),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'OK'),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
     }
     // Optionally open the file or inform the user
     catch (e) {

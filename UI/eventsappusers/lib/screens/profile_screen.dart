@@ -231,7 +231,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         scrollDirection: Axis.horizontal,
                         padding: EdgeInsets.symmetric(vertical: 5),
                         children: dogadjajiList.map((dogadjaj) {
-                          print("Dogadjaj: ${dogadjaj.naziv}");
+                      
                           return DogadjajVerticalWidget(dogadjaj: dogadjaj);
                         }).toList()),
                   )

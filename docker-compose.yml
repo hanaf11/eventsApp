@@ -28,6 +28,7 @@ services:
       - ConnectionStrings__DefaultConnection=${DEFAULT_CONNECTION}
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
       - RABBITMQ_CONNECTIONSTRING=${RABBITMQ_CONNECTIONSTRING}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
     ports:
       - 7294:7294
     networks:
