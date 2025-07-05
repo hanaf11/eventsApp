@@ -41,12 +41,14 @@ Desktop application:
 There are two roles that have access to the admin panel: Admin and Manager.
 The Manager role can manage content, events, and tickets, as well as view reports.
 The Admin role has all the privileges of a Manager, with the additional ability to manage users.
-
+```
 - username: admin
 - password: test
 ```
+```
 - username: desktop
 - password: test
+```
 ```
 - username: manager
 - password: test
@@ -55,24 +57,26 @@ The Admin role has all the privileges of a Manager, with the additional ability 
 Mobile application:
 There are two roles that have access to the user application: Admin and User.
 All users can browse events, create new events, and purchase tickets.
-
+```
 - username: admin
 - password: test
 - location: Sarajevo
+```
 ```
 - username: user
 - password: test
 - location: Sarajevo
 ```
+```
 - username: johndoe
 - password: test
 - location: Sarajevo
 ```
+```
 - username: janedoe
 - password: test
 - location: Mostar
-
-
+```
 
 #### Test data for Stripe:
 
