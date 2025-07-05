@@ -13,10 +13,8 @@ namespace eventsApp.Services
 {
     public class UlogaServiceImpl:BaseService<Model.Uloge, Model.Uloge, Database.Uloge, UlogaSearchObject>, IUlogaService
     {
-        protected readonly ILogger<UlogaServiceImpl> _logger;
-        public UlogaServiceImpl(EventsDbContext context, IMapper mapper, ILogger<UlogaServiceImpl> logger):base(context,mapper)
+        public UlogaServiceImpl(EventsDbContext context, IMapper mapper):base(context,mapper)
         {
-            _logger = logger;
         }
     }
 }

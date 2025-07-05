@@ -44,7 +44,7 @@ namespace eventsApp.Services
             return response;
         }
 
-        public async Task<String> CreatePaymentIntent(PaymentIntentRequest request)
+        public async Task<string> CreatePaymentIntent(PaymentIntentRequest request)
         {
             StripeConfiguration.ApiKey = stripeSecretKey;
 
@@ -60,25 +60,14 @@ namespace eventsApp.Services
                     },
                 };
 
-                // Create the payment intent
                 var service = new PaymentIntentService();
                 var paymentIntent = await service.CreateAsync(options);
 
-                // Map the Stripe PaymentIntent to your model
-                /*return new Model.PaymentIntent
-                {
-                    ClientSecret = paymentIntent.ClientSecret,
-                    PaymentIntentId = paymentIntent.Id,
-                };*/
-                //return paymentIntent.Id;
                 return paymentIntent.ClientSecret;
             }
             catch (Exception ex)
             {
-                // Log the error (you can use _logger here if needed)
                 _logger.LogError(ex, "Error creating PaymentIntent");
-
-                // Re-throw or handle the exception
                 throw new Exception("Error creating PaymentIntent", ex);
             }
         }
@@ -133,10 +122,6 @@ namespace eventsApp.Services
 
             if (search?.KorisnikId!=null)
             {
-                /*var dogadjajiEntities = query.Where(n => n.KorisnikId == search.KorisnikId)
-               .Include(n => n.NarudzbaStavkes).ThenInclude(ns => ns.TipKarte).ThenInclude(tk => tk.Dogadjaj)
-               .ThenInclude(d => d.Kategorija).SelectMany(n => n.NarudzbaStavkes).Select(ns => ns.TipKarte.Dogadjaj);*/
-
                 var dogadjajiEntities = await query.Where(n => n.KorisnikId == search.KorisnikId)
                     .Include(n => n.NarudzbaStavkes).ThenInclude(ns => ns.TipKarte).ThenInclude(tk => tk.Dogadjaj)
                     .ThenInclude(d => d.Kategorija).SelectMany(n => n.NarudzbaStavkes)

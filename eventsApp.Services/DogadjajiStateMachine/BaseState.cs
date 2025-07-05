@@ -77,7 +77,6 @@ namespace eventsApp.Services.DogadjajiStateMachine
 
         public virtual List<string> AllowedActions(Database.Dogadjaji entity)
         {
-            //return new List<string>();
             throw new UserException("Not allowed");
         }
     }

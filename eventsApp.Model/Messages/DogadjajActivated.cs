@@ -8,7 +8,7 @@ namespace eventsApp.Model.Messages
 {
     public class DogadjajActivated
     {
-        public Dogadjaji Dogadjaj;
+        public Dogadjaji Dogadjaj { get; set; }
 
     }
 }

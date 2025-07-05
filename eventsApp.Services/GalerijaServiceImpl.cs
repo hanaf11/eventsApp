@@ -36,10 +36,6 @@ namespace eventsApp.Services
 
             foreach (var slikaByte in request)
             {
-                /* slikaModel.DogadjajId = dogadjajId;
-                 var slikaEntity = _mapper.Map<Database.Slike>(slikaModel);*/
-
-
                 set.Add(CreateSlika(new SlikeInsertRequest(){Slika= slikaByte, DogadjajId=dogadjajId}));
             }
             await _context.SaveChangesAsync();

@@ -44,20 +44,8 @@ namespace eventsApp.Model
 
         public double? Longitude { get; set; }
 
-        public virtual Kategorije Kategorija { get; set; }
+        public Kategorije? Kategorija { get; set; }
 
-        /*  public virtual Dobavljaci? Dobavljac { get; set; }
 
-          public virtual ICollection<HistorijaPregledum> HistorijaPregleda { get; } = new List<HistorijaPregledum>();
-
-          
-
-          public virtual ICollection<Komentari> Komentaris { get; } = new List<Komentari>();
-
-          public virtual ICollection<Saving> Savings { get; } = new List<Saving>();
-
-          public virtual ICollection<Slike> Slikes { get; } = new List<Slike>();
-
-          public virtual ICollection<TipKarte> TipKartes { get; } = new List<TipKarte>();*/
     }
 }

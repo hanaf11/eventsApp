@@ -22,11 +22,11 @@ namespace eventsApp.Model
 
         public Kategorije? Kategorija { get; set; }
 
-        public byte[] Naslovna { get; set; }
+        public byte[] Naslovna { get; set; } = null!;
 
-        public string Status { get; set; }
+        public string Status { get; set; } = null!;
 
-        public Dobavljaci Dobavljac { get; set; }
+        public Dobavljaci? Dobavljac { get; set; }
 
         public double? Latitude { get; set; }
 

@@ -15,14 +15,12 @@ namespace eventsApp.Services.DogadjajiStateMachine
 {
     public class OnHoldEventState : BaseState
     {
-        IDogadjajiService _dogadjajiService;
         ITipKarteService _tipKarteService;
         protected ILogger<OnHoldEventState> _logger;
         protected readonly INotificationService _notificationService;
 
         public OnHoldEventState(IServiceProvider serviceProvider, EventsDbContext context, IMapper mapper, IDogadjajiService dogadjajiService, ITipKarteService tipKarteService, ILogger<OnHoldEventState> logger, INotificationService notificationService) : base(serviceProvider, context, mapper)
         {
-            _dogadjajiService = dogadjajiService;
             _tipKarteService = tipKarteService;
             _logger = logger;
             _notificationService = notificationService;
@@ -32,8 +30,6 @@ namespace eventsApp.Services.DogadjajiStateMachine
         {
             var set = _context.Set<Database.Dogadjaji>();
 
-          //  var entity = await set.FindAsync(id);
-
             var entity = await set.Include(d => d.Kategorija).FirstOrDefaultAsync(d => d.DogadjajId == id);
 
             if (entity != null)
@@ -42,27 +38,7 @@ namespace eventsApp.Services.DogadjajiStateMachine
 
                 await _context.SaveChangesAsync();
 
-                /*var factory = new ConnectionFactory { HostName = "localhost" };
-                using var connection = factory.CreateConnection();
-                using var channel= connection.CreateModel();
-
-                channel.QueueDeclare(queue:"category_subscription",
-                                     durable:false,
-                                     exclusive:false,
-                                     autoDelete:false,
-                                     arguments:null);
-                const string message = "aa";
-                var body = Encoding.UTF8.GetBytes(message);
-
-                channel.BasicPublish(exchange: string.Empty,
-                                     routingKey: "category_subscription",
-                                     basicProperties: null,
-                                     body: body);*/
-
                 var mappedEntity = _mapper.Map<Model.Dogadjaji>(entity);
-
-                /*  using var bus = RabbitHutch.CreateBus("host=localhost");
-                  bus.PubSub.Publish(mappedEntity);*/
                 _notificationService.SendEventActivatedMail(mappedEntity);
                 return mappedEntity;
             }

@@ -10,9 +10,9 @@ namespace eventsApp.Model
     {
         public int RowNum { get; set; }
 
-        public string TipKarte { get; set; }
+        public string TipKarte { get; set; } = null!;
 
-        public string Sifra { get; set; }
+        public string Sifra { get; set; } = null!;
 
         public string? Sjediste { get; set; }
     }

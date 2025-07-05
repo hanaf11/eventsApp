@@ -22,10 +22,8 @@ namespace eventsApp.Filters
             }
             else
             {
-                //TBD: sakriti trace
-                // context.ModelState.AddModelError("ERROR", "Server side error, please check logs");
                 context.ModelState.AddModelError("ERROR", context.Exception.Message);
-                context.ModelState.AddModelError("ERROR", context.Exception.StackTrace);
+                //context.ModelState.AddModelError("ERROR", context.Exception.StackTrace);
                 context.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             }
             

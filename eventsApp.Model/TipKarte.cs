@@ -18,6 +18,6 @@ namespace eventsApp.Model
 
         public bool NumerisanjeSjedista { get; set; }
 
-        public Dogadjaji Dogadjaj { get; set; }
+        public Dogadjaji? Dogadjaj { get; set; }
     }
 }

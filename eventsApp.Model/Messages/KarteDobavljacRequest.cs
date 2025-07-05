@@ -1,20 +1,17 @@
 ﻿using eventsApp.Model.Requests;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace eventsApp.Model.Messages
 {
     public class KarteDobavljacRequest
     {
-        public string Dogadjaj;
+        public string Dogadjaj { get; set; } = null!;
 
-        public DateTime Datum;
+        public DateTime Datum { get; set; }
 
-        public string Lokacija;
+        public string Lokacija { get; set; } = null!;
 
-        public List<KarteRequest> KarteZahtjev;
+        public List<KarteRequest>? KarteZahtjev { get; set; }
     }
 }

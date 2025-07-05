@@ -21,6 +21,5 @@ namespace eventsApp.Model.Requests
 
         public string? Drzava { get; set; }
 
-        //public byte[]? Slika { get; set; }
     }
 }

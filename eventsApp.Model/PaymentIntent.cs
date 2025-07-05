@@ -8,8 +8,8 @@ namespace eventsApp.Model
 {
     public class PaymentIntent
     {  
-        public string ClientSecret { get; set; }
+        public string? ClientSecret { get; set; }
 
-        public string PaymentIntentId { get; set; }
+        public string? PaymentIntentId { get; set; }
     }
 }

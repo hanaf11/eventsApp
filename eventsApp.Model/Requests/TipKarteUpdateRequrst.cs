@@ -11,7 +11,7 @@ namespace eventsApp.Model.Requests
     {
 
         [Required]
-        public string Naziv { get; set; }
+        public string Naziv { get; set; } = null!;
         [Required]
         public decimal Cijena { get; set; }
         [Required]

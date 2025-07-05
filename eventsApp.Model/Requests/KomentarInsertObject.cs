@@ -14,7 +14,7 @@ namespace eventsApp.Model.Requests
         [Required]
         public int DogadjajId { get; set; }
         [Required]
-        public string Komentar { get; set; }
+        public string Komentar { get; set; } = null!;
 
     }
 }

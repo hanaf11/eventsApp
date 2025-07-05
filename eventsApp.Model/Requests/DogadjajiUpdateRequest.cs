@@ -33,8 +33,6 @@ namespace eventsApp.Model.Requests
 
          public List<SlikeInsertRequest>? Galerija { get; set; }
 
-        //public List<byte[]>? Galerija { get; set; }
-
         public double? Latitude { get; set; }
 
         public double? Longitude { get; set; }

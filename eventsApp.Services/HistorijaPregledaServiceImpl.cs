@@ -46,17 +46,6 @@ namespace eventsApp.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> DeleteByDogadjaj(int dogadjajId)
-        {
-            var historyToDelete = _context.HistorijaPregleda.Where(h => h.DogadjajId == dogadjajId);
-
-            _context.HistorijaPregleda.RemoveRange(historyToDelete);
-
-            await _context.SaveChangesAsync();
-
-            return true;
-        }
-
         public async Task<List<Model.Dogadjaji>> GetByKorisnikId(int korisnikId)
         {
             List<Database.Dogadjaji> dogadjaji =await _context.Set<HistorijaPregledum>()

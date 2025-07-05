@@ -41,8 +41,6 @@ namespace eventsApp.Model.Requests
 
         public List<byte[]>? Galerija { get; set; }
 
-      //  public bool? ProdajaKarata  { get; set; }
-
         public List<TipKarteInsertRequest>? TipoviKarata { get; set; }
 
         public double? Latitude { get; set; }

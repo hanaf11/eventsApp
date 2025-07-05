@@ -8,7 +8,7 @@ using System.Text;
 
 public class Program
 {
-    private static readonly HttpClient client = new HttpClient(); // HttpClient should be a class-level instance
+    private static readonly HttpClient client = new HttpClient();
     private static string RabbitMqConnectionString = string.Empty;
     private static string KarteApiUrl = string.Empty;
     private static string DobavljacUsername = string.Empty;
@@ -29,7 +29,6 @@ public class Program
 
             Console.WriteLine("Subscribing to RabbitMQ messages...");
 
-            // bus.PubSub.Subscribe<DogadjajActivated>("seminarski", HandleTextMessage;
             try
             {
                 await bus.PubSub.SubscribeAsync<KarteDobavljacRequest>("dobavljac", HandleKarteDobavljacRequest);
@@ -46,29 +45,6 @@ public class Program
             {
                 Console.WriteLine("Unhandled Error: " + ex.Message);
             }
-
-
-            /* Console.WriteLine("Listening for messages. Hit <return> to quit.");
-             //  Console.ReadLine();
-             while (true)
-             {
-                 // Check for user input
-                 if (Console.KeyAvailable)
-                 {
-                     var key = Console.ReadKey(true).Key; // Read the key without displaying it
-
-                     if (key == ConsoleKey.Q)
-                     {
-                         Console.WriteLine("Exiting...");
-                         break; // Exit the loop if 'Q' is pressed
-                     }
-                 }
-
-                 // Await a short delay to prevent busy waiting
-                 await Task.Delay(100); // Adjust delay as needed
-
-
-             }*/
 
 
             Console.WriteLine("Listening for messages. Press Ctrl+C to quit.");
@@ -115,8 +91,6 @@ public class Program
         {
         try
             {
-               // string apiUrl = "http://localhost:7294/Dogadjaji/send-tickets";
-
             string jsonContent = JsonConvert.SerializeObject(response);
             Console.WriteLine(jsonContent);
 

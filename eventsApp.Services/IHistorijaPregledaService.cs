@@ -10,8 +10,6 @@ namespace eventsApp.Services
     {
         Task Create(int? korisnikId, int? dogadjajId);
 
-        Task<bool> DeleteByDogadjaj(int dogadjajId);
-
         public Task<List<Model.Dogadjaji>> GetByKorisnikId(int korisnikId);
 
         Task<List<Dictionary<string, object>>> GetMostViewedEvents();

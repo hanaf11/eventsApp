@@ -30,11 +30,6 @@ namespace eventsApp.Services.DogadjajiStateMachine
             var entity = await set.FindAsync(id);
 
             _mapper.Map(request, entity);
-
-            /*if (entity.Opis == "aa")
-            {
-                throw new UserException("Opis nije dozvoljen");
-            }*/
             
             if (request.Galerija.Count > 0)
             {
@@ -69,27 +64,7 @@ namespace eventsApp.Services.DogadjajiStateMachine
 
             await _context.SaveChangesAsync();
 
-            /*var factory = new ConnectionFactory { HostName = "localhost" };
-            using var connection = factory.CreateConnection();
-            using var channel= connection.CreateModel();
-
-            channel.QueueDeclare(queue:"category_subscription",
-                                 durable:false,
-                                 exclusive:false,
-                                 autoDelete:false,
-                                 arguments:null);
-            const string message = "aa";
-            var body = Encoding.UTF8.GetBytes(message);
-
-            channel.BasicPublish(exchange: string.Empty,
-                                 routingKey: "category_subscription",
-                                 basicProperties: null,
-                                 body: body);*/
-
             var mappedEntity = _mapper.Map<Model.Dogadjaji>(entity);
-
-           /* using var bus = RabbitHutch.CreateBus("host=localhost");
-            bus.PubSub.Publish(mappedEntity);*/
 
             return mappedEntity;
         }
@@ -106,9 +81,6 @@ namespace eventsApp.Services.DogadjajiStateMachine
             await _context.SaveChangesAsync();
 
             var mappedEntity = _mapper.Map<Model.Dogadjaji>(entity);
-
-            /* using var bus = RabbitHutch.CreateBus("host=localhost");
-             bus.PubSub.Publish(mappedEntity);*/
 
             return mappedEntity;
         }

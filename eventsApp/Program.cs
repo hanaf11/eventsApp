@@ -1,6 +1,5 @@
 using eventsApp;
 using eventsApp.Filters;
-using eventsApp.Model.SearchObjects;
 using eventsApp.Services;
 using eventsApp.Services.Database;
 using eventsApp.Services.DogadjajiStateMachine;
@@ -10,19 +9,15 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 
 builder.Services.AddSingleton<IRabbitMqPublisher>(provider =>
 {
-    /* var configuration = provider.GetRequiredService<IConfiguration>();
-     var hostName = configuration.GetValue<string>("RabbitMQ:HostName") ?? "localhost";*/
     var hostName = Environment.GetEnvironmentVariable("RABBITMQ_CONNECTIONSTRING") ?? builder.Configuration["RabbitMQ:ConnectionString"];
     return new RabbitMqPublisherService(hostName);
 });
 
 builder.Services.AddTransient<IDobavljaciService, DobavljaciServiceImpl>();
 builder.Services.AddTransient<IKorisniciService, KorisniciServiceImpl>();
-//builder.Services.AddTransient<IService<eventsApp.Model.Kategorije, BaseSearchObject>, BaseService<eventsApp.Model.Kategorije, eventsApp.Services.Database.Kategorije, BaseSearchObject>>();
 builder.Services.AddTransient<IDogadjajiService, DogadjajiServiceImpl>();
 builder.Services.AddTransient<IKategorijeService, KategorijeServiceImpl>();
 builder.Services.AddTransient<IPodkategorijeService, PodkategorijeServiceImpl>();
@@ -104,17 +99,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("AllowAnyOrigin");
 
-//app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-/*using (var scope = app.Services.CreateScope())
-{
-    var dataContext = scope.ServiceProvider.GetRequiredService<EventsDbContext>();
-    //dataContext.Database.EnsureCreated();
-    dataContext.Database.Migrate();
-}*/
 
 using (var scope = app.Services.CreateScope())
 {

@@ -22,7 +22,7 @@ namespace eventsApp.Services
         protected readonly INarudzbaService _narudzbaService;
         protected readonly IKorisnikUlogaService _korisnikUlogaService;
 
-        public KorisniciServiceImpl(EventsDbContext context, IMapper mapper, ILogger<KorisniciServiceImpl> logger, INotificationService notificationService, IKomentariService komentariService, IPracenjeService pracenjeService, INarudzbaService narudzbaService, IHistorijaPregledaService historijaPregledaService, IKorisnikUlogaService korisnikUlogaService) : base(context, mapper)
+        public KorisniciServiceImpl(EventsDbContext context, IMapper mapper, ILogger<KorisniciServiceImpl> logger, INotificationService notificationService, IKomentariService komentariService, IPracenjeService pracenjeService, INarudzbaService narudzbaService, IKorisnikUlogaService korisnikUlogaService) : base(context, mapper)
         {
             _logger = logger;
             _notificationService = notificationService;
@@ -56,18 +56,6 @@ namespace eventsApp.Services
                 throw new Model.UserException("Već postoji račun sa tom email adresom");
             }
         }
-
-       /* public override async Task BeforeUpdate(Database.Korisnici entity, KorisniciUpdateRequest update)
-        {
-            base.BeforeUpdate(entity, update);
-            if (update.Lozinka != update.LozinkaPotvrda)
-            {
-                throw new Exception("Lozinka i LozonkaPotvrda moraju biti iste");
-            }
-            entity.LozinkaSalt = GenerateSalt();
-            entity.LozinkaHash = GenerateHash(entity.LozinkaSalt, update.Lozinka);
-
-        }*/
 
         public override async Task AfterInsert(Korisnici entity, KorisniciInsertRequest insert)
         {
@@ -118,7 +106,6 @@ namespace eventsApp.Services
 
         public async Task<Model.Korisnici> Login(string username, string password)
         {
-           // var entity = await _context.Korisnicis.Include("KorisniciUloges.Uloga").FirstOrDefaultAsync(x => x.KorisnickoIme == username);
 
             var entity = await _context.Korisnicis.Include(x=>x.KorisniciUloges).ThenInclude(y=>y.Uloga).FirstOrDefaultAsync(x => x.KorisnickoIme == username);
 

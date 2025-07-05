@@ -29,13 +29,13 @@ namespace eventsApp.Services.DogadjajiStateMachine
             entity.Created= DateTime.Now;
 
             set.Add(entity);
-           // await BeforeInsert(entity, insert);
+
             await _context.SaveChangesAsync();
             if (request.Galerija?.Count > 0)
             {
                 await _gallery.InsertGallery(entity.DogadjajId, request.Galerija);
             }
-            //if(request.ProdajaKarata!=null && request.ProdajaKarata==true && request.TipoviKarata?.Count > 0)
+
             if ( request.TipoviKarata?.Count > 0)
                 {
                 await _tipKarteService.InsertTipKarte(entity.DogadjajId, request.TipoviKarata);
@@ -47,10 +47,6 @@ namespace eventsApp.Services.DogadjajiStateMachine
 
         public override List<string> AllowedActions(Database.Dogadjaji entity)
         {
-            /*var list=await base.AllowedActions();
-            list.Add("Verify");
-            list.Add("Cancel");*/
-
             return new List<string>() { nameof(Insert)};
         }
     }

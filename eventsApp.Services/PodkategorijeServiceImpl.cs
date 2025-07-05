@@ -35,7 +35,7 @@ namespace eventsApp.Services
 
         public override async Task ValidateInsert(PodkategorijeCreateRequest insert)
         {
-            bool kategorijaExists = _context.Kategorijes.Where(k => k.KategorijaId == insert.KategorijaId).Count() == 1;
+            bool kategorijaExists = await _context.Kategorijes.Where(k => k.KategorijaId == insert.KategorijaId).CountAsync() == 1;
 
             if (!kategorijaExists)
             {

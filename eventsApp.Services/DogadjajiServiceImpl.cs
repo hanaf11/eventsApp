@@ -30,18 +30,15 @@ namespace eventsApp.Services
 
         private ISavingService _savingService;
 
-        private IKomentariService _komentariService;
-
         private IGalerijaService _galerijaService;
 
         protected readonly IHistorijaPregledaService _historijaPregledaService;
-        public DogadjajiServiceImpl(BaseState baseState, EventsDbContext context, IMapper mapper, ILogger<DogadjajiServiceImpl> logger, ITipKarteService tipKarteService, ISavingService savingService, IKomentariService komentariService, IGalerijaService galerijaService, IHistorijaPregledaService historijaPregledaService) : base(context, mapper)
+        public DogadjajiServiceImpl(BaseState baseState, EventsDbContext context, IMapper mapper, ILogger<DogadjajiServiceImpl> logger, ITipKarteService tipKarteService, ISavingService savingService, IGalerijaService galerijaService, IHistorijaPregledaService historijaPregledaService) : base(context, mapper)
         {
             _baseState = baseState;
             _logger = logger;
             _tipKarteService = tipKarteService;
             _savingService = savingService;
-            _komentariService = komentariService;
             _galerijaService = galerijaService;
             _historijaPregledaService = historijaPregledaService;
         }
@@ -110,22 +107,12 @@ namespace eventsApp.Services
             }
               else  if (search?.Latitude !=null && search?.Longitude!=null)
             {
-                //var filteredDogadjaji = new List<Database.Dogadjaji>();
                 var latitudeParameter = search.Latitude.Value;
                 var longitudeParameter = search.Longitude.Value;
-
-                /*foreach (var d in dogadjaji)
-                {
-                    if (CalculateDistance(latitudeParameter, longitudeParameter, d.Latitude, d.Longitude) <= 20)
-                    {
-                        filteredDogadjaji.Add(d);
-                    }
-                }*/
 
                 return dogadjaji.Select(d => new { Event = d, Distance = CalculateDistance(latitudeParameter, longitudeParameter, d.Latitude, d.Longitude) })
                     .Where(x => x.Distance <= 20).OrderBy(x => x.Distance)
                     .Select(x => x.Event).ToList();
-               // return filteredDogadjaji;
             }
             return dogadjaji;
         }
@@ -205,19 +192,6 @@ namespace eventsApp.Services
 
             bool eventHasPictures = await _context.Slikes.Where(s => s.DogadjajId == dogadjajId).AnyAsync();
             if (eventHasPictures) { await _galerijaService.DeleteByDogadjaj(dogadjaj.DogadjajId); }
-
-            bool eventInSaving = await _context.Savings.Where(s => s.DogadjajId == dogadjajId).AnyAsync();
-            if (eventInSaving) { await _savingService.DeleteByDogadjaj(dogadjaj.DogadjajId); }
-
-            bool eventHasComments =await  _context.Komentaris.Where(c => c.DogadjajId == dogadjajId).AnyAsync();
-            if (eventHasComments) { await _komentariService.DeleteByDogadjaj(dogadjaj.DogadjajId); }
-
-           /* bool eventInTicketTypes = await _context.TipKartes.Where(s => s.DogadjajId == dogadjajId).AnyAsync();
-            if (eventInTicketTypes) { await _tipKarteService.DeleteByDogadjaj(dogadjaj.DogadjajId); }*/
-
-          /*  bool eventInHistory = await _context.HistorijaPregleda.Where(h => h.DogadjajId == dogadjajId).AnyAsync();
-            if (eventInHistory) { await _historijaPregledaService.DeleteByDogadjaj(dogadjaj.DogadjajId); }*/
-
         }
 
         public override bool RequiresSoftDelete(Database.Dogadjaji entity)
@@ -238,7 +212,6 @@ namespace eventsApp.Services
         }
 
         public async Task<List<string>> AllowedActions(int id) {
-            _logger.LogInformation($"Allowed actions called for id {id}");
             if (id <= 0)
             {
                 var state = _baseState.CreateState("INITIAL");

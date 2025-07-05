@@ -12,7 +12,7 @@ namespace eventsApp.Model.Requests
         [Required]
         public long Amount { get; set; }
         [Required]
-        public string? Currency { get; set; }
+        public string Currency { get; set; } = null!;
 
     }
 }

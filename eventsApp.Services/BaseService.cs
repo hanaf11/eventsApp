@@ -33,8 +33,6 @@ namespace eventsApp.Services
             query = AddFilter(query, search);
              query=AddInclude(query, search);
 
-            //result.Count = await query.CountAsync();
-
             query = AddOrderBy(query, search);
 
             if (search?.Page.HasValue==true && search?.PageSize.HasValue == true)
@@ -53,7 +51,6 @@ namespace eventsApp.Services
 
         public virtual async Task<TDetails> GetById(int? korisnikId,int id)
         {
-            //var entity = await _context.Set<TDb>().FindAsync(id);
             var entity = await FindEntity(id);
 
             await WriteInHistory(korisnikId,id);

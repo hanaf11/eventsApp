@@ -14,7 +14,6 @@ public class EmailService
 
         using (var bus = RabbitHutch.CreateBus(hostName))
         {
-            // Set up cancellation token for graceful shutdown
             var cts = new CancellationTokenSource();
             Console.CancelKeyPress += (sender, e) =>
             {
@@ -24,7 +23,6 @@ public class EmailService
 
             Console.WriteLine("Subscribing to RabbitMQ messages...");
 
-            // User registration subscription
             await bus.PubSub.SubscribeAsync<UserRegisteredModel>("user_registered", async msg =>
             {
                 Console.WriteLine("New user registered.");
@@ -38,7 +36,6 @@ public class EmailService
                 }
             });
 
-            // Order subscription
             await bus.PubSub.SubscribeAsync<OrderModel>("order", async msg =>
             {
                 Console.WriteLine("New order was made.");
@@ -52,7 +49,6 @@ public class EmailService
                 }
             });
 
-            // Event activation subscription
             await bus.PubSub.SubscribeAsync<NotifySubscribers>("event_activated", async msg =>
             {
                 Console.WriteLine($"Event activated: {msg.Dogadjaj.Naziv} from category: {msg.Dogadjaj.Kategorija.Naziv}");

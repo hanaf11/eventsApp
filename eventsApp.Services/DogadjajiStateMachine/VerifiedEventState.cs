@@ -20,44 +20,6 @@ namespace eventsApp.Services.DogadjajiStateMachine
             _notificationService = notificationService;
         }
 
-      /*  public override async Task<Model.Dogadjaji> Activate(int id)
-        {
-            var set =  _context.Set<Database.Dogadjaji>();
-
-            var entity = await set.FindAsync(id);
-
-            entity.Status = "ACTIVE";
-            entity.Created = DateTime.Now;
-
-            await _context.SaveChangesAsync();
-
-            /*var factory = new ConnectionFactory { HostName = "localhost" };
-            using var connection = factory.CreateConnection();
-            using var channel= connection.CreateModel();
-
-            channel.QueueDeclare(queue:"category_subscription",
-                                 durable:false,
-                                 exclusive:false,
-                                 autoDelete:false,
-                                 arguments:null);
-            const string message = "aa";
-            var body = Encoding.UTF8.GetBytes(message);
-
-            channel.BasicPublish(exchange: string.Empty,
-                                 routingKey: "category_subscription",
-                                 basicProperties: null,
-                                 body: body);
-
-            var mappedEntity=_mapper.Map<Model.Dogadjaji>(entity);
-
-            /* using var bus = RabbitHutch.CreateBus("host=localhost");
-             DogadjajActivated message = new DogadjajActivated { Dogadjaj = mappedEntity };
-             bus.PubSub.Publish(message);
-            _notificationService.SendEventActivatedMail(mappedEntity);
-
-            return mappedEntity;
-        }*/
-
         public override async Task<Model.Dogadjaji> SendRequestForTickets(int id, List<KarteRequest> request)
         {
             var set = _context.Set<Database.Dogadjaji>();
@@ -77,7 +39,6 @@ namespace eventsApp.Services.DogadjajiStateMachine
 
         public override List<string> AllowedActions(Database.Dogadjaji entity)
         {
-            // list.Add("GetTickets");
             return new List<string>() { nameof(SendRequestForTickets) };
         }
     }

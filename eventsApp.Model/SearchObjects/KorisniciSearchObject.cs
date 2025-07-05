@@ -10,6 +10,6 @@ namespace eventsApp.Model.SearchObjects
     {
         public bool? IsUlogeIncluded { get; set; }
 
-        public String? Username { get; set; }
+        public string? Username { get; set; }
     }
 }

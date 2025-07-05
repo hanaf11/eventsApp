@@ -14,10 +14,8 @@ namespace eventsApp.Services
 {
     public class TipKarteServiceImpl : BaseService<Model.TipKarte, Model.TipKarte, Database.TipKarte, TipKarteSearchObject>, ITipKarteService
     {
-        private IKarteService _karteService;
-        public TipKarteServiceImpl(EventsDbContext context, IMapper mapper, IKarteService karteService) : base(context, mapper)
+        public TipKarteServiceImpl(EventsDbContext context, IMapper mapper) : base(context, mapper)
         {
-            _karteService = karteService;
         }
 
         public async Task InsertTipKarte(int dogadjajId, List<TipKarteInsertRequest> request)
@@ -81,23 +79,6 @@ namespace eventsApp.Services
             }
             return filteredQuery;
         }
-
-      /*  public async Task<bool> DeleteByDogadjaj(int dogadjajId)
-        {
-            var tipKarteToDelete = await _context.TipKartes.Where(k => k.DogadjajId == dogadjajId).ToListAsync();
-
-            foreach(Database.TipKarte tip in tipKarteToDelete)
-            {
-                bool hasTickets = await _context.Kartes.Where(k => k.TipKarteId == tip.TipKarteId).AnyAsync();
-                if (hasTickets) await _karteService.DeleteByTipKarte(tip.TipKarteId);
-            }
-
-            _context.TipKartes.RemoveRange(tipKarteToDelete);
-
-            await _context.SaveChangesAsync();
-
-            return true;
-        }*/
 
         public async Task<Database.TipKarte> TicketsAvailable(int tipKarteId, int kolicina)
         {

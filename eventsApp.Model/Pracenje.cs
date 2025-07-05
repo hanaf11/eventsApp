@@ -16,6 +16,6 @@ namespace eventsApp.Model
 
         public DateTime Vrijeme { get; set; }
 
-        public virtual Kategorije Kategorija { get; set; } = null!;
+        public Kategorije? Kategorija { get; set; }
     }
 }

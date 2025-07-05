@@ -16,7 +16,7 @@ namespace eventsApp.Model
         public string? Web { get; set; }
         public string Email { get; set; } = null!;
         public string ZiroRacun { get; set; } = null!;
-        public string Napomena { get; set; }
+        public string? Napomena { get; set; }
         public Boolean Status { get; set; }
     }
 }

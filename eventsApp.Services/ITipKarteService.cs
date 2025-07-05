@@ -13,12 +13,9 @@ namespace eventsApp.Services
     {
         public Task InsertTipKarte(int dogadjajId, List<TipKarteInsertRequest> request);
         public Task<Database.TipKarte> FindTip(string naziv, int dogadjajId);
-
         public Task UpdateStanje(Dictionary<string, int> stanje, int dogadjajId);
-        //public Task<bool> DeleteByDogadjaj(int dogadjajId);
         public Task<Database.TipKarte> TicketsAvailable(int tipKarteId, int kolicina);
         public Task UpdateStanjeOduzmi(List<ValidTipKarte> listaKarata);
-
         public Task<Model.Dogadjaji> GetDogadjajByTipKarte(int tipKarteId);
     }
 }

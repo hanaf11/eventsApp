@@ -17,7 +17,6 @@ namespace eventsApp.Services
 
         protected Timer _timer;
 
-       // protected EventsDbContext _context;
 
         public DeactivateEventsService(ILogger<DeactivateEventsService> logger, IServiceProvider serviceProvider)
         {
@@ -33,13 +32,6 @@ namespace eventsApp.Services
             var now = DateTime.Now;
             var targetTime = DateTime.Today.AddDays(1);
             var initialDelay = (targetTime - now).TotalMilliseconds;
-
-            /*var targetTime = DateTime.Today.AddHours(22).AddMinutes(14);
-            if (now > targetTime)
-            {
-                targetTime = targetTime.AddDays(1);
-            }
-            var initialDelay = (targetTime - now).TotalMilliseconds;*/
 
             _timer = new Timer(async state =>
             {

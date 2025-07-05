@@ -11,7 +11,6 @@ namespace eventsApp.Services
     {
         Task<TDetails> Insert(TInsert insert);
         Task<TDetails> Update(int id, TUpdate update);
-
         Task<TDetails> Delete(int id);
     }
 }

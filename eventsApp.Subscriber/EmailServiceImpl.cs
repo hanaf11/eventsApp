@@ -13,8 +13,6 @@ namespace MailingService
         private readonly static string _mail;
         private readonly static string _pass;
         private static readonly SmtpClient client;
-        private static readonly Queue<Func<Task>> eventInFollowingCategoryQueue = new Queue<Func<Task>>();
-        private static bool eventInFollowingCategoryIsProcessing = false;
 
         static EmailServiceImpl()
         {

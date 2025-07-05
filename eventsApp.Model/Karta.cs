@@ -8,9 +8,9 @@ namespace eventsApp.Model
 {
     public class Karta
     {
-        public string Sifra { get; set; }
-        public string Sjediste { get; set; }
-        public TipKarte TipKarte { get; set; }
-     
+        public string Sifra { get; set; } = null!;
+        public string? Sjediste { get; set; }
+        public TipKarte TipKarte { get; set; } = null!;
+
     }
 }

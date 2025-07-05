@@ -22,7 +22,6 @@ namespace eventsApp.Model.Requests
         [Required(ErrorMessage ="Korisnicko ime je obavezno")]
         public string KorisnickoIme { get; set; } = null!;
 
-
         [Required(ErrorMessage = "Adresa je obavezna")]
         public string Adresa { get; set; } = null!;
 
@@ -30,10 +29,10 @@ namespace eventsApp.Model.Requests
 
         [Required(ErrorMessage = "Lozinka je obavezna")]
         [Compare("PasswordPotvrda", ErrorMessage="Lozinke nisu iste")]
-        public string Password { get; set; }
+        public string Password { get; set; } = null!;
 
         [Required(ErrorMessage = "Potvrda lozinke je obavezna")]
-        public string PasswordPotvrda { get; set; }
+        public string PasswordPotvrda { get; set; } = null!;
 
         public int? Uloga { get; set; }
     }

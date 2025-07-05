@@ -28,7 +28,7 @@ namespace eventsApp.Services
 
         public void SendEventActivatedMail(Model.Dogadjaji dogadjaj)
         {
-            List<String> subscribersEmails = _dbContext.Pracenjes.Where(p => p.KategorijaId == dogadjaj.KategorijaId).Select(p => p.Korisnik.Email).ToList();
+            List<string> subscribersEmails = _dbContext.Pracenjes.Where(p => p.KategorijaId == dogadjaj.KategorijaId).Select(p => p.Korisnik.Email).ToList();
 
             foreach (var email in subscribersEmails)
             {

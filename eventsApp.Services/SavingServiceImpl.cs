@@ -97,17 +97,6 @@ namespace eventsApp.Services
             }
         }
 
-        public async Task<bool> DeleteByDogadjaj(int dogadjajId)
-        {
-            var savingsToDelete = _context.Savings.Where(s => s.DogadjajId == dogadjajId);
-
-            _context.Savings.RemoveRange(savingsToDelete);
-
-            await _context.SaveChangesAsync();
-
-            return true;
-        }
-
         public async Task<List<Dictionary<string, object>>> GetMostSavedEvents()
         {
           var queryResult = await _context.Savings.GroupBy(s => s.DogadjajId).Select(group => new

@@ -42,19 +42,13 @@ namespace eventsApp.Services
             CreateMap<Database.TipKarte, Model.TipKarte>();
             CreateMap<Database.Karte, Model.Karta>();
             CreateMap<Model.Requests.NarudzbaInsertRequest, Database.Narudzbe>();
-            // CreateMap<Database.Narudzbe, Model.Narudzbe>();
             CreateMap<Database.Narudzbe, Model.Narudzbe>()
             .ForMember(model => model.KorisnickoIme, source => source.MapFrom(src => src.Korisnik.KorisnickoIme));
             CreateMap<Model.ValidTipKarte, Database.NarudzbaStavke>();
             CreateMap<Database.Karte, Model.Karta>();
-            /* CreateMap<Database.Narudzbe, Model.NarudzbaDetails>()
-            .ForMember(model => model.KorisnickoIme, source => source.MapFrom(src => src.Korisnik.KorisnickoIme));*/
-            /* CreateMap<Database.NarudzbaStavke, Model.StavkeNarudzbe>()
-              .ForMember(model => model.TipKarte, source => source.MapFrom(src => src.TipKarte.Naziv));*/
             CreateMap<Database.NarudzbaStavke, Model.StavkeNarudzbe>()
      .ForMember(model => model.TipKarte, source => source.MapFrom(src => src.TipKarte.Naziv))
      .ForMember(model => model.Dogadjaj, source => source.MapFrom(src => src.TipKarte.Dogadjaj.Naziv));
-
             CreateMap<Model.KorisniciUloge, Database.KorisniciUloge>();
             CreateMap<Database.KorisniciUloge, Model.KorisniciUloge>();
             CreateMap<Database.Uloge, Model.Uloge>();

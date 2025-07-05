@@ -92,8 +92,6 @@ namespace eventsApp.Services
 
                 await BeforeDelete(entity);
 
-            // set.Remove(entity);
-
             if (RequiresSoftDelete(entity))
             {
                 ApplySoftDelete(entity);

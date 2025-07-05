@@ -13,8 +13,6 @@ namespace eventsApp.Services
     {
         Task<PagedResult<Model.Komentari>> Post(KomentarInsertObject insert);
 
-        Task<bool> DeleteByDogadjaj(int dogadjajId);
-
         public Task<List<Dictionary<string, object>>> GetMostActiveUsers();
     }
 }
