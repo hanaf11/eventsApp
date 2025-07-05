@@ -12,12 +12,17 @@ namespace MailingService
 
         private readonly static string _mail;
         private readonly static string _pass;
+        private readonly static string _host;
+        private readonly static int _port;
         private static readonly SmtpClient client;
 
         static EmailServiceImpl()
         {
             _mail = Environment.GetEnvironmentVariable("MAIL") ?? string.Empty;
             _pass = Environment.GetEnvironmentVariable("MAIL_PASS") ?? string.Empty;
+            _host = Environment.GetEnvironmentVariable("SMTP_HOST") ?? string.Empty;
+            var portStr = Environment.GetEnvironmentVariable("SMTP_PORT") ?? string.Empty;
+            _port = !string.IsNullOrWhiteSpace(portStr) ? int.Parse(portStr) : 0;
             if (string.IsNullOrWhiteSpace(_mail))
             {
                 throw new InvalidOperationException("Email configuration is missing. Please set the 'MAIL' environment variable.");
@@ -28,8 +33,18 @@ namespace MailingService
                 throw new InvalidOperationException("Email password configuration is missing. Please set the 'MAIL_PASS' environment variable.");
             }
 
-            client = new SmtpClient("smtp.gmail.com", 587)
+            if (string.IsNullOrWhiteSpace(_host))
             {
+                throw new InvalidOperationException("SMTP host configuration is missing. Please set the 'SMTP_HOST' environment variable.");
+            }
+
+            if (_port==0)
+            {
+                throw new InvalidOperationException("SMTP port configuration is missing. Please set the 'SMTP_PORT' environment variable.");
+            }
+
+             client = new SmtpClient(_host, _port)
+                {
                 EnableSsl = true,
                 UseDefaultCredentials = false,
                 Credentials = new NetworkCredential(_mail, _pass),

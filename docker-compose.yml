@@ -50,6 +50,8 @@ services:
       - RABBITMQ_CONNECTIONSTRING=${RABBITMQ_CONNECTIONSTRING}
       - MAIL=${MAIL}
       - MAIL_PASS=${MAIL_PASS}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
     depends_on:
       rabbitmq:
         condition: service_healthy
