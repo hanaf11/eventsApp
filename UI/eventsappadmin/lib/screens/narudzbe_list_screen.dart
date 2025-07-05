@@ -1,20 +1,14 @@
 import 'dart:convert';
 
 import 'package:eventsappadmin/models/narudzba.dart';
-import 'package:eventsappadmin/providers/dogadjaj_provider.dart';
 import 'package:eventsappadmin/providers/narudzba_provider.dart';
-import 'package:eventsappadmin/screens/dogadjaj_details_screen.dart';
 import 'package:eventsappadmin/screens/narudzba_details_screen.dart';
 import 'package:eventsappadmin/utils/style_util.dart';
 import 'package:eventsappadmin/utils/util.dart';
 import 'package:eventsappadmin/widgets/master_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../models/dogadjaj.dart';
-import '../models/korisnik.dart';
 import '../models/search_result.dart';
-import '../providers/korisnik_provider.dart';
 import '../widgets/searchField.dart';
 
 class NarudzbeListScreen extends StatefulWidget {
@@ -60,16 +54,15 @@ class _NarudzbeListScreenState extends State<NarudzbeListScreen>
     }
   }
 
-  getNarudzbe() async {
+  Future<void> getNarudzbe() async {
     var data = await _narudzbaProvider.get(filter: {'OrderBy': '-Datum'});
     setState(() {
       result = data;
       isLoading = false;
     });
-    print(result?.result);
   }
 
-  search() async {
+  Future<void> search() async {
     var data = await _narudzbaProvider.get(filter: {
       'Username': _usernameController.text,
       'BrojNarudzbe': _brNarudzbeController.text,
@@ -174,7 +167,7 @@ class _NarudzbeListScreenState extends State<NarudzbeListScreen>
         ));
   }
 
-  _buildNarudzbaDetails(int narudzbaId) {
+  void _buildNarudzbaDetails(int narudzbaId) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -242,19 +235,6 @@ class _NarudzbeListScreenState extends State<NarudzbeListScreen>
         );
       },
     );
-  }
-}
-
-Image _buildProfilna(String? img) {
-  if (img == null || img == "") {
-    return Image.asset('assets/images/blankprofile.jpg', fit: BoxFit.cover);
-  } else {
-    try {
-      Image slika = Image.memory(base64Decode(img), fit: BoxFit.cover);
-      return slika;
-    } on Exception catch (e) {
-      return Image.asset('assets/images/blankprofile.jpg', fit: BoxFit.cover);
-    }
   }
 }
 

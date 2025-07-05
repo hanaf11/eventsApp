@@ -1,20 +1,14 @@
-import 'dart:convert';
-
 import 'package:eventsappadmin/models/korisnik_global.dart';
 import 'package:eventsappadmin/models/uloga.dart';
-import 'package:eventsappadmin/providers/dogadjaj_provider.dart';
 import 'package:eventsappadmin/providers/uloga_provider.dart';
-import 'package:eventsappadmin/screens/dogadjaj_details_screen.dart';
 import 'package:eventsappadmin/screens/korisnik_details_screen.dart';
 import 'package:eventsappadmin/utils/style_util.dart';
-import 'package:eventsappadmin/utils/util.dart';
 import 'package:eventsappadmin/widgets/master_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:provider/provider.dart';
 import 'package:country_picker/country_picker.dart';
-import '../models/dogadjaj.dart';
 import '../models/korisnik.dart';
 import '../models/search_result.dart';
 import '../providers/korisnik_provider.dart';
@@ -61,7 +55,7 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
     }
   }
 
-  getKorisnici() async {
+  Future<void> getKorisnici() async {
     var data = await _korisnikProvider.get();
     setState(() {
       result = data;
@@ -70,7 +64,7 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
     handleLoading();
   }
 
-  getUloge() async {
+  Future<void> getUloge() async {
     var data = await _ulogaProvider.get();
     setState(() {
       _ulogeList = data.result;
@@ -79,7 +73,7 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
     handleLoading();
   }
 
-  handleLoading() {
+  void handleLoading() {
     if (isKorisniciLoading == false && isUlogeLoading == false) {
       setState(() {
         isLoading = false;
@@ -87,7 +81,7 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
     }
   }
 
-  search() async {
+  Future<void> search() async {
     var data = await _korisnikProvider.get(filter: {
       'Username': _usernameController.text,
     });
@@ -118,7 +112,7 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
     );
   }
 
-  handleSuccess(String msg) {
+  void handleSuccess(String msg) {
     showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
@@ -136,7 +130,7 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
             ));
   }
 
-  handleException(Exception e) {
+  void handleException(Exception e) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -152,7 +146,7 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
     );
   }
 
-  addUser() {
+  void addUser() {
     bool canAccess = KorisnikGlobal.uloge?.contains("Admin") ?? false;
     if (canAccess) {
       showDialog<String>(
@@ -295,13 +289,8 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
             TextButton(
               onPressed: () async {
                 if (_userFormKey.currentState?.saveAndValidate() ?? false) {
-                  print("validno");
-                  print(_userFormKey.currentState?.value);
-
                   Korisnik request =
                       Korisnik.fromJson(_userFormKey.currentState!.value);
-                  print("request je");
-                  print(request.ime);
                   try {
                     await _korisnikProvider.insert(request).then((value) =>
                         handleSuccess("Uspješno dodan novi korisnik"));
@@ -321,7 +310,7 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
     }
   }
 
-  _buildCountryInput() {
+  InkWell _buildCountryInput() {
     return InkWell(
         child: IgnorePointer(
             child: SizedBox(
@@ -346,7 +335,7 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
         });
   }
 
-  _buildRoleInput() {
+  InputField _buildRoleInput() {
     return InputField(
       name: 'Uloga:',
       field: FormBuilderDropdown<int>(
@@ -423,17 +412,6 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
                 addUser();
               },
             ),
-
-            /* InputField(
-              name: "",
-              field: IconButton(
-                icon: const Icon(Icons.add),
-                tooltip: 'Dodaj novog korisnika',
-                onPressed: () {
-                  addUser();
-                },
-              ),
-            ),*/
           ],
         ),
       ),
@@ -504,12 +482,6 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
                                   },
                                 );
                               },
-                              /* onPressed: () {
-                                Navigator.pop(context, 'Potvrdi');
-                                _korisnikProvider
-                                    .delete(korisnikId)
-                                    .then((value) => search());
-                              },*/
                               child: const Text('Potvrdi'),
                             ),
                           ],
@@ -529,7 +501,7 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
     );
   }
 
-  _buildKorisnikDetails(int korisnikId) {
+  void _buildKorisnikDetails(int korisnikId) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -543,190 +515,6 @@ class _KorisniciListScreenState extends State<KorisniciListScreen>
         ],
       ),
     );
-
-    /* showDialog<String>(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-              title: Text('Detalji o korisniku', style: h2),
-              content: isLoading
-                  ? const CircularProgressIndicator()
-                  : Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 15),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                  height: 80,
-                                  width: 80,
-                                  margin: const EdgeInsets.only(right: 20),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(50)),
-                                  child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(50),
-                                      child: k != null
-                                          ? _buildProfilna(k.slika)
-                                          : Image.asset(
-                                              "assets/images/blankprofile.jpg",
-                                              fit: BoxFit.cover))),
-                              Container(
-                                  width: 250,
-                                  alignment: Alignment.topLeft,
-                                  //color: Colors.red,
-                                  child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "${k?.ime} ${k?.prezime}",
-                                        textAlign: TextAlign.left,
-                                        style: TextStyle(
-                                            color: const Color.fromARGB(
-                                                255, 71, 70, 70),
-                                            fontSize: 22,
-                                            fontWeight: FontWeight.w600),
-                                      ),
-                                      Text("@${k?.korisnickoIme}",
-                                          textAlign: TextAlign.left,
-                                          style: TextStyle(
-                                              color: const Color.fromARGB(
-                                                  255, 90, 89, 89),
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w300)),
-                                      Text("${k?.email}",
-                                          textAlign: TextAlign.left,
-                                          style: TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w300))
-                                    ],
-                                  ))
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text("Adresa:",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: const Color.fromARGB(
-                                                    255, 71, 70, 70),
-                                                fontSize: 16)),
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text("${k?.adresa}, ${k?.drzava}",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w300,
-                                                color: Colors.grey,
-                                                fontSize: 16))
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        Text("Telefon:",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: const Color.fromARGB(
-                                                    255, 71, 70, 70),
-                                                fontSize: 16)),
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text("${k?.telefon}",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w300,
-                                                color: Colors.grey,
-                                                fontSize: 16))
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        Text("Status:",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: const Color.fromARGB(
-                                                    255, 71, 70, 70),
-                                                fontSize: 16)),
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text(
-                                            k?.status == true
-                                                ? "Aktivan"
-                                                : "Deaktiviran",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w300,
-                                                color: Colors.grey,
-                                                fontSize: 16))
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        Text("Račun kreiran:",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: const Color.fromARGB(
-                                                    255, 71, 70, 70),
-                                                fontSize: 16)),
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text(
-                                            "${k?.created.day}.${k?.created.month}.${k?.created.year}.",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w300,
-                                                color: Colors.grey,
-                                                fontSize: 16))
-                                      ],
-                                    )
-                                  ])
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 30,
-                          ),
-                          Row(children: [
-                            Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text("Narudžbe",
-                                      textAlign: TextAlign.start, style: h2),
-                                  const Divider(
-                                    color: Color.fromARGB(255, 145, 145, 145),
-                                    height: 5,
-                                    thickness: 0.7,
-                                  ),
-                                  k?.narudzbes == null || k!.narudzbes!.isEmpty
-                                      ? const Text(
-                                          "Korisnik nije izvršio nijednu narudžbu.",
-                                          textAlign: TextAlign.left,
-                                        )
-                                      : const Text("ima nesto")
-                                ]),
-                          ])
-                        ],
-                      )),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => Navigator.pop(context, 'Zatvori'),
-                  child: const Text('Zatvori'),
-                ),
-              ],
-            ));*/
   }
 }
 

@@ -33,7 +33,7 @@ class _NarudzbaDetailsScreenState extends State<NarudzbaDetailsScreen> {
     getNarudzbaDetails();
   }
 
-  getNarudzbaDetails() async {
+  Future<void> getNarudzbaDetails() async {
     var data = await _narudzbaProvider.getById(widget.narudzbaId);
     setState(() {
       narudzba = data;
@@ -50,7 +50,7 @@ class _NarudzbaDetailsScreenState extends State<NarudzbaDetailsScreen> {
     });
   }
 
-  handleLoading() {
+  void handleLoading() {
     if (isNarudzbaLoading == false && isStavkeLoading == false) {
       setState(() {
         isLoading = false;
@@ -76,43 +76,43 @@ class _NarudzbaDetailsScreenState extends State<NarudzbaDetailsScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text("Broj narudžbe:", style: _boldStyle),
+                                Text("Broj narudžbe:", style: boldStyle),
                                 Text(narudzba?.brojNarudzbe ?? "",
-                                    style: _myTextStyle),
+                                    style: myTextStyle),
                               ],
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text("Datum:", style: _boldStyle),
+                                Text("Datum:", style: boldStyle),
                                 Text(
                                   "${narudzba!.datum?.day}.${narudzba!.datum?.month}.${narudzba!.datum?.year}.",
-                                  style: _myTextStyle,
+                                  style: myTextStyle,
                                 ),
                               ],
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text("Tip:", style: _boldStyle),
-                                Text(narudzba?.tip ?? "", style: _myTextStyle),
+                                Text("Tip:", style: boldStyle),
+                                Text(narudzba?.tip ?? "", style: myTextStyle),
                               ],
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text("Cijena:", style: _boldStyle),
+                                Text("Cijena:", style: boldStyle),
                                 Text(formatCijena(narudzba?.cijena ?? 0),
-                                    style: _myTextStyle),
+                                    style: myTextStyle),
                               ],
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text("Korisnik koji je napravio narudžbu:",
-                                    style: _boldStyle),
+                                    style: boldStyle),
                                 Text(narudzba!.korisnickoIme ?? "",
-                                    style: _myTextStyle),
+                                    style: myTextStyle),
                               ],
                             ),
                             const SizedBox(height: 30),
@@ -121,7 +121,7 @@ class _NarudzbaDetailsScreenState extends State<NarudzbaDetailsScreen> {
                             const SizedBox(height: 20),
                             Text("Stavke narudžbe", style: h2),
                             Text(_stavke[0].dogadjaj ?? '',
-                                style: _myTextStyle),
+                                style: myTextStyle),
                             Divider(
                               color: const Color.fromARGB(255, 145, 145, 145),
                               thickness: 0.7,
@@ -129,7 +129,7 @@ class _NarudzbaDetailsScreenState extends State<NarudzbaDetailsScreen> {
                             _stavke.isEmpty
                                 ? Text(
                                     "Nema stavki u narudžbi.",
-                                    style: _myTextStyle,
+                                    style: myTextStyle,
                                   )
                                 : Column(
                                     children:
@@ -139,10 +139,10 @@ class _NarudzbaDetailsScreenState extends State<NarudzbaDetailsScreen> {
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(stavka.tipKarte ?? "",
-                                              style: _myTextStyle),
+                                              style: myTextStyle),
                                           Text(
                                               "${stavka.kolicina} x ${formatCijena(stavka.cijena)}",
-                                              style: _myTextStyle),
+                                              style: myTextStyle),
                                         ],
                                       );
                                     }).toList(),
@@ -154,11 +154,6 @@ class _NarudzbaDetailsScreenState extends State<NarudzbaDetailsScreen> {
     );
   }
 
-  TextStyle _myTextStyle = TextStyle(
-      color: Color.fromRGBO(60, 71, 92, 1),
-      fontSize: 15,
-      fontFamily: 'Montserrat',
-      letterSpacing: 0.3);
 
   _buildLicniPodaci() {
     return Column(
@@ -176,50 +171,26 @@ class _NarudzbaDetailsScreenState extends State<NarudzbaDetailsScreen> {
         ),
         Text(
           narudzba?.adresa ?? '',
-          style: _myTextStyle,
+          style: myTextStyle,
         ),
         Text(
           "${narudzba?.postanskiBroj} ${narudzba?.grad}",
-          style: _myTextStyle,
+          style: myTextStyle,
         ),
         Text(
           "${narudzba?.drzava}",
-          style: _myTextStyle,
+          style: myTextStyle,
         ),
         Text(
           "${narudzba?.telefon}",
-          style: _myTextStyle,
+          style: myTextStyle,
         ),
         Text(
           "${narudzba?.email}",
-          style: _myTextStyle,
+          style: myTextStyle,
         ),
       ],
     );
   }
 
-  TextStyle get _boldStyle => TextStyle(
-        fontWeight: FontWeight.bold,
-        color: const Color.fromARGB(255, 71, 70, 70),
-        fontSize: 16,
-      );
-
-  /*TextStyle get _regularStyle => TextStyle(
-        fontWeight: FontWeight.w300,
-        color: Colors.grey,
-        fontSize: 16,
-      );*/
-
-  Widget _userDetailRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 5),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label, style: _boldStyle),
-          Text(value, style: _myTextStyle),
-        ],
-      ),
-    );
-  }
 }

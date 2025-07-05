@@ -1,20 +1,16 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-
 import 'package:eventsappadmin/models/narudzbe_report_response.dart';
 import 'package:eventsappadmin/providers/narudzba_provider.dart';
 import 'package:eventsappadmin/widgets/master_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:graphic/graphic.dart';
-import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:provider/provider.dart';
-
-final _monthDayFormat = DateFormat('MM-dd');
 
 class NarudzbeIzvjestajScreen extends StatefulWidget {
   int? selected = 6;
@@ -43,7 +39,7 @@ class _NarudzbeIzvjestajScreenState extends State<NarudzbeIzvjestajScreen> {
     getData();
   }
 
-  getData() async {
+  Future<void> getData() async {
     var data = await _narudzbaProvider.getReportData(filter: {
       'NumOfOrders': widget.options[0],
       'Revenue': widget.options[1],
@@ -57,7 +53,6 @@ class _NarudzbeIzvjestajScreenState extends State<NarudzbeIzvjestajScreen> {
   }
 
   Future<Uint8List> _captureWidgetAsImage(GlobalKey key) async {
-    // find the RenderRepaintBoundary
     RenderRepaintBoundary boundary =
         key.currentContext!.findRenderObject() as RenderRepaintBoundary;
 
@@ -67,7 +62,6 @@ class _NarudzbeIzvjestajScreenState extends State<NarudzbeIzvjestajScreen> {
   }
 
   Future<void> exportPdf() async {
-    print("export kliknut");
     try {
       final pdf = pw.Document();
 
@@ -89,7 +83,6 @@ class _NarudzbeIzvjestajScreenState extends State<NarudzbeIzvjestajScreen> {
           build: (context) {
             List<pw.Widget> widgets = [];
 
-            // Add the header
             widgets.add(
               pw.Center(
                   child: pw.Text(
@@ -101,13 +94,13 @@ class _NarudzbeIzvjestajScreenState extends State<NarudzbeIzvjestajScreen> {
               )),
             );
             widgets.add(
-                pw.SizedBox(height: 20)); // Space between header and content
+                pw.SizedBox(height: 20)); 
 
             // Add the charts
             for (var chart in chartImagesList) {
               widgets.add(pw.Center(child: pw.Image(chart)));
               widgets
-                  .add(pw.SizedBox(height: 20)); // Add spacing between charts
+                  .add(pw.SizedBox(height: 20)); 
             }
 
             return widgets;
@@ -115,7 +108,6 @@ class _NarudzbeIzvjestajScreenState extends State<NarudzbeIzvjestajScreen> {
         ),
       );
 
-      // Save or share the PDF
       final outputDir = await getDownloadsDirectory();
       if (outputDir == null) {
         throw Exception("Error: Downloads directory could not be found");
@@ -141,7 +133,6 @@ class _NarudzbeIzvjestajScreenState extends State<NarudzbeIzvjestajScreen> {
       ),
     );
     }
-    // Optionally open the file or inform the user
     catch (e) {
       print("Error while exporting PDF: $e");
     }
@@ -211,7 +202,7 @@ class _NarudzbeIzvjestajScreenState extends State<NarudzbeIzvjestajScreen> {
                         ])))));
   }
 
-  _buildNumOfOrders() {
+  Column _buildNumOfOrders() {
     return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
       Text("Broj narudžbi u zadnjih mjesec dana",
           style: TextStyle(
@@ -221,7 +212,6 @@ class _NarudzbeIzvjestajScreenState extends State<NarudzbeIzvjestajScreen> {
           )),
       Container(
         margin: const EdgeInsets.only(top: 10),
-        //  width: 350,
         height: 300,
         child: Chart(
           data: result!.numOfOrders!,
@@ -280,7 +270,7 @@ class _NarudzbeIzvjestajScreenState extends State<NarudzbeIzvjestajScreen> {
     ]);
   }
 
-  _buildRevenue() {
+  Column _buildRevenue() {
     return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
       Text("Zarada u zadnjih mjesec dana",
           style: TextStyle(
@@ -290,7 +280,6 @@ class _NarudzbeIzvjestajScreenState extends State<NarudzbeIzvjestajScreen> {
           )),
       Container(
         margin: const EdgeInsets.only(top: 10),
-        //  width: 350,
         height: 300,
         child: Chart(
           data: result!.revenue!,
@@ -349,7 +338,7 @@ class _NarudzbeIzvjestajScreenState extends State<NarudzbeIzvjestajScreen> {
     ]);
   }
 
-  _buildNumOfSoldTickets() {
+  Column _buildNumOfSoldTickets() {
     return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
       Text("Broj prodanih karata u zadnjih mjesec dana",
           style: TextStyle(
@@ -359,7 +348,6 @@ class _NarudzbeIzvjestajScreenState extends State<NarudzbeIzvjestajScreen> {
           )),
       Container(
         margin: const EdgeInsets.only(top: 10),
-        //  width: 350,
         height: 300,
         child: Chart(
           data: result!.numOfSoldTickets!,
@@ -418,7 +406,7 @@ class _NarudzbeIzvjestajScreenState extends State<NarudzbeIzvjestajScreen> {
     ]);
   }
 
-  _buildMostSoldEvents() {
+  Column _buildMostSoldEvents() {
     return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
       Text("Top 3 događaja s najviše prodanih karata",
           style: TextStyle(
@@ -428,7 +416,6 @@ class _NarudzbeIzvjestajScreenState extends State<NarudzbeIzvjestajScreen> {
           )),
       Container(
         margin: const EdgeInsets.only(top: 10),
-        //    width: 350,
         height: 300,
         child: Chart(
           data: result!.mostSoldEvents!,

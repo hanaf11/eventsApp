@@ -1,9 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
-import 'dart:typed_data';
 import 'package:intl/intl.dart';
-import 'dart:convert';
-import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
@@ -17,10 +14,6 @@ class ImageObj {
   String? base64Image;
 
   ImageObj(this.image, this.base64Image);
-  /* {
-    image = image;
-    base64Image = base64image;
-  }*/
 }
 
 String formErrorMessage(dynamic jsonResponse) {
@@ -52,15 +45,6 @@ Image imageFromBase64String(String? base64Image) {
   return Image.asset('assets/images/no_picture.jpg', fit: BoxFit.cover);
 }
 
-String formatNumber(dynamic) {
-  var f = NumberFormat("###,00");
-
-  if (dynamic == null) {
-    return "";
-  }
-  return f.format(dynamic);
-}
-
 String formatCijena(dynamic) {
   var f = NumberFormat("###.00");
   if (dynamic == null) return "";
@@ -84,28 +68,6 @@ String printDate(DateTime? date) {
 ImageObj defaultImg =
     ImageObj(Image.asset('assets/images/empty.jpg', fit: BoxFit.cover), null);
 
-/*ImageObj loadImageFromMemory(String? imgBytes) {
-  if (imgBytes == null) return defaultImg; // Check if the image bytes are null
-  ImageObj img = defaultImg;
-
-  try {
-    // Attempt to decode the image
-    img = ImageObj(
-      Image.memory(
-        base64Decode(imgBytes),
-        fit: BoxFit.cover,
-      ),
-      imgBytes,
-    );
-  } catch (e) {
-    // In case of any exception, log the error and return the default image
-    print("Exception occurred while loading image: $e");
-    img = defaultImg;
-  }
-
-  print("Sending base64 image: ${img.base64Image}");
-  return img;
-}*/
 
 ImageObj loadImageFromMemory(String? imgBytes) {
   if (imgBytes == null || imgBytes.isEmpty) return defaultImg;

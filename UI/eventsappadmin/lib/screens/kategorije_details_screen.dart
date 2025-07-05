@@ -50,7 +50,6 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
   final _podkategorijaFormKey = GlobalKey<FormBuilderState>();
   Map<String, dynamic> _initialValue = {};
   String? _slikaError;
-
   late KategorijaProvider kategorijaProvider;
   late PodkategorijaProvider podkategorijaProvider;
 
@@ -80,7 +79,7 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
     }
   }
 
-  handleException(Exception e) {
+  void handleException(Exception e) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -96,7 +95,7 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
     );
   }
 
-  checkCustomValidations() {
+  bool checkCustomValidations() {
     if (slika.base64Image == null) {
       setState(
         () {
@@ -109,7 +108,7 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
     return true;
   }
 
-  getPodkategorije(int kategorijaId) async {
+  Future<void> getPodkategorije(int kategorijaId) async {
     var data = await podkategorijaProvider.get(filter: {
       'KategorijaId': kategorijaId,
     });
@@ -118,7 +117,7 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
     });
   }
 
-  deletePodkategorija(Podkategorija e) {
+  void deletePodkategorija(Podkategorija e) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -149,7 +148,7 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
     );
   }
 
-  savePodkategorija(int? id) async {
+  Future<void> savePodkategorija(int? id) async {
     if (_podkategorijaFormKey.currentState?.saveAndValidate() ?? false) {
       var request = Map.from(_podkategorijaFormKey.currentState!.value);
       request['KategorijaId'] = widget.selectedKategorija?.kategorijaId ?? 0;
@@ -437,7 +436,7 @@ class _KategorijeDetailsScreenState extends State<KategorijeDetailsScreen>
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.79, // Full-width table
+        width: MediaQuery.of(context).size.width * 0.79, 
         child: PaginatedDataTable(
           header: const Text('Podkategorije'),
           columns: [

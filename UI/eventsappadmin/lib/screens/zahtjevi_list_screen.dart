@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:eventsappadmin/models/tipkarte.dart';
 import 'package:eventsappadmin/providers/dogadjaj_provider.dart';
 import 'package:eventsappadmin/providers/tipkarte_provider.dart';
@@ -7,12 +5,9 @@ import 'package:eventsappadmin/screens/dogadjaj_details_screen.dart';
 import 'package:eventsappadmin/utils/util.dart';
 import 'package:eventsappadmin/widgets/input_widget.dart';
 import 'package:eventsappadmin/widgets/master_screen.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../models/dogadjaj.dart';
-import '../models/search_result.dart';
 
 class ZahtjeviListScreen extends StatefulWidget {
   int? selected = 1;
@@ -20,7 +15,6 @@ class ZahtjeviListScreen extends StatefulWidget {
 
   @override
   State<ZahtjeviListScreen> createState() =>
-      // ignore: no_logic_in_create_state
       _ZahtjeviListScreenState(selected: selected);
 }
 
@@ -48,7 +42,7 @@ class _ZahtjeviListScreenState extends State<ZahtjeviListScreen> {
     getZahtjevi();
   }
 
-  handleLoading() {
+  void handleLoading() {
     if (zahtjeviLoaded && verifiedLoaded) {
       setState(() {
         _isLoading = false;
@@ -56,11 +50,11 @@ class _ZahtjeviListScreenState extends State<ZahtjeviListScreen> {
     }
   }
 
-  getZahtjevi() async {
-    var _zahtjeviResult = await _dogadjajProvider
+  Future<void> getZahtjevi() async {
+    var zahtjeviResult = await _dogadjajProvider
         .get(filter: {'Status': 'DRAFT', 'DatumOd': DateTime.now()});
     setState(() {
-      _zahtjeviList = _zahtjeviResult.result;
+      _zahtjeviList = zahtjeviResult.result;
       zahtjeviLoaded = true;
       handleLoading();
     });
@@ -68,26 +62,26 @@ class _ZahtjeviListScreenState extends State<ZahtjeviListScreen> {
     loadVerifiedEvents();
   }
 
-  loadVerifiedEvents() async {
+  Future<void> loadVerifiedEvents() async {
     setState(() {
       verifiedLoaded = false;
     });
-    var _verifiedResult = await _dogadjajProvider.findVerified();
+    var verifiedResult = await _dogadjajProvider.findVerified();
     setState(() {
-      _verifiedList = _verifiedResult.result;
+      _verifiedList = verifiedResult.result;
       verifiedLoaded = true;
       handleLoading();
     });
   }
 
-  openZahtjev(int dogadjajId) {
+  void openZahtjev(int dogadjajId) {
     Navigator.of(context).push(MaterialPageRoute(
       builder: (context) => DogadjajiDetailsScreen(
           dogadjajId: dogadjajId, zahtjev: true, refresh: getZahtjevi),
     ));
   }
 
-  handleException(Exception e) {
+   handleException(Exception e) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -103,10 +97,7 @@ class _ZahtjeviListScreenState extends State<ZahtjeviListScreen> {
     );
   }
 
-  sendRequestForTickets() {
-    print("selected verified ${_selectedVerified}");
-
-    print("moji rows $rows");
+  void sendRequestForTickets() {
     List<KarteRequest> karteList = rows?.map((tip) {
           return KarteRequest(
               Naziv: tip.tipKarteController.text,
@@ -115,7 +106,6 @@ class _ZahtjeviListScreenState extends State<ZahtjeviListScreen> {
               NumerisanjeSjedista: tip.numerisanjeSjedista);
         }).toList() ??
         [];
-    print("moji kartelist $karteList");
 
     _dogadjajProvider
         .sendRequestForTickets(_selectedVerified!.dogadjajId!, karteList)
@@ -142,30 +132,17 @@ class _ZahtjeviListScreenState extends State<ZahtjeviListScreen> {
             ));
   }
 
-  /*onSelectedChanged(bool selected){
-    {
-                                    if (selected == true) {
-                                      setState(() {
-                                        _selectedVerified = e;
-                                      });
-                                    }
-                                  }
-  }*/
 
-  onSendPressed(Dogadjaj e) async {
-    print("uslo u send pressed");
-    print("saljem stauts ${e.status}");
+  Future<void> onSendPressed(Dogadjaj e) async {
     if (calculateWhetherEnabled(e.status)) {
-      print("izvrsava se");
       setState(() {
         _selectedVerified = e;
       });
-      print("selected verified $_selectedVerified");
+
       await _tipkarteProvider.get(
           filter: {'DogadjajId': _selectedVerified?.dogadjajId}).then((val) {
         setState(() {
           tipovi = val.result;
-          print(tipovi);
           tipKarteLoaded = true;
           rows = tipovi?.map((tip) {
             return RowData(
@@ -380,13 +357,11 @@ class _ZahtjeviListScreenState extends State<ZahtjeviListScreen> {
     });
   }
 
-  calculateWhetherEnabled(status) {
-    print(status);
+  bool calculateWhetherEnabled(status) {
     return status != null && status == 'VERIFIED';
   }
 
   Future<void> _openPopup(Dogadjaj dog) async {
-    print("open popup");
     setState(() {
       _selectedVerified = dog;
     });
@@ -443,7 +418,7 @@ class _ZahtjeviListScreenState extends State<ZahtjeviListScreen> {
     );
   }
 
-  _buildRows() {
+  Column _buildRows() {
     return Column(
       children: rows?.map((rowData) {
             return Container(
@@ -459,7 +434,6 @@ class _ZahtjeviListScreenState extends State<ZahtjeviListScreen> {
                     ),
                   ),
                   SizedBox(width: 10),
-                  // Cijena input
                   Flexible(
                     flex: 1,
                     child: InputWidget(
@@ -470,7 +444,6 @@ class _ZahtjeviListScreenState extends State<ZahtjeviListScreen> {
                     ),
                   ),
                   SizedBox(width: 10),
-                  // Količina input
                   Flexible(
                     flex: 1,
                     child: InputWidget(

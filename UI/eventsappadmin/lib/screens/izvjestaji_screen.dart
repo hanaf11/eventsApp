@@ -49,7 +49,7 @@ class _IzvjestajiScreenState extends State<IzvjestajiScreen> {
 
   _IzvjestajiScreenState();
 
-  _onItemTapped(int index) {
+  void _onItemTapped(int index) {
     setState(() {
       _selectedCard = index;
       optionsValues =
@@ -160,7 +160,6 @@ class _IzvjestajiScreenState extends State<IzvjestajiScreen> {
                         child: ElevatedButton(
                             style: buttonPrimary,
                             onPressed: () {
-                              print("selected ${_selectedReports}");
                               if (_selectedReports.isEmpty) {
                                 showDialog<String>(
                                   context: context,
@@ -179,7 +178,6 @@ class _IzvjestajiScreenState extends State<IzvjestajiScreen> {
                                   ),
                                 );
                               } else {
-                                print(optionsValues);
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
                                       builder: (context) => getReportScreen()),

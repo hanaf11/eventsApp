@@ -27,7 +27,6 @@ class _KorisniciIzvjestajScreenState extends State<KorisniciIzvjestajScreen> {
   late KorisnikProvider _korisnikProvider;
   KorisniciReportResponse? result;
   bool isLoading = true;
-
   final GlobalKey _numberOfRegisteredKey = GlobalKey();
   final GlobalKey _mostOrdersUsersKey = GlobalKey();
   final GlobalKey _mostActiveUsersKey = GlobalKey();
@@ -42,7 +41,7 @@ class _KorisniciIzvjestajScreenState extends State<KorisniciIzvjestajScreen> {
     getData();
   }
 
-  getData() async {
+  Future<void> getData() async {
     var data = await _korisnikProvider.getReportData(filter: {
       'NumberOfRegistered': widget.options[0],
       'MostOrdersUsers': widget.options[1],
@@ -56,7 +55,6 @@ class _KorisniciIzvjestajScreenState extends State<KorisniciIzvjestajScreen> {
   }
 
   Future<Uint8List> _captureWidgetAsImage(GlobalKey key) async {
-    // find the RenderRepaintBoundary
     RenderRepaintBoundary boundary =
         key.currentContext!.findRenderObject() as RenderRepaintBoundary;
 
@@ -66,7 +64,6 @@ class _KorisniciIzvjestajScreenState extends State<KorisniciIzvjestajScreen> {
   }
 
   Future<void> exportPdf() async {
-    print("export kliknut");
     try {
       final pdf = pw.Document();
 
@@ -89,8 +86,6 @@ class _KorisniciIzvjestajScreenState extends State<KorisniciIzvjestajScreen> {
         pw.MultiPage(
           build: (context) {
             List<pw.Widget> widgets = [];
-
-            // Add the header
             widgets.add(
               pw.Center(
                   child: pw.Text(
@@ -102,13 +97,12 @@ class _KorisniciIzvjestajScreenState extends State<KorisniciIzvjestajScreen> {
               )),
             );
             widgets.add(
-                pw.SizedBox(height: 20)); // Space between header and content
+                pw.SizedBox(height: 20)); 
 
-            // Add the charts
             for (var chart in chartImagesList) {
               widgets.add(pw.Center(child: pw.Image(chart)));
               widgets
-                  .add(pw.SizedBox(height: 20)); // Add spacing between charts
+                  .add(pw.SizedBox(height: 20)); 
             }
 
             return widgets;
@@ -116,7 +110,6 @@ class _KorisniciIzvjestajScreenState extends State<KorisniciIzvjestajScreen> {
         ),
       );
 
-      // Save or share the PDF
       final outputDir = await getDownloadsDirectory();
       if (outputDir == null) {
         throw Exception("Error: Downloads directory could not be found");
@@ -142,7 +135,6 @@ class _KorisniciIzvjestajScreenState extends State<KorisniciIzvjestajScreen> {
       ),
     );
     }
-    // Optionally open the file or inform the user
     catch (e) {
       print("Error while exporting PDF: $e");
     }
@@ -223,7 +215,6 @@ class _KorisniciIzvjestajScreenState extends State<KorisniciIzvjestajScreen> {
           )),
       Container(
         margin: const EdgeInsets.only(top: 10),
-        //  width: 350,
         height: 300,
         child: Chart(
           data: result!.numberOfRegistered!,
@@ -292,7 +283,6 @@ class _KorisniciIzvjestajScreenState extends State<KorisniciIzvjestajScreen> {
           )),
       Container(
         margin: const EdgeInsets.only(top: 10),
-        //    width: 350,
         height: 300,
         child: Chart(
           data: result!.mostOrdersUsers!,
@@ -343,7 +333,6 @@ class _KorisniciIzvjestajScreenState extends State<KorisniciIzvjestajScreen> {
           ? Center(child: Text("Nema dovoljno podataka"))
           : Container(
               margin: const EdgeInsets.only(top: 10),
-              //    width: 350,
               height: 300,
               child: Chart(
                 data: result!.mostActiveUsers!,
@@ -393,7 +382,6 @@ class _KorisniciIzvjestajScreenState extends State<KorisniciIzvjestajScreen> {
           )),
       Container(
         margin: const EdgeInsets.only(top: 10),
-        //    width: 350,
         height: 300,
         child: Chart(
           data: result!.mostSubscribedCategories!,

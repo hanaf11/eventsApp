@@ -1,18 +1,12 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:eventsappadmin/models/dobavljac.dart';
 import 'package:eventsappadmin/models/dogadjaj.dart';
-import 'package:eventsappadmin/models/podkategorija.dart';
 import 'package:eventsappadmin/providers/dobavljac_provider.dart';
 import 'package:eventsappadmin/providers/dogadjaj_provider.dart';
-import 'package:eventsappadmin/screens/dogadjaj_details_screen.dart';
 import 'package:eventsappadmin/utils/style_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:provider/provider.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-
 import '../widgets/searchField.dart';
 
 class DobavljacDetailsScreen extends StatefulWidget {
@@ -27,23 +21,12 @@ class DobavljacDetailsScreen extends StatefulWidget {
 }
 
 class _DobavljacDetailsScreenState extends State<DobavljacDetailsScreen> {
-  /* late ImageObj slika = widget.kategorijaSlika ??
-      ImageObj(
-          Image.asset(
-            'assets/images/no_picture.jpg',
-            fit: BoxFit.cover,
-          ),
-          null);*/
   final _formKey = GlobalKey<FormBuilderState>();
-  final _podkategorijaFormKey = GlobalKey<FormBuilderState>();
   Map<String, dynamic> _initialValue = {};
-  String? _slikaError;
-
   late DobavljacProvider _dobavljacProvider;
   late DogadjajProvider _dogadjajProvider;
   List<Dogadjaj>? _dogadjajList;
-  //late PodkategorijaProvider podkategorijaProvider;
-
+  
   _DobavljacDetailsScreenState();
 
   @override
@@ -71,7 +54,7 @@ class _DobavljacDetailsScreenState extends State<DobavljacDetailsScreen> {
     getDogadjaji();
   }
 
-  getDogadjaji() async {
+  Future<void> getDogadjaji() async {
     var dogadjajiResult = await _dogadjajProvider
         .get(filter: {'DobavljacId': widget.selectedDobavljac?.dobavljacId});
     setState(() {
@@ -79,7 +62,7 @@ class _DobavljacDetailsScreenState extends State<DobavljacDetailsScreen> {
     });
   }
 
-  handleException(Exception e) {
+  void handleException(Exception e) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -118,6 +101,7 @@ class _DobavljacDetailsScreenState extends State<DobavljacDetailsScreen> {
     }
   }
 
+@override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: widget.selectedDobavljac == null
@@ -163,12 +147,6 @@ class _DobavljacDetailsScreenState extends State<DobavljacDetailsScreen> {
                                     name: "Telefon:",
                                     field: FormBuilderTextField(
                                       name: 'Telefon',
-                                      /* validator: FormBuilderValidators.compose([
-                                    FormBuilderValidators.required(
-                                        errorText: 'Telefon je obavezan'),
-                                    FormBuilderValidators.numeric(
-                                        errorText: 'Dozvoljeni samo brojevi')
-                                  ]),*/
                                       validator: FormBuilderValidators.compose([
                                         FormBuilderValidators.required(
                                             errorText: 'Polje je obavezno'),
@@ -249,7 +227,6 @@ class _DobavljacDetailsScreenState extends State<DobavljacDetailsScreen> {
             onPressed: () async {
               if (_formKey.currentState?.saveAndValidate() ?? false) {
                 var request = Map.from(_formKey.currentState!.value);
-                print(request);
 
                 try {
                   if (widget.selectedDobavljac == null) {
@@ -283,7 +260,7 @@ class _DobavljacDetailsScreenState extends State<DobavljacDetailsScreen> {
     return SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: SizedBox(
-            width: MediaQuery.of(context).size.width * 0.79, // Full-width table
+            width: MediaQuery.of(context).size.width * 0.79,
             child: PaginatedDataTable(
               columns: [
                 DataColumn(

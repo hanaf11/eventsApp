@@ -29,7 +29,6 @@ class _KategorijeScreenState extends State<KategorijeScreen>
     implements Clearable {
   int? selected;
   bool isLoading = true;
-
   final TextEditingController _searchController = TextEditingController();
   late KategorijaProvider _kategorijaProvider;
   late PodkategorijaProvider _podkategorijaProvider;
@@ -60,7 +59,7 @@ class _KategorijeScreenState extends State<KategorijeScreen>
     }
   }
 
-  handleException(Exception e) {
+  void handleException(Exception e) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -76,7 +75,7 @@ class _KategorijeScreenState extends State<KategorijeScreen>
     );
   }
 
-  getKategorije() async {
+  Future<void> getKategorije() async {
     var data = await _kategorijaProvider.get();
     setState(() {
       result = data;
@@ -84,7 +83,7 @@ class _KategorijeScreenState extends State<KategorijeScreen>
     });
   }
 
-  getPodkategorije(int kategorijaId) async {
+  Future<void> getPodkategorije(int kategorijaId) async {
     var data = await _podkategorijaProvider.get(filter: {
       'KategorijaId': kategorijaId,
     });
@@ -93,13 +92,13 @@ class _KategorijeScreenState extends State<KategorijeScreen>
     });
   }
 
-  imageChanged(ImageObj imageObj) {
+  void imageChanged(ImageObj imageObj) {
     setState(() {
       _kategorijaSlika = imageObj;
     });
   }
 
-  editKategorija(int id) async {
+  Future<void> editKategorija(int id) async {
     setState(() {
       isLoading = true;
     });
@@ -116,7 +115,7 @@ class _KategorijeScreenState extends State<KategorijeScreen>
     });
   }
 
-  deleteKategorija(Kategorija e) async {
+  Future<void> deleteKategorija(Kategorija e) async {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -166,32 +165,7 @@ class _KategorijeScreenState extends State<KategorijeScreen>
     _buildKategorijaDetails(_selectedKategorija);
   }
 
-  Future<ImageObj> getImage() async {
-    File? file;
-    String? base64Image;
-    var result = await FilePicker.platform.pickFiles(type: FileType.image);
-
-    if (result != null && result.files.single.path != null) {
-      file = File(result.files.single.path!);
-      base64Image = base64Encode(file!.readAsBytesSync());
-      final image = ImageObj(
-          Image.file(
-            file,
-            fit: BoxFit.cover,
-          ),
-          base64Image);
-      return image;
-    }
-    return _kategorijaSlika ??
-        ImageObj(
-            Image.asset(
-              'assets/images/no_picture.jpg',
-              fit: BoxFit.cover,
-            ),
-            null);
-  }
-
-  refresh(int? id) {
+  void refresh(int? id) {
     search();
     if (_selectedKategorija == null && id != null) {
       getPodkategorije(id);
@@ -200,7 +174,7 @@ class _KategorijeScreenState extends State<KategorijeScreen>
     }
   }
 
-  search() async {
+  Future<void> search() async {
     var data = await _kategorijaProvider.get(filter: {
       'fts': _searchController.text,
     });

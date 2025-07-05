@@ -1,18 +1,14 @@
 import 'package:eventsappadmin/providers/dogadjaj_provider.dart';
 import 'package:eventsappadmin/screens/dogadjaj_details_screen.dart';
 import 'package:eventsappadmin/utils/style_util.dart';
-import 'package:eventsappadmin/utils/util.dart';
 import 'package:eventsappadmin/widgets/master_screen.dart';
 import 'package:eventsappadmin/widgets/searchField.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:provider/provider.dart';
-
 import '../models/dogadjaj.dart';
 import '../models/kategorija.dart';
 import '../models/search_result.dart';
 import '../providers/kategorija_provider.dart';
-import '../widgets/searchField.dart';
 
 class DogadjajiListScreen extends StatefulWidget {
   DogadjajiListScreen({super.key});
@@ -48,17 +44,14 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
     _dogadjajProvider = context.read<DogadjajProvider>();
     initForm();
     getDogadjaji();
-    /*_datumOdController = TextEditingController(text: _datumOd.toString());
-    _datumDoController = TextEditingController(text: _datumDo.toString());*/
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    //dropdownValue = kategorijeResult?.result[0].kategorijaId;
   }
 
-  setLoading() {
+  void setLoading() {
     if (_dogadjajiLoaded && _kategorijeLoaded) {
       setState(() {
         isLoading = false;
@@ -75,20 +68,6 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
       });
     }
   }
-
-  /*Future<void> _selectDate(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-    );
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-      });
-    }
-  }*/
 
   void _showDatePicker(caller) {
     showDatePicker(
@@ -128,7 +107,7 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
     );
   }
 
-  getDogadjaji() async {
+  Future<void> getDogadjaji() async {
     var data = await _dogadjajProvider.get();
     setState(() {
       result = data;
@@ -137,7 +116,7 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
     });
   }
 
-  search() async {
+  Future<void> search() async {
     var filter = {
       'FTS': _ftsController.text,
       'Kategorija': _dropdownValue,
@@ -145,7 +124,6 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
       'DatumOd': _datumOd,
       'DatumDo': _datumDo
     };
-    print("filter je ${filter}");
     var data = await _dogadjajProvider.get(filter: filter);
 
     setState(() {
@@ -153,7 +131,7 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
     });
   }
 
-  handleException(Exception e) {
+  void handleException(Exception e) {
     showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
@@ -167,7 +145,6 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
                     child: Text("OK"))
               ],
             ));
-    // _formKey.currentState?.reset(); //myb for update
   }
 
   @override
@@ -197,7 +174,7 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
     }
   }
 
-  editDogadjaj(int dogadjajId) {
+  void editDogadjaj(int dogadjajId) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => DogadjajiDetailsScreen(
@@ -208,7 +185,8 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
     );
   }
 
-  /*deleteDogadjaj(Dogadjaj e) {
+  
+  void deleteDogadjaj(Dogadjaj e) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -223,47 +201,11 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
           ),
           TextButton(
             onPressed: () {
-              print("uslo u delete");
-              try {
-                // Navigator.pop(context, 'Potvrdi');
-                _dogadjajProvider.delete(e.dogadjajId!);
-                _handleDeleteSuccess(context);
-              } catch (error) {
-                print("Error occurred: $error");
-                handleException(error as Exception);
-              } /*finally {
-                Navigator.pop(context, 'Potvrdi');
-              }*/
-            },
-            child: const Text('Potvrdi'),
-          ),
-        ],
-      ),
-    );
-  }*/
-
-  deleteDogadjaj(Dogadjaj e) {
-    showDialog<String>(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: const Text('Potvrdite akciju'),
-        content: Text('Da li stvarno želite obrisati događaj ${e.naziv}?'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context, 'Odustani');
-            },
-            child: const Text('Odustani'),
-          ),
-          TextButton(
-            onPressed: () {
-              //  Navigator.pop(context, 'Potvrdi');
               _dogadjajProvider.delete(e.dogadjajId!).then((value) {
                 Navigator.pop(context, 'Potvrdi');
                 _handleDeleteSuccess(context);
               }).onError(
                 (error, stackTrace) {
-                  print("error koji se desio $error");
                   Navigator.pop(context, 'Potvrdi');
                   handleException(error as Exception);
                 },
@@ -387,11 +329,6 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
                   ),
                   InputField(
                     name: "",
-                    /* field: ElevatedButton(
-                        child: Text("Pretraga"),
-                        onPressed: () async {
-                          search();
-                        }),*/
                     field: ElevatedButton(
                       child: Text("Pretraga"),
                       style: buttonPrimary,
@@ -400,17 +337,6 @@ class _DogadjajiListScreenState extends State<DogadjajiListScreen>
                       },
                     ),
                   ),
-                  /* _buildSearchField(
-                    "",
-                    ElevatedButton(
-                        child: Text("New"),
-                        onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => DogadjajiDetailsScreen(),
-                          ));
-                        }),
-                    false,
-                  ),*/
                 ],
               ),
             ],

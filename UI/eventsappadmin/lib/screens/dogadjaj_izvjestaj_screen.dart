@@ -12,7 +12,6 @@ import 'package:provider/provider.dart';
 import 'dart:ui' as ui;
 import 'package:flutter/rendering.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
 
 class DogadjajIzvjestajScreen extends StatefulWidget {
   int? selected = 6;
@@ -28,14 +27,6 @@ class _DogadjajIzvjestajScreenState extends State<DogadjajIzvjestajScreen> {
   late DogadjajProvider _dogadjajProvider;
   DogadjajiReportResponse? result;
   bool isLoading = true;
-  var basicData = [
-    {'genre': 'Sports', 'sold': 275},
-    {'genre': 'Strategy', 'sold': 115},
-    {'genre': 'Action', 'sold': 120},
-    {'genre': 'Shooter', 'sold': 350},
-    {'genre': 'Other', 'sold': 150},
-  ];
-
   final GlobalKey _eventsByStatusKey = GlobalKey();
   final GlobalKey _eventsByCategoryKey = GlobalKey();
   final GlobalKey _top3EventsKey = GlobalKey();
@@ -51,7 +42,7 @@ class _DogadjajIzvjestajScreenState extends State<DogadjajIzvjestajScreen> {
     getData();
   }
 
-  getData() async {
+  Future<void> getData() async {
     var data = await _dogadjajProvider.getReportData(filter: {
       'EventsByStatus': widget.options[0],
       'EventsByCategory': widget.options[1],
@@ -63,11 +54,9 @@ class _DogadjajIzvjestajScreenState extends State<DogadjajIzvjestajScreen> {
       result = data;
       isLoading = false;
     });
-    print(result?.eventsByStatus);
   }
 
   Future<Uint8List> _captureWidgetAsImage(GlobalKey key) async {
-    // find the RenderRepaintBoundary
     RenderRepaintBoundary boundary =
         key.currentContext!.findRenderObject() as RenderRepaintBoundary;
 
@@ -77,7 +66,6 @@ class _DogadjajIzvjestajScreenState extends State<DogadjajIzvjestajScreen> {
   }
 
   Future<void> exportPdf() async {
-    print("export kliknut");
     try {
       final pdf = pw.Document();
 
@@ -99,8 +87,6 @@ class _DogadjajIzvjestajScreenState extends State<DogadjajIzvjestajScreen> {
         pw.MultiPage(
           build: (context) {
             List<pw.Widget> widgets = [];
-
-            // Add the header
             widgets.add(
               pw.Center(
                   child: pw.Text(
@@ -112,13 +98,12 @@ class _DogadjajIzvjestajScreenState extends State<DogadjajIzvjestajScreen> {
               )),
             );
             widgets.add(
-                pw.SizedBox(height: 20)); // Space between header and content
+                pw.SizedBox(height: 20));
 
-            // Add the charts
             for (var chart in chartImagesList) {
               widgets.add(pw.Center(child: pw.Image(chart)));
               widgets
-                  .add(pw.SizedBox(height: 20)); // Add spacing between charts
+                  .add(pw.SizedBox(height: 20)); 
             }
 
             return widgets;
@@ -126,7 +111,6 @@ class _DogadjajIzvjestajScreenState extends State<DogadjajIzvjestajScreen> {
         ),
       );
 
-      // Save or share the PDF
       final outputDir = await getDownloadsDirectory();
       if (outputDir == null) {
         throw Exception("Error: Downloads directory could not be found");
@@ -152,7 +136,6 @@ class _DogadjajIzvjestajScreenState extends State<DogadjajIzvjestajScreen> {
       ),
     );
     }
-    // Optionally open the file or inform the user
     catch (e) {
       print("Error while exporting PDF: $e");
     }
@@ -240,7 +223,6 @@ class _DogadjajIzvjestajScreenState extends State<DogadjajIzvjestajScreen> {
         margin: const EdgeInsets.only(top: 10),
         height: 350,
         child: Chart(
-          // data: statusData,
           data: result!.eventsByStatus!,
           variables: {
             'status': Variable(
@@ -281,7 +263,7 @@ class _DogadjajIzvjestajScreenState extends State<DogadjajIzvjestajScreen> {
     ]);
   }
 
-  _buildEventsByCategory() {
+  Column _buildEventsByCategory() {
     return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
       Text("Broj događaja po kategorijama",
           style: TextStyle(
@@ -293,7 +275,6 @@ class _DogadjajIzvjestajScreenState extends State<DogadjajIzvjestajScreen> {
         margin: const EdgeInsets.only(top: 10),
         height: 350,
         child: Chart(
-          // data: statusData,
           data: result!.eventsByCategory!,
           variables: {
             'kategorija': Variable(
@@ -336,7 +317,7 @@ class _DogadjajIzvjestajScreenState extends State<DogadjajIzvjestajScreen> {
   }
 
 //double column
-  _buildTop3Events() {
+  Column _buildTop3Events() {
     return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
       Text("Top 3 događaja s najvećim prihodom",
           style: TextStyle(
@@ -346,7 +327,6 @@ class _DogadjajIzvjestajScreenState extends State<DogadjajIzvjestajScreen> {
           )),
       Container(
         margin: const EdgeInsets.only(top: 10),
-        // width: 350,
         height: 300,
         child: Chart(
           padding: (_) => const EdgeInsets.fromLTRB(40, 5, 10, 40),
@@ -383,7 +363,6 @@ class _DogadjajIzvjestajScreenState extends State<DogadjajIzvjestajScreen> {
             )
           },
           tooltip: TooltipGuide(multiTuples: true),
-          // crosshair: CrosshairGuide(),
           annotations: [
             CustomAnnotation(
                 renderer: (_, size) => [
@@ -429,7 +408,7 @@ class _DogadjajIzvjestajScreenState extends State<DogadjajIzvjestajScreen> {
   }
 
 //column
-  _buildMostViewedEvents() {
+  Column _buildMostViewedEvents() {
     return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
       Text("Top 3 događaja s najviše pregleda",
           style: TextStyle(
@@ -439,7 +418,6 @@ class _DogadjajIzvjestajScreenState extends State<DogadjajIzvjestajScreen> {
           )),
       Container(
         margin: const EdgeInsets.only(top: 10),
-        //    width: 350,
         height: 300,
         child: Chart(
           data: result!.mostViewedEvents!,
@@ -478,7 +456,7 @@ class _DogadjajIzvjestajScreenState extends State<DogadjajIzvjestajScreen> {
     ]);
   }
 
-  _buildMostSavedEvents() {
+  Column _buildMostSavedEvents() {
     return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
       Text("Top 3 najviše sačuvanih događaja",
           style: TextStyle(
@@ -488,7 +466,6 @@ class _DogadjajIzvjestajScreenState extends State<DogadjajIzvjestajScreen> {
           )),
       Container(
         margin: const EdgeInsets.only(top: 10),
-        //    width: 350,
         height: 350,
         child: Chart(
           data: result!.mostSavedEvents!,
