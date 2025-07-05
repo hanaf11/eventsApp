@@ -219,7 +219,8 @@ namespace eventsApp.Services
         {
             var predictionEngine = mlContext.Model.CreatePredictionEngine<EventInteraction, EventPrediction>(model);
 
-            var possibleEvents = await _context.Dogadjajis.Include(d=>d.Kategorija).Include(d => d.TipKartes).ThenInclude(t => t.NarudzbaStavkes).ThenInclude(n => n.Narudzba)
+            var possibleEvents = await _context.Dogadjajis.Include(d=>d.Kategorija).Include(d => d.TipKartes).
+                ThenInclude(t => t.NarudzbaStavkes).ThenInclude(n => n.Narudzba)
                 .Where(d => d.Status == "ACTIVE" &&
                      !d.TipKartes.Any(t => t.NarudzbaStavkes.Any(n => n.Narudzba.KorisnikId == userId))).ToListAsync();
             if (!possibleEvents.Any()) throw new Exception("Ne postoje događaji za predložiti");

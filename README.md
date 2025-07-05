@@ -16,14 +16,14 @@ In contrast, the mobile app enables end users to browse currently active events,
 
 - `flutter pub get` - to fetch dependencies
 - `flutter run` - to launch the application
-Base url is "http://localhost:7294/" by default but it can be changed using -dart-define=baseUrl=>>NEWURL<< when running the flutter app.
+- Base url is "http://localhost:7294/" by default but it can be changed using `--dart-define=baseUrl=>>NEWURL<<` when running the flutter app.
 
 2. Start the mobile application by opening the **eventsappusers** folder in VSCode and executing the following commands in the terminal:
 
 - `flutter pub get` - to fetch dependencies
 - `flutter run` - to launch the application
-Base url is "http://10.0.2.2:7294/" by default but it can be changed using -dart-define=baseUrl=>>NEWURL<< when running the flutter app.
-Stripe publishable key is also set by default but it can be changed using --dart-define=publishableKey=>>NEWKEY<< when running the flutter app.
+- Base url is "http://10.0.2.2:7294/" by default but it can be changed using `--dart-define=baseUrl=>>NEWURL<<` when running the flutter app.
+- Stripe publishable key is also set by default but it can be changed using `--dart-define=publishableKey=>>NEWKEY<<` when running the flutter app.
 
 
 ### Credentials
@@ -35,13 +35,13 @@ The Admin role has all the privileges of a Manager, with the additional ability 
 
 - username: admin
 - password: test
-
+```
 - username: desktop
 - password: test
-
+```
 - username: manager
 - password: test
-
+```
 
 Mobile application:
 There are two roles that have access to the user application: Admin and User.
@@ -50,15 +50,15 @@ All users can browse events, create new events, and purchase tickets.
 - username: admin
 - password: test
 - location: Sarajevo
-
+```
 - username: user
 - password: test
 - location: Sarajevo
-
+```
 - username: johndoe
 - password: test
 - location: Sarajevo
-
+```
 - username: janedoe
 - password: test
 - location: Mostar
