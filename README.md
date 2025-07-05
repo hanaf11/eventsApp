@@ -12,19 +12,28 @@ In contrast, the mobile app enables end users to browse currently active events,
 
 - `docker-compose up --build`
 
-2. Start the desktop application by opening the **eventsappadmin** folder in VSCode and executing the following commands in the terminal:
+### Desktop Application
+#### Option 1
+Start the desktop application by opening the **eventsappadmin** folder in VSCode and executing the following commands in the terminal:
 
 - `flutter pub get` - to fetch dependencies
 - `flutter run` - to launch the application
 - Base url is "http://localhost:7294/" by default but it can be changed using `--dart-define=baseUrl=>>NEWURL<<` when running the flutter app.
 
-2. Start the mobile application by opening the **eventsappusers** folder in VSCode and executing the following commands in the terminal:
+#### Option 2
+Navigate to fit-build-2025-07-05/Release and run eventsappadmin.exe
+
+### Mobile Application
+#### Option 1
+Start the mobile application by opening the **eventsappusers** folder in VSCode and executing the following commands in the terminal:
 
 - `flutter pub get` - to fetch dependencies
 - `flutter run` - to launch the application
 - Base url is "http://10.0.2.2:7294/" by default but it can be changed using `--dart-define=baseUrl=>>NEWURL<<` when running the flutter app.
 - Stripe publishable key is also set by default but it can be changed using `--dart-define=publishableKey=>>NEWKEY<<` when running the flutter app.
 
+#### Option 2
+Navigate to fit-build-2025-07-05/flutter-apk and drag-and-drop app-release.apk to your android emulator
 
 ### Credentials
 
